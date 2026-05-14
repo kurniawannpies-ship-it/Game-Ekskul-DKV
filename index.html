@@ -1124,7 +1124,7 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
   <div class="tab-bar">
     <button class="tab-btn active" data-tab="quest" type="button">📋 Quest</button>
     <button class="tab-btn" data-tab="siswa" type="button">👥 Siswa</button>
-    <button class="tab-btn" data-tab="kelompok" type="button">🤝 Kelompok</button>
+    <button class="tab-btn" data-tab="kelompok" type="button">📝 Tugas</button>
     <button class="tab-btn" data-tab="peringkat" type="button">🏆 Peringkat</button>
   </div>
 
@@ -1305,7 +1305,7 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
   <div class="tab-content" id="tab-kelompok">
     <div class="siswa-top">
       <div>
-        <h2>🤝 Kelompok</h2>
+        <h2>📝 Tugas</h2>
         <div style="font-size:11px;color:#888;margin-top:2px" id="kelompok-count-label">—</div>
       </div>
       <button class="btn-add-siswa" id="btn-add-kelompok" type="button" style="display:none">&#x2795; Buat Kelompok</button>
@@ -5115,7 +5115,7 @@ function switchCharTab(tab){
     dataSection.style.display   = 'none';
     // Populate profil fields from stored data
     if(loggedInStudentId) loadProfilFields(loggedInStudentId);
-    // Render admin-configured extra fields
+    // Render admin-configured profil fields (ALL chapters sesuai konfigurasi tabel profil)
     if(loggedInStudentId){
       var dynChapters = (window._profilChapters||[]).filter(function(ch){
         return ch.fields && ch.fields.some(function(f){
@@ -5123,16 +5123,13 @@ function switchCharTab(tab){
         });
       });
       var p2 = getStudentProfile(loggedInStudentId);
-      // Only show chapters that have fields admin added beyond defaults
-      var defaultIds = ['ch_basic','ch_academic','ch_lifestyle','ch_personality','ch_social','ch_wellness','ch_future'];
-      var extraChapters = dynChapters.filter(function(ch){ return defaultIds.indexOf(ch.id) < 0; });
       var dynSec = document.getElementById('prf-dynamic-fields-section');
       var dynCon = document.getElementById('prf-dynamic-fields-container');
       if(dynSec && dynCon){
-        if(extraChapters.length > 0){
+        if(dynChapters.length > 0){
           dynSec.style.display = 'block';
           var dynHtml = '';
-          extraChapters.forEach(function(ch){
+          dynChapters.forEach(function(ch){
             dynHtml += '<div class="char-section-lbl">'+esc(ch.label)+'</div>';
             dynHtml += '<div style="background:#f8f7f4;border-radius:14px;border:1px solid #ebebeb;padding:14px;margin-bottom:14px">';
             ch.fields.forEach(function(f){
