@@ -526,6 +526,38 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
 .prf-card-xp{font-size:12px;font-weight:700;color:#7F77DD}
 .prf-card-dream{font-size:11px;color:#888}
 
+/* ── INLINE PROFILE CARD (dalam tabel siswa) ── */
+.sc2-profil-inline{border-top:1px solid #f0eeea;margin:0;overflow:hidden;max-height:0;transition:max-height .35s ease;background:#fafafa}
+.sc2-profil-inline.open{max-height:1200px}
+.sc2-profil-header-strip{padding:14px 14px 10px;position:relative;overflow:hidden;display:-webkit-flex;display:flex;-webkit-align-items:flex-start;align-items:flex-start;gap:12px}
+.sc2-profil-avatar-sm{width:52px;height:52px;border-radius:50%;border:3px solid rgba(255,255,255,.8);overflow:hidden;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;-webkit-flex-shrink:0;flex-shrink:0;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.sc2-profil-identity{-webkit-flex:1;flex:1;min-width:0}
+.sc2-profil-name{font-size:15px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:2px}
+.sc2-profil-nick{font-size:11px;color:rgba(255,255,255,.8);margin-bottom:4px}
+.sc2-profil-bio{font-size:11px;color:rgba(255,255,255,.9);line-height:1.4;margin-bottom:6px}
+.sc2-profil-mood{display:-webkit-inline-flex;display:inline-flex;-webkit-align-items:center;align-items:center;gap:4px;background:rgba(255,255,255,.2);border-radius:20px;padding:3px 10px;font-size:10px;font-weight:600;color:#fff}
+.sc2-profil-badge-box{background:rgba(255,255,255,.92);border-radius:12px;padding:9px 11px;text-align:center;min-width:76px;-webkit-flex-shrink:0;flex-shrink:0;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+.sc2-profil-badge-icon{font-size:26px;line-height:1;margin-bottom:3px}
+.sc2-profil-badge-lbl{font-size:7px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:2px}
+.sc2-profil-badge-name{font-size:11px;font-weight:700;color:#1a1a18;line-height:1.2}
+.sc2-profil-body{background:#fff;padding:12px 14px;border-top:1px solid #f0eeea}
+.sc2-profil-row{display:-webkit-flex;display:flex;-webkit-align-items:flex-start;align-items:flex-start;gap:8px;margin-bottom:7px}
+.sc2-profil-row:last-child{margin-bottom:0}
+.sc2-profil-icon{font-size:13px;-webkit-flex-shrink:0;flex-shrink:0;width:18px;text-align:center;margin-top:1px}
+.sc2-profil-lbl{font-size:8px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.06em;margin-bottom:1px}
+.sc2-profil-val{font-size:11px;color:#1a1a18;font-weight:500;line-height:1.4}
+.sc2-profil-tags{display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;gap:4px;margin-top:6px}
+.sc2-profil-tag{font-size:9px;font-weight:600;padding:2px 8px;border-radius:20px;background:#f0eeea;color:#666}
+.sc2-profil-footer{background:#f8f7f4;padding:8px 14px;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:space-between;justify-content:space-between;border-top:1px solid #f0eeea;font-size:11px}
+.sc2-profil-xp{font-weight:700}
+.sc2-profil-completion{font-size:10px;color:#aaa}
+.sc2-profil-empty{text-align:center;padding:16px;color:#bbb;font-size:11px;font-style:italic}
+.sc2-profil-badges-row{display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;gap:6px;padding:10px 14px;border-top:1px dashed #f0eeea;background:#fff}
+.sc2-profil-badge-chip{border-radius:9px;padding:7px 5px;text-align:center;border:1.5px solid #e8e6e0;background:#f8f7f4;min-width:54px}
+.sc2-profil-badge-chip-icon{font-size:18px;line-height:1;display:block;margin-bottom:2px}
+.sc2-profil-badge-chip-name{font-size:8px;font-weight:700;color:#666;line-height:1.1}
+.sc2-profil-toggle{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;border:1.5px solid;background:transparent;cursor:pointer;-webkit-transition:all .18s;transition:all .18s;display:-webkit-inline-flex;display:inline-flex;-webkit-align-items:center;align-items:center;gap:4px;white-space:nowrap;-webkit-flex-shrink:0;flex-shrink:0}
+
 /* Progress bar for profil completion */
 .prf-completion-bar{height:5px;background:#f0eeea;border-radius:3px;overflow:hidden;margin-bottom:14px}
 .prf-completion-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#7F77DD,#E075C0);-webkit-transition:width .6s;transition:width .6s}
@@ -1015,81 +1047,12 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
         <button type="button" class="spe-btn-save" id="prf-interest-save" onclick="saveProfilInterest()">💾 Simpan Interest</button>
       </div>
 
-      <!-- 4. Social & Community -->
-      <div class="char-section-lbl">🤝 Social & Community</div>
-      <div style="background:#f8f7f4;border-radius:14px;border:1px solid #ebebeb;padding:14px;margin-bottom:14px">
-        <div class="profil-edit-row">
-          <label>Club / Komunitas yang Diikuti</label>
-          <input type="text" id="prf-club" placeholder="cth: Esport Club, KPop Club, Coding Club 🏫" maxlength="120" autocomplete="off">
-        </div>
-        <div class="profil-edit-row">
-          <label>Role Model / Mentor</label>
-          <input type="text" id="prf-mentor" placeholder="cth: Kak Rizky (senior), Bu Sari (guru DKV)" maxlength="100" autocomplete="off">
-        </div>
-        <button type="button" class="spe-btn-save" id="prf-social-save" onclick="saveProfilSocial()">💾 Simpan Social</button>
-      </div>
-
-      <!-- 5. Wellness & Lifestyle -->
-      <div class="char-section-lbl">💚 Wellness & Lifestyle</div>
-      <div style="background:#f8f7f4;border-radius:14px;border:1px solid #ebebeb;padding:14px;margin-bottom:14px">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
-          <div class="profil-edit-row" style="margin-bottom:0">
-            <label>😴 Rata² Jam Tidur</label>
-            <select id="prf-tidur">
-              <option value="">Pilih...</option>
-              <option value="< 6 jam">😵 &lt; 6 jam</option>
-              <option value="6-7 jam">😐 6–7 jam</option>
-              <option value="7-8 jam">😊 7–8 jam</option>
-              <option value="> 8 jam">😄 &gt; 8 jam</option>
-            </select>
-          </div>
-          <div class="profil-edit-row" style="margin-bottom:0">
-            <label>📱 Screen Time / Hari</label>
-            <select id="prf-screen">
-              <option value="">Pilih...</option>
-              <option value="< 3 jam">✅ &lt; 3 jam</option>
-              <option value="3-5 jam">🟡 3–5 jam</option>
-              <option value="5-8 jam">🟠 5–8 jam</option>
-              <option value="> 8 jam">🔴 &gt; 8 jam</option>
-            </select>
-          </div>
-        </div>
-        <div class="profil-edit-row">
-          <label>🏃 Aktivitas Fisik Favorit</label>
-          <input type="text" id="prf-olahraga" placeholder="cth: Basket, Renang, Gym, Dance 💪" maxlength="80" autocomplete="off">
-        </div>
-        <div class="profil-edit-row">
-          <label>🌟 Win of the Day / Gratitude</label>
-          <textarea id="prf-gratitude" placeholder="Apa hal baik yang terjadi hari ini? 🙏" maxlength="200" rows="2"></textarea>
-        </div>
-        <button type="button" class="spe-btn-save" id="prf-wellness-save" onclick="saveProfilWellness()">💾 Simpan Wellness</button>
-      </div>
-
-      <!-- 6. Future & Aspiration -->
-      <div class="char-section-lbl">🚀 Future & Aspiration</div>
-      <div style="background:#f8f7f4;border-radius:14px;border:1px solid #ebebeb;padding:14px;margin-bottom:14px">
-        <div class="profil-edit-row">
-          <label>💼 Dream Career / Job</label>
-          <input type="text" id="prf-dream-job" placeholder="cth: UI/UX Designer, Game Developer, Animator 🎬" maxlength="100" autocomplete="off">
-        </div>
-        <div class="profil-edit-row">
-          <label>💡 Skills yang Ingin Dikuasai</label>
-          <input type="text" id="prf-skills-wish" placeholder="cth: Figma, Python, Video Editing, Bahasa Inggris" maxlength="120" autocomplete="off">
-        </div>
-        <div class="profil-edit-row">
-          <label>🏫 Universitas / Sekolah Impian</label>
-          <input type="text" id="prf-univ" placeholder="cth: ITS, ITB, SMSR, SMKN 1 Sumenep" maxlength="100" autocomplete="off">
-        </div>
-        <button type="button" class="spe-btn-save" id="prf-future-save" onclick="saveProfilFuture()">💾 Simpan Aspiration</button>
-      </div>
-
       <!-- Profile Card Preview -->
       <div class="char-section-lbl">🪪 Profile Card</div>
       <div id="prf-card-preview" class="profil-card-preview"><!-- rendered by JS --></div>
 
       <!-- ── DYNAMIC ADMIN FIELDS ── -->
       <div id="prf-dynamic-fields-section" style="display:none">
-        <div class="char-section-lbl" style="margin-top:8px">📋 Field Tambahan dari Admin</div>
         <div id="prf-dynamic-fields-container"></div>
       </div>
 
@@ -3200,6 +3163,7 @@ function saveSiswa(){
 // RENDER SISWA
 // ─────────────────────────────────────────────
 var siswaXPSortDesc = true; // true = XP Tertinggi, false = XP Terendah
+var openProfilInlineId = null; // ID siswa yang profile card inline-nya terbuka
 
 function toggleSortXP(){
   siswaXPSortDesc = !siswaXPSortDesc;
@@ -3334,6 +3298,89 @@ function renderSiswa(){
     }
     var rankNum=idx+1;
     var rankBadgeHtml='<div style="min-width:26px;text-align:center;font-size:13px;font-weight:700;color:#aaa;-webkit-flex-shrink:0;flex-shrink:0">'+rankNum+'</div>';
+    // ── Inline Profile Card ──
+    var isProfileOpen = openProfilInlineId === s.id;
+    var p = getStudentProfile(s.id);
+    var themeColor = p.color || s.color || '#7F77DD';
+    var completion = profilCompletion(s.id);
+    var badge = getBadgeForXP(xp);
+
+    var avatarSmHtml = s.photoData
+      ? '<img src="'+s.photoData+'" style="width:100%;height:100%;object-fit:cover">'
+      : '<span style="font-size:18px;font-weight:700;color:#fff">'+(s.initials||s.name[0].toUpperCase())+'</span>';
+
+    var badgeIconSmHtml = badge.imgData
+      ? '<img src="'+badge.imgData+'" style="width:28px;height:28px;object-fit:contain">'
+      : '<div class="sc2-profil-badge-icon">'+badge.icon+'</div>';
+
+    var extraRowsInline = '';
+    if(p.dreamJob) extraRowsInline += '<div class="sc2-profil-row"><div class="sc2-profil-icon">💼</div><div><div class="sc2-profil-lbl">Dream Job</div><div class="sc2-profil-val">'+esc(p.dreamJob)+'</div></div></div>';
+    if(p.mapel)    extraRowsInline += '<div class="sc2-profil-row"><div class="sc2-profil-icon">📚</div><div><div class="sc2-profil-lbl">Mapel Favorit</div><div class="sc2-profil-val">'+esc(p.mapel)+'</div></div></div>';
+    if(p.learnStyle) extraRowsInline += '<div class="sc2-profil-row"><div class="sc2-profil-icon">🧠</div><div><div class="sc2-profil-lbl">Learning Style</div><div class="sc2-profil-val">'+esc(p.learnStyle)+'</div></div></div>';
+    if(p.musik)    extraRowsInline += '<div class="sc2-profil-row"><div class="sc2-profil-icon">🎵</div><div><div class="sc2-profil-lbl">Musik Favorit</div><div class="sc2-profil-val">'+esc(p.musik)+'</div></div></div>';
+    if(p.game)     extraRowsInline += '<div class="sc2-profil-row"><div class="sc2-profil-icon">🎮</div><div><div class="sc2-profil-lbl">Game Favorit</div><div class="sc2-profil-val">'+esc(p.game)+'</div></div></div>';
+    if(p.strengths) extraRowsInline += '<div class="sc2-profil-row"><div class="sc2-profil-icon">💪</div><div><div class="sc2-profil-lbl">Kelebihan</div><div class="sc2-profil-val">'+esc(p.strengths)+'</div></div></div>';
+    if(p.goal)     extraRowsInline += '<div class="sc2-profil-row"><div class="sc2-profil-icon">🎯</div><div><div class="sc2-profil-lbl">Target Semester</div><div class="sc2-profil-val">'+esc(p.goal)+'</div></div></div>';
+
+    var tagsInlineHtml = '';
+    if(p.hobi){
+      var tagItems = p.hobi.split(',').slice(0,5).map(function(t){
+        return '<span class="sc2-profil-tag">'+esc(t.trim())+'</span>';
+      }).join('');
+      tagsInlineHtml = '<div class="sc2-profil-tags">'+tagItems+'</div>';
+    }
+
+    var levelsInl = (window.badgeLevels||[]).slice().sort(function(a,b){return (a.minXP||0)-(b.minXP||0);});
+    var earnedInl = levelsInl.filter(function(b){ return xp >= (b.minXP||0); });
+    var badgesInlineHtml = '';
+    if(earnedInl.length > 0){
+      badgesInlineHtml = '<div class="sc2-profil-badges-row">'+
+        earnedInl.map(function(b){
+          var bIcon = b.imgData ? '<img src="'+b.imgData+'" style="width:20px;height:20px;object-fit:contain">' : '<span class="sc2-profil-badge-chip-icon">'+b.icon+'</span>';
+          return '<div class="sc2-profil-badge-chip">'+bIcon+'<div class="sc2-profil-badge-chip-name">'+esc(b.name)+'</div></div>';
+        }).join('')+
+      '</div>';
+    }
+
+    var profilEmptyMsg = (!extraRowsInline && !tagsInlineHtml && !p.bio && !p.mood)
+      ? '<div class="sc2-profil-empty">Belum ada profil lengkap.<br><span style="font-size:9px">Login siswa untuk mengisi profil.</span></div>'
+      : '';
+
+    var profilToggleColor = themeColor;
+    var profilToggleLabel = isProfileOpen ? '👤 Sembunyikan Profil' : '👤 Lihat Profil';
+
+    var inlineProfilHtml =
+      '<div class="sc2-profil-inline'+(isProfileOpen?' open':'')+'" id="prf-inline-'+s.id+'">'+
+        // Gradient header
+        '<div class="sc2-profil-header-strip" style="background:linear-gradient(135deg,'+themeColor+','+adjustColor(themeColor,-30)+')">'+
+          '<div class="sc2-profil-avatar-sm" style="background:rgba(255,255,255,.25)">'+avatarSmHtml+'</div>'+
+          '<div class="sc2-profil-identity">'+
+            '<div class="sc2-profil-name">'+esc(s.name)+(p.nickname?' <span style="font-weight:400;font-size:11px;opacity:.8">@'+esc(p.nickname)+'</span>':'')+'</div>'+
+            '<div class="sc2-profil-nick">'+esc(s.kelas||'')+(p.personality?' · '+esc(p.personality):'')+'</div>'+
+            (p.bio?'<div class="sc2-profil-bio">'+esc(p.bio)+'</div>':'')+
+            (p.mood?'<div class="sc2-profil-mood">'+esc(p.mood)+'</div>':'')+
+          '</div>'+
+          '<div class="sc2-profil-badge-box">'+
+            badgeIconSmHtml+
+            '<span class="sc2-profil-badge-lbl">Badge</span>'+
+            '<div class="sc2-profil-badge-name">'+esc(badge.name||'Pemula')+'</div>'+
+          '</div>'+
+        '</div>'+
+        // Body rows
+        '<div class="sc2-profil-body">'+
+          profilEmptyMsg+
+          extraRowsInline+
+          tagsInlineHtml+
+        '</div>'+
+        // Badges earned
+        badgesInlineHtml+
+        // Footer bar
+        '<div class="sc2-profil-footer">'+
+          '<div class="sc2-profil-xp" style="color:'+themeColor+'">⭐ '+xp+' XP · '+esc(badge.name||'Pemula')+'</div>'+
+          '<div class="sc2-profil-completion">Profil '+completion+'% lengkap</div>'+
+        '</div>'+
+      '</div>';
+
     return '<div class="sc2-card">'+
       '<div class="sc2-header" data-action="toggle-siswa" data-sid="'+s.id+'">'+
         rankBadgeHtml+
@@ -3343,7 +3390,6 @@ function renderSiswa(){
             : '<div class="sc2-photo-init" style="background:'+s.color+'">'+(s.initials||s.name[0].toUpperCase())+'</div>')+
         '</div>'+
         (function(){
-          var badge = getBadgeForXP(xp);
           var col = s.color;
           var circleContent = badge.imgData
             ? '<img src="'+badge.imgData+'" style="width:44px;height:44px;object-fit:contain">'
@@ -3360,9 +3406,12 @@ function renderSiswa(){
             '<span class="sc2-chevron'+(isOpen?' open':'')+'">&#9654;</span>';
         })()+
       '</div>'+
+      // Profile toggle button row
       '<div style="padding:0 14px 10px;display:-webkit-flex;display:flex;-webkit-justify-content:flex-end;justify-content:flex-end">'+
-        '<button class="btn-view-profile" type="button" data-action="view-profile" data-sid="'+s.id+'">👤 Lihat Profil</button>'+
+        '<button class="sc2-profil-toggle" type="button" data-action="toggle-profil-inline" data-sid="'+s.id+'" style="color:'+profilToggleColor+';border-color:'+profilToggleColor+'55;background:'+(isProfileOpen?profilToggleColor+'11':'transparent')+'">'+profilToggleLabel+'</button>'+
       '</div>'+
+      // Inline Profile Card
+      inlineProfilHtml+
       (isOpen?'<div class="sc2-divider"></div><div class="sc2-detail open">'+
         '<div class="siswa-stat-row">'+
         '<div class="siswa-stat"><div class="siswa-stat-num">'+xp+'</div><div class="siswa-stat-lbl">Total XP</div></div>'+
@@ -3388,6 +3437,11 @@ document.getElementById('siswa-grid').addEventListener('click',function(e){
   if(!el)return;
   var action=el.dataset.action,sid=el.dataset.sid,qid=el.dataset.qid;
   if(action==='toggle-siswa'){openSiswaId=(openSiswaId===sid?null:sid);renderSiswa();}
+  if(action==='toggle-profil-inline'){
+    openProfilInlineId=(openProfilInlineId===sid?null:sid);
+    renderSiswa();
+    return;
+  }
   if(action==='view-profile'){openPublicProfile(sid);}
   if(action==='toggle-siswa-quest'&&pembina){toggleSiswaQuest(sid,qid);}
   if(action==='dl-pdf'){showPDF(sid);}
@@ -4931,6 +4985,8 @@ window.initFirebase = function(){
     _fbRef.child('dkv_profiles').on('value', function(snap){
       var v = snap.val();
       if(v) window.siswaProfiles = v;
+      // Re-render siswa agar profile card inline ikut terupdate secara realtime
+      if(typeof renderSiswa === 'function') renderSiswa();
     });
   }, 2000);
 };
