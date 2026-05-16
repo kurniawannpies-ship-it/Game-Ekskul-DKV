@@ -5,6 +5,57 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Ekskul DKV SMPN 1 Sumenep — Quest Board</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+
+<!-- ══ MODAL PENDAFTARAN MANDIRI SISWA ══ -->
+<div class="reg-modal-overlay" id="reg-modal">
+  <div class="reg-modal-box">
+    <!-- Step 1: Form -->
+    <div class="reg-step" id="reg-step-1">
+      <div class="reg-title">📋 Daftar Ekskul DKV</div>
+      <div class="reg-sub">Isi data kamu. Akun aktif setelah disetujui pembina.</div>
+      <div class="reg-field">
+        <label>Nama Lengkap</label>
+        <input type="text" id="reg-name" placeholder="Nama lengkap kamu" autocomplete="off" autocapitalize="words">
+      </div>
+      <div class="reg-field">
+        <label>Kelas / Angkatan</label>
+        <input type="text" id="reg-kelas" placeholder="Contoh: 7.1 / 2025" autocomplete="off">
+      </div>
+      <div class="reg-field">
+        <label>Username Login</label>
+        <input type="text" id="reg-username" placeholder="Huruf kecil, tanpa spasi" autocomplete="off" autocapitalize="none">
+      </div>
+      <div class="reg-field">
+        <label>Password</label>
+        <input type="password" id="reg-password" placeholder="Min. 6 karakter">
+      </div>
+      <div class="reg-field">
+        <label>Pilih Warna Avatar</label>
+        <div class="reg-color-grid" id="reg-color-grid"></div>
+      </div>
+      <div class="reg-err" id="reg-err"></div>
+      <button class="reg-btn" id="reg-submit-btn" type="button">Kirim Pendaftaran 🚀</button>
+      <button class="reg-btn-ghost" id="reg-cancel-btn" type="button">Batal</button>
+    </div>
+    <!-- Step 2: Sukses -->
+    <div class="reg-step" id="reg-step-2">
+      <div class="reg-success-icon">✅</div>
+      <div class="reg-title">Pendaftaran Terkirim!</div>
+      <div class="reg-sub" style="margin-bottom:24px">Tunggu persetujuan pembina. Kamu akan dapat notifikasi saat akun diaktifkan.<br><br>Username kamu: <strong id="reg-done-username"></strong></div>
+      <button class="reg-btn" id="reg-done-btn" type="button">Tutup</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PANEL PENDING REGISTRASI (ADMIN) ══ -->
+<div class="pending-panel-overlay" id="pending-panel-overlay"></div>
+<div class="pending-panel" id="pending-panel">
+  <div class="pending-panel-head">
+    <div class="pending-panel-title">📬 Permintaan Bergabung</div>
+    <button class="pending-panel-close" id="pending-panel-close" type="button">✕</button>
+  </div>
+  <div class="pending-list" id="pending-list"></div>
+</div>
 <!-- Firebase SDK v9 compat (CDN) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
@@ -678,6 +729,46 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
 .pubprof-drag{width:36px;height:4px;background:rgba(0,0,0,.15);border-radius:2px;margin:12px auto 8px}
 .pubprof-close{position:absolute;top:12px;right:14px;background:rgba(255,255,255,.25);border:none;width:30px;height:30px;border-radius:50%;font-size:14px;cursor:pointer;color:#fff;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
 .pubprof-inner{padding:0 14px 28px}
+
+/* ══ MODAL PENDAFTARAN SISWA ══ */
+.reg-modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:7000;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;touch-action:none}
+.reg-modal-overlay.show{display:-webkit-flex;display:flex}
+.reg-modal-box{background:#fff;border-radius:20px;width:90%;max-width:420px;padding:28px 24px;box-shadow:0 8px 40px rgba(0,0,0,.18);position:relative;max-height:90vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.reg-step{display:none}
+.reg-step.active{display:block}
+.reg-title{font-size:18px;font-weight:700;color:#1a1a18;margin-bottom:4px}
+.reg-sub{font-size:13px;color:#888;margin-bottom:20px;line-height:1.5}
+.reg-field{margin-bottom:14px}
+.reg-field label{display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:5px}
+.reg-field input{width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid #e0ddd6;font-family:'Space Grotesk',sans-serif;font-size:15px;color:#1a1a18;background:#f8f7f4;outline:none;-webkit-transition:border .2s;transition:border .2s}
+.reg-field input:focus{border-color:#378ADD;background:#fff}
+.reg-color-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.reg-color-dot{width:30px;height:30px;border-radius:50%;cursor:pointer;border:3px solid transparent;-webkit-transition:all .2s;transition:all .2s}
+.reg-color-dot.sel{border-color:#1a1a18;transform:scale(1.15)}
+.reg-err{font-size:12px;color:#e24b4a;font-weight:600;margin-bottom:10px;min-height:18px}
+.reg-btn{width:100%;padding:12px;border-radius:12px;border:none;background:#378ADD;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;-webkit-transition:opacity .2s;transition:opacity .2s}
+.reg-btn:disabled{opacity:.6;cursor:not-allowed}
+.reg-btn-ghost{width:100%;padding:11px;border-radius:12px;border:1.5px solid #e0ddd6;background:transparent;color:#888;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;cursor:pointer}
+.reg-success-icon{font-size:48px;text-align:center;margin-bottom:12px}
+
+/* ══ PANEL PENDING REGISTRASI (ADMIN) ══ */
+.pending-panel-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:7500;background:rgba(0,0,0,.35)}
+.pending-panel-overlay.show{display:block}
+.pending-panel{position:fixed;top:0;right:-360px;width:340px;max-width:95vw;height:100vh;background:#fff;z-index:7600;box-shadow:-4px 0 24px rgba(0,0,0,.12);-webkit-transition:right .3s;transition:right .3s;display:flex;flex-direction:column}
+.pending-panel.open{right:0}
+.pending-panel-head{display:flex;align-items:center;justify-content:space-between;padding:18px 16px 14px;border-bottom:1px solid #e8e6e0;flex-shrink:0}
+.pending-panel-title{font-size:15px;font-weight:700;color:#1a1a18}
+.pending-panel-close{background:transparent;border:none;font-size:16px;cursor:pointer;color:#888;padding:4px 8px;border-radius:6px}
+.pending-list{flex:1;overflow-y:auto;padding:12px}
+.pending-card{background:#f8f7f4;border-radius:12px;border:1.5px solid #e8e6e0;padding:14px;margin-bottom:10px}
+.pending-card-name{font-size:14px;font-weight:700;color:#1a1a18}
+.pending-card-meta{font-size:11px;color:#888;margin-top:2px;line-height:1.5}
+.pending-card-actions{display:flex;gap:8px;margin-top:10px}
+.pending-approve-btn{flex:1;padding:8px;border-radius:8px;border:none;background:#378ADD;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:700;cursor:pointer}
+.pending-reject-btn{flex:1;padding:8px;border-radius:8px;border:1.5px solid #e24b4a;background:transparent;color:#e24b4a;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:700;cursor:pointer}
+.admin-bell-wrap{position:relative;display:inline-flex}
+.admin-bell-badge{position:absolute;top:-5px;right:-5px;background:#e24b4a;color:#fff;font-size:9px;font-weight:700;min-width:17px;height:17px;border-radius:9px;display:none;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;padding:0 3px;border:2px solid #f8f7f4}
+.admin-bell-badge.show{display:-webkit-flex;display:flex}
 </style>
 </head>
 <body>
@@ -4787,58 +4878,7 @@ document.getElementById('pdf-print-btn').addEventListener('click',function(){
     '@media print{@page{margin:12mm 14mm;size:A4 portrait}body{padding:0}}'+
     '</style></head><body>'+content+
     '<script>window.onload=function(){window.print();}<\/script>'+
-    '
-<!-- ══ MODAL PENDAFTARAN MANDIRI SISWA ══ -->
-<div class="reg-modal-overlay" id="reg-modal">
-  <div class="reg-modal-box">
-    <!-- Step 1: Form -->
-    <div class="reg-step active" id="reg-step-1">
-      <div class="reg-title">📋 Daftar Ekskul DKV</div>
-      <div class="reg-sub">Isi data kamu. Akun aktif setelah disetujui pembina.</div>
-      <div class="reg-field">
-        <label>Nama Lengkap</label>
-        <input type="text" id="reg-name" placeholder="Nama lengkap kamu" autocomplete="off" autocapitalize="words">
-      </div>
-      <div class="reg-field">
-        <label>Kelas / Angkatan</label>
-        <input type="text" id="reg-kelas" placeholder="Contoh: 7.1 / 2025" autocomplete="off">
-      </div>
-      <div class="reg-field">
-        <label>Username Login</label>
-        <input type="text" id="reg-username" placeholder="Huruf kecil, tanpa spasi" autocomplete="off" autocapitalize="none">
-      </div>
-      <div class="reg-field">
-        <label>Password</label>
-        <input type="password" id="reg-password" placeholder="Min. 6 karakter">
-      </div>
-      <div class="reg-field">
-        <label>Pilih Warna Avatar</label>
-        <div class="reg-color-grid" id="reg-color-grid"></div>
-      </div>
-      <div class="reg-err" id="reg-err"></div>
-      <button class="reg-btn" id="reg-submit-btn" type="button">Kirim Pendaftaran 🚀</button>
-      <button class="reg-btn-ghost" id="reg-cancel-btn" type="button">Batal</button>
-    </div>
-    <!-- Step 2: Sukses -->
-    <div class="reg-step" id="reg-step-2">
-      <div class="reg-success-icon">✅</div>
-      <div class="reg-title">Pendaftaran Terkirim!</div>
-      <div class="reg-sub" style="margin-bottom:24px">Tunggu persetujuan pembina. Kamu akan dapat notifikasi saat akun diaktifkan.<br><br>Username kamu: <strong id="reg-done-username"></strong></div>
-      <button class="reg-btn" id="reg-done-btn" type="button">Tutup</button>
-    </div>
-  </div>
-</div>
-
-<!-- ══ PANEL PENDING REGISTRASI (ADMIN) ══ -->
-<div class="pending-panel-overlay" id="pending-panel-overlay"></div>
-<div class="pending-panel" id="pending-panel">
-  <div class="pending-panel-head">
-    <div class="pending-panel-title">📬 Permintaan Bergabung</div>
-    <button class="pending-panel-close" id="pending-panel-close" type="button">✕</button>
-  </div>
-  <div class="pending-list" id="pending-list"></div>
-</div>
-</body></html>');
+    '</body></html>');
   pw.document.close();
 });
 
@@ -7762,7 +7802,6 @@ function openRegModal(){
   document.getElementById('reg-step-2').classList.remove('active');
   document.getElementById('reg-name').value = '';
   document.getElementById('reg-kelas').value = '';
-  document.getElementById('reg-phone').value = '';
   document.getElementById('reg-username').value = '';
   document.getElementById('reg-password').value = '';
   document.getElementById('reg-err').textContent = '';
