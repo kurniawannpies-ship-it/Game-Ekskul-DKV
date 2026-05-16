@@ -1105,6 +1105,7 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
         <span class="notif-badge" id="notif-badge">0</span>
       </div>
       <button class="btn-student-login" id="student-login-btn" type="button">🎮 Login Siswa</button>
+      <button type="button" id="debug-materi-btn" onclick="debugMateriAccess()" style="font-size:11px;padding:5px 10px;border-radius:8px;border:1px dashed #e24b4a;background:transparent;color:#e24b4a;cursor:pointer;font-family:Space Grotesk,sans-serif">🔍 Debug Materi</button>
     </div>
   </div>
 
@@ -1656,6 +1657,9 @@ function _applyFirebaseData(data){
   // Extended data: akun siswa & profil
   if(data.dkv_accounts){
     window.siswaAccounts = typeof data.dkv_accounts === 'string' ? JSON.parse(data.dkv_accounts) : data.dkv_accounts;
+    if(typeof window.siswaAccounts !== 'object' || Array.isArray(window.siswaAccounts)) window.siswaAccounts = {};
+  } else {
+    if(!window.siswaAccounts || typeof window.siswaAccounts !== 'object') window.siswaAccounts = {};
   }
   if(data.dkv_profiles){
     window.siswaProfiles = typeof data.dkv_profiles === 'string' ? JSON.parse(data.dkv_profiles) : data.dkv_profiles;
@@ -1671,6 +1675,8 @@ function _applyFirebaseData(data){
   if(data.dkv_editor_access){
     window.dkvEditorAccess = typeof data.dkv_editor_access === 'string' ? JSON.parse(data.dkv_editor_access) : data.dkv_editor_access;
     if(!Array.isArray(window.dkvEditorAccess)) window.dkvEditorAccess = [];
+  } else {
+    if(!Array.isArray(window.dkvEditorAccess)) window.dkvEditorAccess = [];
   }
   // Re-render semua tampilan
   if(typeof applyAppConfig === 'function') applyAppConfig();
@@ -1681,6 +1687,7 @@ function _applyFirebaseData(data){
   if(typeof renderBadgeLevelEditor === 'function') renderBadgeLevelEditor();
   if(typeof renderSiswaAccountList === 'function') renderSiswaAccountList();
   if(typeof updateStudentUI === 'function') updateStudentUI();
+  if(typeof updateMateriEditorTabVisibility === 'function') updateMateriEditorTabVisibility();
 }
 
 // ─── Load dari localStorage jika Firebase tidak tersedia ───
@@ -2355,6 +2362,7 @@ function checkPassword(){
       showToast('Selamat datang, Pembina! 🎉');
       toggleEditMode();
       renderSiswa();
+      updateMateriEditorTabVisibility();
     } else {
       document.getElementById('pw-err').textContent='Password salah. Coba lagi.';
       document.getElementById('pw-input').value='';
@@ -2451,6 +2459,7 @@ function toggleEditMode(){
     btn.classList.remove('active-mode');
     document.getElementById('btn-add-siswa').style.display='none';
     render();renderSiswa();
+    updateMateriEditorTabVisibility();
     return;
   }
   render();
@@ -5590,14 +5599,22 @@ document.getElementById('notif-mark-all').addEventListener('click', function(){
 // Restore session (simple in-memory, reset on page reload for security)
 (function(){
   var sess = sessionStorage.getItem('dkv_student_sess');
-  if(sess){
-    var sid = sess;
-    var s = window.siswaList.find(function(x){return x.id===sid;});
-    if(s && window.siswaAccounts[sid]){
+  if(!sess) return;
+  var sid = sess;
+  // Tunggu Firebase selesai load dulu, lalu restore session (retry max 10x setiap 200ms)
+  function tryRestore(attempt){
+    var s = window.siswaList && window.siswaList.find(function(x){return x.id===sid;});
+    var hasAcc = window.siswaAccounts && window.siswaAccounts[sid];
+    var editorReady = Array.isArray(window.dkvEditorAccess);
+    if(s && hasAcc && editorReady){
       loggedInStudentId = sid;
-      setTimeout(updateStudentUI, 300);
+      updateStudentUI();
+      updateMateriEditorTabVisibility();
+    } else if(attempt < 20){
+      setTimeout(function(){ tryRestore(attempt+1); }, 200);
     }
   }
+  setTimeout(function(){ tryRestore(0); }, 200);
 })();
 
 // ─────────────────────────────────────────────
@@ -6676,11 +6693,29 @@ function pushSystemNotif(sid, title, sub, type){
   if(loggedInStudentId === sid) renderNotifBadge();
 }
 
-// Show/hide tab ✏️ Materi berdasarkan akses login siswa
+// Show/hide tab ✏️ Materi berdasarkan akses login siswa (bukan pembina, pembina edit via Quest)
+function debugMateriAccess(){
+  var editorList = Array.isArray(window.dkvEditorAccess) ? window.dkvEditorAccess : [];
+  var msg = [
+    '=== DEBUG TAB MATERI ===',
+    'pembina: ' + pembina,
+    'loggedInStudentId: ' + loggedInStudentId,
+    'dkvEditorAccess: ' + JSON.stringify(editorList),
+    'hasEditorAccess: ' + (loggedInStudentId ? (editorList.indexOf(loggedInStudentId) >= 0) : 'N/A (tidak login)'),
+    'show tab: ' + (!pembina && !!(loggedInStudentId && editorList.indexOf(loggedInStudentId) >= 0)),
+    '',
+    'siswaAccounts keys: ' + Object.keys(window.siswaAccounts||{}).join(', ')
+  ].join('\n');
+  alert(msg);
+}
+
 function updateMateriEditorTabVisibility(){
   var tabBtn = document.getElementById('tab-btn-materi-editor');
   if(!tabBtn) return;
-  var show = loggedInStudentId && hasEditorAccess(loggedInStudentId);
+  var editorList = Array.isArray(window.dkvEditorAccess) ? window.dkvEditorAccess : [];
+  var hasAccess = loggedInStudentId && editorList.indexOf(loggedInStudentId) >= 0;
+  var show = !pembina && hasAccess;
+  console.log('[MateriTab]', 'pembina='+pembina, 'sid='+loggedInStudentId, 'editorList='+JSON.stringify(editorList), 'hasAccess='+hasAccess, 'show='+show);
   tabBtn.style.display = show ? '' : 'none';
   // Jika sedang di tab materi-editor tapi akses dicabut → pindah ke quest
   if(!show){
