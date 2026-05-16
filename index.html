@@ -4560,9 +4560,12 @@ function buildSimCard(s, xp, inlineProfileHtml){
             '<div style="flex:1"></div>'+
             '<div class="simcard-label">STUDENT ID</div>'+
           '</div>'+
-          '<div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:6px 0">'+
-            '<div class="simcard-name">'+esc(s.name)+(nicknameVal?' <span style="font-size:11px;font-weight:400;opacity:.8">@'+esc(nicknameVal)+'</span>':'')+'</div>'+
-            '<div class="simcard-kelas">'+esc(s.kelas||'')+'</div>'+
+          '<div style="flex:1;display:flex;flex-direction:row;align-items:center">'+
+            '<div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:6px 0">'+
+              '<div class="simcard-name">'+esc(s.name)+(nicknameVal?' <span style="font-size:11px;font-weight:400;opacity:.8">@'+esc(nicknameVal)+'</span>':'')+'</div>'+
+              '<div class="simcard-kelas">'+esc(s.kelas||'')+'</div>'+
+            '</div>'+
+            '<div id="qr-wrap-'+s.id+'" class="simcard-qr"><div id="qr-inner-'+s.id+'"></div></div>'+
           '</div>'+
           '<div class="simcard-footer" style="display:flex;align-items:flex-end;justify-content:space-between;margin-top:auto;padding-top:6px;border-top:1px solid rgba(255,255,255,.18)">'+
             '<div style="flex:1;min-width:0">'+
@@ -4571,9 +4574,6 @@ function buildSimCard(s, xp, inlineProfileHtml){
                 esc(badge2.name||'Pemula')+' · '+xp+' XP'+
               '</div>'+
               '<div class="simcard-num" style="margin-top:3px;font-size:8px;opacity:.55;font-family:monospace;letter-spacing:.05em">DKV_'+s.id+'</div>'+
-            '</div>'+
-            '<div id="qr-wrap-'+s.id+'" class="simcard-qr">'+
-              '<div id="qr-inner-'+s.id+'"></div>'+
             '</div>'+
           '</div>'+
         '</div>'+
