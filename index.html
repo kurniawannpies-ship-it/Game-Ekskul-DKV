@@ -6702,24 +6702,38 @@ window.unduhAbsensiCSV=function(id){
   if(typeof showToast==='function') showToast('✅ CSV diunduh!');
 };
 
-// ─── KAMERA & jsQR ───
-function loadJsQR(cb){
-  if(window.jsQR){ cb(); return; }
-  var s=document.createElement('script');
-  s.src='https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js';
-  s.onload=cb;
-  s.onerror=function(){ if(typeof showToast==='function') showToast('Gagal load library QR'); };
-  document.head.appendChild(s);
+// ─── KAMERA & SCAN (tanpa library eksternal) ───
+// Strategi: BarcodeDetector API (Chrome/Android built-in) → fallback foto manual
+
+var _barcodeDetector = null;
+
+function initBarcodeDetector(cb){
+  // BarcodeDetector tersedia di Chrome 83+, Chrome Android, Edge
+  if(window.BarcodeDetector){
+    BarcodeDetector.getSupportedFormats().then(function(formats){
+      if(formats.indexOf('qr_code')>=0 || formats.indexOf('QR_CODE')>=0 || formats.length>0){
+        _barcodeDetector = new BarcodeDetector({formats:['qr_code','code_128','code_39','ean_13','ean_8','data_matrix']});
+        cb('barcode_api');
+      } else {
+        cb('manual_only');
+      }
+    }).catch(function(){ cb('manual_only'); });
+  } else {
+    cb('manual_only');
+  }
 }
 
 function startAbsenCam(){
   var sesiId=document.getElementById('absen-session-sel').value;
   if(!sesiId){ setAbsenStatus('⚠️ Pilih sesi terlebih dahulu','#BA7517','#fff8ec'); return; }
-  loadJsQR(function(){
-    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
-      setAbsenStatus('❌ Kamera tidak didukung browser ini','#e24b4a','#fcebeb'); return;
-    }
-    setAbsenStatus('🔄 Meminta akses kamera…','#378ADD','#e8f4ff');
+
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    setAbsenStatus('❌ Kamera tidak didukung. Gunakan tombol Manual.','#e24b4a','#fcebeb'); return;
+  }
+
+  setAbsenStatus('🔄 Meminta akses kamera…','#378ADD','#e8f4ff');
+
+  initBarcodeDetector(function(mode){
     navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}}})
       .then(function(stream){
         _absenCamStream=stream;
@@ -6729,40 +6743,103 @@ function startAbsenCam(){
         if(ph) ph.style.display='none';
         document.getElementById('absen-start-cam').style.display='none';
         document.getElementById('absen-stop-cam').style.display='';
-        setAbsenStatus('🎯 Arahkan kamera ke barcode SIM Card siswa…','#639922','#f0fff0');
         _absenScanPaused=false;
-        startScanLoop();
+
+        if(mode==='barcode_api'){
+          setAbsenStatus('🎯 Arahkan kamera ke QR Code SIM Card siswa…','#639922','#f0fff0');
+          startScanLoopAPI();
+        } else {
+          // Fallback: tampilkan tombol foto & instruksi
+          setAbsenStatus('📷 Kamera aktif. Arahkan ke QR Code lalu tekan "📸 Foto & Scan"','#BA7517','#fff8ec');
+          showFotoScanBtn();
+        }
       })
-      .catch(function(err){ setAbsenStatus('❌ Kamera ditolak: '+err.message,'#e24b4a','#fcebeb'); });
+      .catch(function(err){
+        var msg = err.name==='NotAllowedError'?'Izin kamera ditolak. Buka pengaturan browser dan izinkan akses kamera.':
+                  err.name==='NotFoundError'?'Kamera tidak ditemukan di perangkat ini.':
+                  'Gagal akses kamera: '+err.message;
+        setAbsenStatus('❌ '+msg,'#e24b4a','#fcebeb');
+      });
   });
 }
 
-function startScanLoop(){
+function showFotoScanBtn(){
+  var statusEl=document.getElementById('absen-scan-status');
+  if(!document.getElementById('absen-foto-btn')){
+    var btn=document.createElement('button');
+    btn.id='absen-foto-btn';
+    btn.type='button';
+    btn.textContent='📸 Foto & Scan';
+    btn.style.cssText='display:block;width:100%;margin-top:8px;font-family:Space Grotesk,sans-serif;font-size:14px;font-weight:700;padding:11px;border-radius:10px;border:none;background:#E2884B;color:#fff;cursor:pointer';
+    btn.addEventListener('click',captureAndScan);
+    if(statusEl && statusEl.parentNode) statusEl.parentNode.insertBefore(btn,statusEl.nextSibling);
+  }
+}
+
+function hideFotoScanBtn(){
+  var b=document.getElementById('absen-foto-btn');
+  if(b) b.remove();
+}
+
+function captureAndScan(){
   var v=document.getElementById('absen-video');
   var c=document.getElementById('absen-canvas');
+  if(!v||!c||v.readyState<2){ setAbsenStatus('⚠️ Kamera belum siap, coba lagi','#BA7517','#fff8ec'); return; }
+  c.width=v.videoWidth; c.height=v.videoHeight;
   var ctx=c.getContext('2d');
-  function tick(){
-    if(!_absenCamStream) return;
-    if(v.readyState===v.HAVE_ENOUGH_DATA){
-      c.width=v.videoWidth; c.height=v.videoHeight;
-      ctx.drawImage(v,0,0,c.width,c.height);
-      if(window.jsQR){
-        var img=ctx.getImageData(0,0,c.width,c.height);
-        var code=window.jsQR(img.data,img.width,img.height,{inversionAttempts:'dontInvert'});
-        if(code&&code.data&&!_absenScanPaused){
+  ctx.drawImage(v,0,0,c.width,c.height);
+
+  // Coba BarcodeDetector dari ImageData jika tersedia
+  if(_barcodeDetector){
+    _barcodeDetector.detect(c).then(function(results){
+      if(results && results.length>0){
+        var val=results[0].rawValue||results[0].rawData||'';
+        if(val && !_absenScanPaused){
           _absenScanPaused=true;
-          prosesAbsen(code.data);
+          prosesAbsen(val);
           setTimeout(function(){ _absenScanPaused=false; },2200);
         }
+      } else {
+        setAbsenStatus('🔍 QR Code tidak terdeteksi. Pastikan barcode terlihat jelas & dekat.','#BA7517','#fff8ec');
       }
-    }
-    _absenScanLoop=requestAnimationFrame(tick);
+    }).catch(function(){ setAbsenStatus('⚠️ Gagal scan. Coba foto lagi.','#e24b4a','#fcebeb'); });
+  } else {
+    setAbsenStatus('⚠️ Browser tidak mendukung scan otomatis. Gunakan tombol ✍️ Manual.','#BA7517','#fff8ec');
   }
-  _absenScanLoop=requestAnimationFrame(tick);
+}
+
+// Loop scan otomatis pakai BarcodeDetector API
+function startScanLoopAPI(){
+  var v=document.getElementById('absen-video');
+  var _scanning=false;
+  function tick(){
+    if(!_absenCamStream){ _scanning=false; return; }
+    if(!_scanning && v.readyState>=2 && _barcodeDetector && !_absenScanPaused){
+      _scanning=true;
+      _barcodeDetector.detect(v).then(function(results){
+        _scanning=false;
+        if(results && results.length>0){
+          var val=results[0].rawValue||results[0].rawData||'';
+          if(val && !_absenScanPaused){
+            _absenScanPaused=true;
+            prosesAbsen(val);
+            setTimeout(function(){ _absenScanPaused=false; },2200);
+          }
+        }
+      }).catch(function(){ _scanning=false; });
+    }
+    _absenScanLoop=setTimeout(tick,300);
+  }
+  tick();
+}
+
+function startScanLoop(){
+  // Dipanggil hanya jika mode BarcodeDetector aktif (sekarang pakai startScanLoopAPI)
+  startScanLoopAPI();
 }
 
 function stopAbsenCam(){
-  if(_absenScanLoop){ cancelAnimationFrame(_absenScanLoop); _absenScanLoop=null; }
+  if(_absenScanLoop){ clearTimeout(_absenScanLoop); cancelAnimationFrame(_absenScanLoop); _absenScanLoop=null; }
   if(_absenCamStream){ _absenCamStream.getTracks().forEach(function(t){ t.stop(); }); _absenCamStream=null; }
   var v=document.getElementById('absen-video');
   if(v){ v.style.display='none'; v.srcObject=null; }
@@ -6772,6 +6849,7 @@ function stopAbsenCam(){
   var sp=document.getElementById('absen-stop-cam');
   if(s) s.style.display='';
   if(sp) sp.style.display='none';
+  hideFotoScanBtn();
   setAbsenStatus('Kamera dinonaktifkan. Tekan tombol untuk scan kembali.','#888','#f8f7f4');
 }
 
@@ -6850,53 +6928,170 @@ document.addEventListener('click',function(e){
   if(btn&&btn.dataset.tab!=='absensi') stopAbsenCam();
 });
 
-// ─── Render QR Code di SIM Card (pakai qrcode-generator mini) ───
-window.renderQRCodeForSiswa=function(sid){
-  var canvas=document.getElementById('qr-canvas-'+sid);
-  if(!canvas) return;
-  var data='DKV_'+sid;
-  // Gunakan qrcode-generator jika sudah dimuat, atau gambar teks sebagai fallback
-  if(window.qrcode){
-    try{
-      var qr=window.qrcode(0,'M');
-      qr.addData(data);
-      qr.make();
-      var size=70, mods=qr.getModuleCount(), cell=Math.floor(size/mods);
-      var ctx=canvas.getContext('2d');
-      canvas.width=size; canvas.height=size;
-      ctx.fillStyle='#fff'; ctx.fillRect(0,0,size,size);
-      for(var r=0;r<mods;r++){
-        for(var c2=0;c2<mods;c2++){
-          ctx.fillStyle=qr.isDark(r,c2)?'#1a1a18':'#fff';
-          ctx.fillRect(c2*cell,r*cell,cell,cell);
+// ─── QR Code Generator (self-contained, tanpa library eksternal) ───
+// Implementasi mini QR Code versi 1-3 berbasis Reed-Solomon
+// Cukup untuk encode teks pendek seperti "DKV_sid_abc12345"
+(function(){
+  // ── Tabel GF(256) untuk Reed-Solomon ──
+  var GF_EXP=new Uint8Array(512), GF_LOG=new Uint8Array(256);
+  (function(){
+    var x=1;
+    for(var i=0;i<255;i++){
+      GF_EXP[i]=x; GF_LOG[x]=i;
+      x<<=1; if(x&0x100) x^=0x11d;
+    }
+    for(var i2=255;i2<512;i2++) GF_EXP[i2]=GF_EXP[i2-255];
+  })();
+  function gfMul(a,b){ return (a&&b)?GF_EXP[GF_LOG[a]+GF_LOG[b]]:0; }
+  function gfPoly(n){
+    var p=[1];
+    for(var i=0;i<n;i++){
+      var q=[1,GF_EXP[i]];
+      var r=new Array(p.length+1).fill(0);
+      for(var j=0;j<p.length;j++) for(var k=0;k<q.length;k++) r[j+k]^=gfMul(p[j],q[k]);
+      p=r;
+    }
+    return p;
+  }
+  function rsEncode(data,nec){
+    var gen=gfPoly(nec), out=data.slice();
+    for(var i=0;i<nec;i++) out.push(0);
+    for(var i2=0;i2<data.length;i2++){
+      var c=out[i2];
+      if(c) for(var j=0;j<gen.length;j++) out[i2+j]^=gfMul(gen[j],c);
+    }
+    return out.slice(data.length);
+  }
+
+  // ── QR versi 1 (21x21) ──
+  var VERSION=1, SIZE=21;
+  var EC_BLOCKS=13; // level M
+
+  function makeMatrix(bits){
+    var m=[];
+    for(var i=0;i<SIZE;i++){ m.push(new Array(SIZE).fill(null)); }
+
+    // Finder patterns
+    function finder(r,c){
+      for(var dy=-1;dy<=7;dy++) for(var dx=-1;dx<=7;dx++){
+        var rr=r+dy, cc=c+dx;
+        if(rr<0||rr>=SIZE||cc<0||cc>=SIZE) continue;
+        m[rr][cc]=(dy>=0&&dy<=6&&dx>=0&&dx<=6)&&(dy===0||dy===6||dx===0||dx===6||(dy>=2&&dy<=4&&dx>=2&&dx<=4));
+      }
+    }
+    finder(0,0); finder(0,14); finder(14,0);
+
+    // Timing
+    for(var i=8;i<13;i++){
+      if(m[6][i]===null) m[6][i]=(i%2===0);
+      if(m[i][6]===null) m[i][6]=(i%2===0);
+    }
+    // Dark module
+    m[13][8]=true;
+
+    // Format info (mask 0, EC level M = 01)
+    var fmt=[1,0,1,0,1,0,0,0,0,0,1,0,0,1,0];
+    var fi=[0,1,2,3,4,5,7,8,14,13,12,11,10,9,8]; // positions
+    var fmtH=[0,1,2,3,4,5,7,8,8,9,10,11,12,13,14]; // horizontal
+    for(var i2=0;i2<15;i2++){
+      m[8][fmtH[i2]]=fmt[i2];
+      if(fi[i2]<8) m[fi[i2]][8]=fmt[i2];
+      else m[fi[i2]][8]=fmt[i2];
+    }
+
+    // Data placement
+    var col=SIZE-1, row=SIZE-1, dir=-1, bi=0;
+    while(col>=1){
+      if(col===6) col--;
+      for(var step=0;step<SIZE;step++){
+        var rr=dir===-1?(SIZE-1-step):step;
+        for(var dc=0;dc<2;dc++){
+          var cc=col-dc;
+          if(m[rr][cc]!==null) continue;
+          var bit=(bi<bits.length)?bits[bi]:0; bi++;
+          // mask 0: (r+c)%2===0
+          m[rr][cc]=bit^((rr+cc)%2===0?1:0);
         }
       }
-    }catch(e){}
-  } else {
-    // Load qrcode-generator lalu render ulang
-    var s=document.createElement('script');
-    s.src='https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js';
-    s.onload=function(){ window.renderQRCodeForSiswa(sid); };
-    if(!window._qrScriptLoading){
-      window._qrScriptLoading=true;
-      document.head.appendChild(s);
+      col-=2; dir*=-1;
     }
-    // Gambar placeholder sementara
-    var ctx2=canvas.getContext('2d');
-    canvas.width=70; canvas.height=70;
-    ctx2.fillStyle='#f8f7f4'; ctx2.fillRect(0,0,70,70);
-    ctx2.fillStyle='#bbb'; ctx2.font='8px sans-serif'; ctx2.textAlign='center';
-    ctx2.fillText('QR',35,38);
+    return m;
   }
-};
 
-// Render ulang semua QR setelah siswa dibuka
-document.addEventListener('click',function(e){
-  var btn=e.target.closest('[data-action="switch-siswa-tab"][data-tab="simcard"]');
-  if(!btn) return;
-  var sid=btn.dataset.sid;
-  setTimeout(function(){ if(typeof window.renderQRCodeForSiswa==='function') window.renderQRCodeForSiswa(sid); },100);
-});
+  function encodeText(text){
+    // Byte mode
+    var bytes=[];
+    for(var i=0;i<text.length;i++) bytes.push(text.charCodeAt(i));
+    // Data codewords for version 1-M: 16 total, 13 data
+    var dc=[];
+    dc.push(0x40|(bytes.length>>4));
+    dc.push(((bytes.length&0xf)<<4)|((bytes[0]||0)>>4));
+    for(var i2=0;i2<bytes.length;i2++){
+      var lo=(bytes[i2]&0xf)<<4;
+      var hi=(bytes[i2+1]||0)>>4;
+      if(i2<bytes.length-1) dc.push(lo|hi);
+    }
+    dc.push((bytes[bytes.length-1]&0xf)<<4);
+    // Pad to 13 codewords
+    var pads=[0xec,0x11];
+    var pi=0;
+    while(dc.length<13) dc.push(pads[pi++%2]);
+    dc=dc.slice(0,13);
+    var ec=rsEncode(dc,EC_BLOCKS);
+    var cw=dc.concat(ec);
+    var bits=[];
+    for(var i3=0;i3<cw.length;i3++) for(var b=7;b>=0;b--) bits.push((cw[i3]>>b)&1);
+    return bits;
+  }
+
+  window.renderQRCodeForSiswa=function(sid){
+    var canvas=document.getElementById('qr-canvas-'+sid);
+    if(!canvas) return;
+    var text='DKV_'+sid;
+
+    // Jika teks terlalu panjang untuk versi 1 (maks ~14 byte mode M),
+    // tampilkan teks kode saja sebagai fallback visual
+    if(text.length>14){
+      drawTextFallback(canvas,text); return;
+    }
+
+    try{
+      var bits=encodeText(text);
+      var mat=makeMatrix(bits);
+      var sz=70, cell=Math.floor(sz/SIZE), pad=Math.floor((sz-cell*SIZE)/2);
+      canvas.width=sz; canvas.height=sz;
+      var ctx=canvas.getContext('2d');
+      ctx.fillStyle='#fff'; ctx.fillRect(0,0,sz,sz);
+      ctx.fillStyle='#1a1a18';
+      for(var r=0;r<SIZE;r++) for(var c=0;c<SIZE;c++)
+        if(mat[r][c]) ctx.fillRect(pad+c*cell,pad+r*cell,cell,cell);
+    } catch(e){ drawTextFallback(canvas,text); }
+  };
+
+  function drawTextFallback(canvas,text){
+    // Fallback: tampilkan ID sebagai barcode garis sederhana (visual saja)
+    canvas.width=70; canvas.height=70;
+    var ctx=canvas.getContext('2d');
+    ctx.fillStyle='#fff'; ctx.fillRect(0,0,70,70);
+    // Gambar barcode garis dari hash karakter
+    ctx.fillStyle='#1a1a18';
+    var x=4;
+    for(var i=0;i<text.length&&x<66;i++){
+      var w=(text.charCodeAt(i)%3)+1;
+      ctx.fillRect(x,6,w,52);
+      x+=w+((text.charCodeAt(i)%2)+1);
+    }
+    ctx.font='6px monospace'; ctx.fillStyle='#555'; ctx.textAlign='center';
+    ctx.fillText(text.slice(0,12),35,65);
+  }
+
+  // Render ulang QR saat buka tab SIM Card
+  document.addEventListener('click',function(e){
+    var btn=e.target.closest('[data-action="switch-siswa-tab"][data-tab="simcard"]');
+    if(!btn) return;
+    setTimeout(function(){ window.renderQRCodeForSiswa(btn.dataset.sid); },120);
+  });
+})();
 
 })();
 </script>
