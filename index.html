@@ -6900,15 +6900,17 @@ function renderBabEditorStudent(){
   if(!el) return;
   var babs = getBabList();
   if(babs.length === 0){
-    el.innerHTML = '<div style="text-align:center;padding:28px;color:#bbb;font-size:13px">Belum ada bab materi. Tekan "+ Tambah Bab" untuk memulai.</div>';
+    el.innerHTML = '<div style="text-align:center;padding:28px;color:#bbb;font-size:13px">Belum ada bab materi. Tekan &quot;+ Tambah Bab&quot; untuk memulai.</div>';
     return;
   }
   el.innerHTML = babs.map(function(bab){
     var isOpen = openBab['student_'+bab.id];
     var totalQ = bab.worlds.reduce(function(a,w){return a+w.quests.length;},0);
     var babLabel = getBabLabel(bab.id);
-    var babIcon  = babLabel.split(' ')[0] || '&#x1F4DA;';
+    var babIcon  = babLabel.split(' ')[0] || '\uD83D\uDCDA';
     var babName  = babLabel.replace(/^[^\s]+\s*/,'') || bab.id;
+
+    // Baris tiap sub-bab — identik visual dengan admin (tombol Edit + hapus 🗑)
     var subbabRows = bab.worlds.map(function(w){
       var isEditing = editingSubbabId === ('student_'+w.id);
       var qCount = w.quests.length;
@@ -6917,7 +6919,8 @@ function renderBabEditorStudent(){
           '<span style="font-size:15px">'+(w.iconImg?'<img src="'+w.iconImg+'" style="width:18px;height:18px;object-fit:contain;border-radius:3px">':w.icon)+'</span>'+
           '<div class="subbab-row-name">'+esc(w.name)+'</div>'+
           '<span class="subbab-row-count">'+qCount+' materi</span>'+
-          '<button class="btn-edit-subbab" type="button" data-action="toggle-subbab-edit-student" data-wid="'+w.id+'">'+(isEditing?'&#x2715; Tutup':'&#x270F;&#xFE0F; Edit')+'</button>'+
+          '<button class="btn-edit-subbab" type="button" data-action="toggle-subbab-edit-student" data-wid="'+w.id+'" style="display:-webkit-inline-flex;display:inline-flex;-webkit-align-items:center;align-items:center;gap:4px">'+(isEditing?'&#x2715; Tutup':'\u270F\uFE0F Edit')+'</button>'+
+          '<button class="btn-del-subbab" type="button" data-action="del-subbab-student" data-wid="'+w.id+'">\uD83D\uDDD1</button>'+
         '</div>'+
         (isEditing ? renderSubbabEditFormStudent(w) : '')+
       '</div>';
@@ -6928,15 +6931,12 @@ function renderBabEditorStudent(){
     var addSbForm =
       '<div id="'+addSbFormId+'" style="display:none;margin-top:8px;background:#f0f7ff;border-radius:10px;border:1.5px solid #378ADD33;padding:13px">'+
         '<div style="font-size:12px;font-weight:700;color:#378ADD;margin-bottom:10px">&#x2795; Sub-bab Baru di Bab '+esc(babName)+'</div>'+
-        '<div style="display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;gap:8px;margin-bottom:10px">'+
-          '<div><label style="font-size:10px;font-weight:700;color:#378ADD;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px">Nama Sub-bab</label>'+
-            '<input id="ssb-name-'+bab.id+'" type="text" placeholder="cth: Desain Level 1" value="Sub-bab Baru" style="font-family:Space Grotesk,sans-serif;padding:7px 9px;border-radius:6px;border:1px solid #ddd;background:#fff;color:#1a1a18;width:100%;font-size:12px"></div>'+
-          '<div><label style="font-size:10px;font-weight:700;color:#378ADD;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px">Subtitle / Deskripsi</label>'+
-            '<input id="ssb-sub-'+bab.id+'" type="text" placeholder="cth: Fondasi Visual" value="Deskripsi sub-bab" style="font-family:Space Grotesk,sans-serif;padding:7px 9px;border-radius:6px;border:1px solid #ddd;background:#fff;color:#1a1a18;width:100%;font-size:12px"></div>'+
-          '<div><label style="font-size:10px;font-weight:700;color:#378ADD;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px">Icon (emoji)</label>'+
-            '<input id="ssb-icon-'+bab.id+'" type="text" placeholder="&#x2B50;" value="&#x2B50;" maxlength="4" style="font-family:Space Grotesk,sans-serif;padding:7px 9px;border-radius:6px;border:1px solid #ddd;background:#fff;color:#1a1a18;width:100%;font-size:12px"></div>'+
+        '<div class="subbab-edit-form" style="display:block;border:none;padding:0;background:transparent">'+
+          '<div class="ef-row"><label>Nama Sub-bab</label><input id="ssb-name-'+bab.id+'" type="text" placeholder="cth: Desain Level 1" value="Sub-bab Baru"></div>'+
+          '<div class="ef-row"><label>Subtitle / Deskripsi</label><input id="ssb-sub-'+bab.id+'" type="text" placeholder="cth: Fondasi Visual" value="Deskripsi sub-bab"></div>'+
+          '<div class="ef-row"><label>Icon (emoji)</label><input id="ssb-icon-'+bab.id+'" type="text" placeholder="\u2B50" value="\u2B50" maxlength="4"></div>'+
         '</div>'+
-        '<div style="display:-webkit-flex;display:flex;gap:8px">'+
+        '<div style="display:-webkit-flex;display:flex;gap:8px;margin-top:4px">'+
           '<button class="btn-save" type="button" data-action="confirm-add-subbab-student" data-cat="'+bab.id+'" style="font-size:12px;padding:7px 14px">Tambah Sub-bab</button>'+
           '<button class="btn-cancel" type="button" data-action="hide-add-subbab-student" data-cat="'+bab.id+'" style="font-size:12px;padding:7px 14px">Batal</button>'+
         '</div>'+
@@ -6947,11 +6947,25 @@ function renderBabEditorStudent(){
         '<div class="bab-item-dot" style="background:'+bab.color+'"></div>'+
         '<span style="font-size:18px;margin-right:2px">'+babIcon+'</span>'+
         '<div class="bab-item-name">'+esc(babName)+'</div>'+
-        '<span class="bab-item-count">'+bab.worlds.length+' sub-bab · '+totalQ+' materi</span>'+
+        '<span class="bab-item-count">'+bab.worlds.length+' sub-bab \u00B7 '+totalQ+' materi</span>'+
         '<span class="bab-chevron'+(isOpen?' open':'')+'" style="margin-left:8px">&#9654;</span>'+
       '</div>'+
       (isOpen ?
         '<div class="bab-item-body open">'+
+          // Edit bab inline — identik dengan admin
+          '<div class="bab-edit-form" style="margin-bottom:12px">'+
+            '<div style="font-size:11px;font-weight:700;color:#BA7517;margin-bottom:8px">\u270F\uFE0F Edit Bab Ini</div>'+
+            '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'+
+              '<div class="ef-row" style="grid-column:1/-1"><label>Nama Bab</label><input id="sbef-name-'+bab.id+'" type="text" value="'+esc(babName)+'" placeholder="Nama bab..."></div>'+
+              '<div class="ef-row"><label>Warna</label><input id="sbef-color-'+bab.id+'" type="color" value="'+bab.color+'" style="height:40px;padding:3px 4px;width:100%"></div>'+
+              '<div class="ef-row"><label>Icon (emoji)</label><input id="sbef-icon-'+bab.id+'" type="text" value="'+babIcon+'" maxlength="4" placeholder="\uD83D\uDCDA"></div>'+
+            '</div>'+
+            '<div style="display:-webkit-flex;display:flex;gap:8px;margin-top:4px;-webkit-flex-wrap:wrap;flex-wrap:wrap">'+
+              '<button class="btn-save" type="button" data-action="save-bab-student" data-cat="'+bab.id+'" style="font-size:12px;padding:7px 14px">Simpan Bab</button>'+
+              '<button class="btn-danger" type="button" data-action="del-bab-student" data-cat="'+bab.id+'" style="font-size:12px;padding:7px 14px">\uD83D\uDDD1 Hapus Bab Ini</button>'+
+            '</div>'+
+          '</div>'+
+          '<div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Sub-bab</div>'+
           '<div class="subbab-list">'+subbabRows+'</div>'+
           '<button class="btn-add-subbab" type="button" data-action="show-add-subbab-student" data-cat="'+bab.id+'">+ Tambah Sub-bab</button>'+
           addSbForm+
@@ -7002,6 +7016,50 @@ document.addEventListener('click', function(e){
   if(action === 'toggle-bab-student'){
     openBab['student_'+cat] = !openBab['student_'+cat];
     renderBabEditorStudent();
+    return;
+  }
+  if(action === 'save-bab-student'){
+    if(!canEditMateri()){ showToast('Kamu tidak punya akses edit materi.'); return; }
+    var nameVal  = (document.getElementById('sbef-name-'+cat)||{}).value;
+    var colorVal = (document.getElementById('sbef-color-'+cat)||{}).value;
+    var iconVal  = (document.getElementById('sbef-icon-'+cat)||{}).value;
+    nameVal  = (nameVal||'').trim();
+    colorVal = colorVal || getCatColor(cat);
+    iconVal  = (iconVal||'').trim() || '\uD83D\uDCDA';
+    if(nameVal){
+      CAT_LABELS[cat] = iconVal+' '+nameVal;
+      CAT_COLORS[cat] = colorVal;
+      window.worlds.forEach(function(w){
+        if(w.cat===cat){ w.color=colorVal; w.catName=nameVal; w.icon=iconVal; }
+      });
+    }
+    saveAll(); render(); renderBabEditorStudent(); renderSiswa(); renderRanking();
+    showToast('Bab disimpan! \u2705');
+    return;
+  }
+  if(action === 'del-bab-student'){
+    if(!canEditMateri()){ showToast('Kamu tidak punya akses edit materi.'); return; }
+    var babWorlds = window.worlds.filter(function(w){return w.cat===cat;});
+    var babLbl = getBabLabel(cat).replace(/^[^\s]+\s*/,'') || cat;
+    customConfirm('Hapus bab "'+babLbl+'" beserta '+babWorlds.length+' sub-bab dan semua materinya?', function(ok){
+      if(!ok) return;
+      window.worlds = window.worlds.filter(function(w){return w.cat!==cat;});
+      delete openBab['student_'+cat];
+      saveAll(); render(); renderBabEditorStudent(); renderSiswa(); renderRanking();
+      showToast('Bab dihapus.');
+    });
+    return;
+  }
+  if(action === 'del-subbab-student'){
+    if(!canEditMateri()){ showToast('Kamu tidak punya akses edit materi.'); return; }
+    var wDel = window.worlds.find(function(x){return x.id===wid;});
+    customConfirm('Hapus sub-bab "'+(wDel?wDel.name:'')+'" beserta semua materinya?', function(ok){
+      if(!ok) return;
+      window.worlds = window.worlds.filter(function(x){return x.id!==wid;});
+      if(editingSubbabId==='student_'+wid) editingSubbabId=null;
+      saveAll(); render(); renderBabEditorStudent(); renderSiswa(); renderRanking();
+      showToast('Sub-bab dihapus.');
+    });
     return;
   }
   if(action === 'show-add-subbab-student'){
