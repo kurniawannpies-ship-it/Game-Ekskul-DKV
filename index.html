@@ -323,6 +323,34 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
 .sync-dot.pulse{-webkit-animation:syncpulse 1.4s infinite;animation:syncpulse 1.4s infinite}
 @-webkit-keyframes syncpulse{0%,100%{opacity:1}50%{opacity:.3}}
 @keyframes syncpulse{0%,100%{opacity:1}50%{opacity:.3}}
+/* Notifikasi Bell */
+.notif-bell-wrap{position:relative;display:inline-flex;-webkit-flex-shrink:0;flex-shrink:0}
+.notif-bell-btn{background:transparent;border:1.5px solid #e8e6e0;border-radius:10px;width:36px;height:36px;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;cursor:pointer;font-size:17px;position:relative;-webkit-transition:all .2s;transition:all .2s;padding:0}
+.notif-bell-btn:hover{background:#f8f7f4}
+.notif-badge{position:absolute;top:-5px;right:-5px;background:#e24b4a;color:#fff;font-size:9px;font-weight:700;min-width:17px;height:17px;border-radius:9px;display:none;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;padding:0 3px;border:2px solid #f8f7f4}
+.notif-badge.show{display:-webkit-flex;display:flex}
+.notif-panel-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:1500;background:rgba(0,0,0,.3)}
+.notif-panel-overlay.show{display:block}
+.notif-panel{position:fixed;top:0;right:0;bottom:0;width:min(340px,100vw);background:#fff;box-shadow:-4px 0 24px rgba(0,0,0,.12);display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;-webkit-transform:translateX(100%);transform:translateX(100%);-webkit-transition:-webkit-transform .3s cubic-bezier(.4,0,.2,1);transition:transform .3s cubic-bezier(.4,0,.2,1);z-index:1501}
+.notif-panel.open{-webkit-transform:translateX(0);transform:translateX(0)}
+.notif-panel-head{display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:space-between;justify-content:space-between;padding:16px 18px 12px;border-bottom:1px solid #f0eeea;-webkit-flex-shrink:0;flex-shrink:0}
+.notif-panel-title{font-size:15px;font-weight:700;color:#1a1a18}
+.notif-panel-close{background:none;border:none;font-size:19px;cursor:pointer;color:#aaa;line-height:1;padding:4px}
+.notif-panel-mark{font-size:11px;color:#378ADD;font-weight:600;background:none;border:none;cursor:pointer;padding:4px 0;font-family:'Space Grotesk',sans-serif}
+.notif-list{-webkit-flex:1;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 0}
+.notif-item{display:-webkit-flex;display:flex;-webkit-align-items:flex-start;align-items:flex-start;gap:11px;padding:12px 16px;border-bottom:1px solid #f5f4f0;position:relative;-webkit-transition:background .15s;transition:background .15s}
+.notif-item:last-child{border-bottom:none}
+.notif-item.unread{background:#f0f7ff}
+.notif-item-dot{width:8px;height:8px;border-radius:50%;background:#378ADD;-webkit-flex-shrink:0;flex-shrink:0;margin-top:5px;display:none}
+.notif-item.unread .notif-item-dot{display:block}
+.notif-item-icon{font-size:20px;-webkit-flex-shrink:0;flex-shrink:0;margin-top:1px}
+.notif-item-body{-webkit-flex:1;flex:1;min-width:0}
+.notif-item-title{font-size:13px;font-weight:700;color:#1a1a18;margin-bottom:2px;line-height:1.35}
+.notif-item-sub{font-size:11px;color:#888;line-height:1.4}
+.notif-item-time{font-size:10px;color:#bbb;margin-top:4px}
+.notif-empty{text-align:center;padding:48px 24px;color:#bbb}
+.notif-empty-icon{font-size:36px;margin-bottom:8px}
+.notif-empty-txt{font-size:13px;font-weight:500;color:#bbb}
 /* Logo & App Name */
 .top-title-wrap{display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;gap:9px}
 .app-logo{width:36px;height:36px;border-radius:8px;object-fit:contain;-webkit-flex-shrink:0;flex-shrink:0}
@@ -653,6 +681,21 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
 </style>
 </head>
 <body>
+
+<!-- ═══════ NOTIFIKASI PANEL ═══════ -->
+<div class="notif-panel-overlay" id="notif-panel-overlay"></div>
+<div class="notif-panel" id="notif-panel">
+  <div class="notif-panel-head">
+    <div class="notif-panel-title">🔔 Notifikasi</div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="notif-panel-mark" id="notif-mark-all" type="button">Tandai semua dibaca</button>
+      <button class="notif-panel-close" id="notif-panel-close" type="button">✕</button>
+    </div>
+  </div>
+  <div class="notif-list" id="notif-list">
+    <div class="notif-empty"><div class="notif-empty-icon">🔕</div><div class="notif-empty-txt">Belum ada notifikasi</div></div>
+  </div>
+</div>
 
 <div class="toast" id="toast"></div>
 
@@ -1057,6 +1100,10 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
       </span>
       <button class="edit-btn" id="edit-btn" type="button">🔒 Edit Mode</button>
       <button class="btn-reset" id="reset-btn" type="button">Reset Progress</button>
+      <div class="notif-bell-wrap" id="notif-bell-wrap" style="display:none">
+        <button class="notif-bell-btn" id="notif-bell-btn" type="button" title="Notifikasi">🔔</button>
+        <span class="notif-badge" id="notif-badge">0</span>
+      </div>
       <button class="btn-student-login" id="student-login-btn" type="button">🎮 Login Siswa</button>
     </div>
   </div>
@@ -1067,6 +1114,7 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
     <button class="tab-btn" data-tab="kelompok" type="button">📝 Tugas</button>
     <button class="tab-btn" data-tab="peringkat" type="button">🏆 Rank</button>
     <button class="tab-btn" data-tab="absensi" type="button">📸 Absen</button>
+    <button class="tab-btn" data-tab="materi-editor" type="button" id="tab-btn-materi-editor" style="display:none">✏️ Materi</button>
   </div>
 
   <!-- STUDENT DASHBOARD BAR (visible when student logged in) -->
@@ -1155,6 +1203,12 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
           <div style="font-size:11px;color:#888;margin-bottom:12px">Username &amp; password siswa dikelola oleh admin.</div>
           <div id="siswa-account-list" style="display:-webkit-flex;display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto"><!-- rendered by JS --></div>
         </div>
+
+        <!-- EDITOR MATERI ACCESS -->
+        <div style="height:1px;background:#f0eeea;margin:14px 0"></div>
+        <h3 style="font-size:13px;font-weight:700;margin-bottom:4px;color:#1a1a18">✏️ Akses Edit Materi</h3>
+        <div style="font-size:11px;color:#888;margin-bottom:12px">Pilih siswa yang boleh menambah/mengedit materi di tab Bab &amp; Materi. Mereka tidak perlu password pembina.</div>
+        <div id="editor-access-list" style="display:-webkit-flex;display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto"><!-- rendered by JS --></div>
       </div>
 
 
@@ -1338,6 +1392,18 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
     </div>
 
     <div id="absen-rekap-container"></div>
+  </div>
+
+  <!-- TAB MATERI EDITOR (untuk siswa dengan akses editor) -->
+  <div class="tab-content" id="tab-materi-editor">
+    <div style="display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;gap:10px;margin-bottom:16px;-webkit-flex-wrap:wrap;flex-wrap:wrap">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:16px;font-weight:700;color:#1a1a18">✏️ Editor Materi</div>
+        <div style="font-size:11px;color:#888;margin-top:2px" id="materi-editor-label">Kamu memiliki akses untuk mengedit materi</div>
+      </div>
+      <div style="font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;background:#378ADD22;color:#378ADD;border:1px solid #378ADD33;white-space:nowrap">✏️ Editor</div>
+    </div>
+    <div id="bab-editor-list-student"></div>
   </div>
 
 </div>
@@ -1598,6 +1664,14 @@ function _applyFirebaseData(data){
     window.kelompokList = typeof data.dkv_kelompok === 'string' ? JSON.parse(data.dkv_kelompok) : data.dkv_kelompok;
     if(!Array.isArray(window.kelompokList)) window.kelompokList = [];
   }
+  if(data.dkv_notif){
+    window.dkvNotif = typeof data.dkv_notif === 'string' ? JSON.parse(data.dkv_notif) : data.dkv_notif;
+    if(typeof window.dkvNotif !== 'object' || Array.isArray(window.dkvNotif)) window.dkvNotif = {};
+  }
+  if(data.dkv_editor_access){
+    window.dkvEditorAccess = typeof data.dkv_editor_access === 'string' ? JSON.parse(data.dkv_editor_access) : data.dkv_editor_access;
+    if(!Array.isArray(window.dkvEditorAccess)) window.dkvEditorAccess = [];
+  }
   // Re-render semua tampilan
   if(typeof applyAppConfig === 'function') applyAppConfig();
   if(typeof render === 'function') render();
@@ -1620,6 +1694,8 @@ function _loadFromLocal(){
   window.badgeLevels = loadJSON('dkv_badge_levels', JSON.parse(JSON.stringify(DEFAULT_BADGE_LEVELS)));
   window.badgeLevels.sort(function(a,b){return (a.minXP||0)-(b.minXP||0);});
   window.kelompokList = loadJSON('dkv_kelompok', []);
+  window.dkvNotif = loadJSON('dkv_notif', {});
+  window.dkvEditorAccess = loadJSON('dkv_editor_access', []);
   var cfg = loadJSON('dkv_cfg', null);
   if(cfg){ window._appConfig = cfg; appConfig = cfg; }
   setSyncStatus('online', _storageType==='local'?'💾 Lokal Saja':'💾 Memori');
@@ -1652,6 +1728,8 @@ function saveAll(){
   if(window._appConfig) saveJSON('dkv_cfg', window._appConfig);
   saveJSON('dkv_badge_levels', window.badgeLevels);
   saveJSON('dkv_kelompok', window.kelompokList);
+  if(window.dkvNotif) saveJSON('dkv_notif', window.dkvNotif);
+  if(window.dkvEditorAccess) saveJSON('dkv_editor_access', window.dkvEditorAccess);
 
   // 2. Jika Firebase siap, kirim ke cloud (debounce 800ms)
   if(!isFirebaseConfigured() || !_fbRef) return;
@@ -1673,6 +1751,8 @@ function saveAll(){
     // Extended data
     if(window.siswaAccounts) payload.dkv_accounts = window.siswaAccounts;
     if(window.siswaProfiles)  payload.dkv_profiles  = window.siswaProfiles;
+    if(window.dkvNotif)       payload.dkv_notif          = window.dkvNotif;
+    if(window.dkvEditorAccess) payload.dkv_editor_access  = window.dkvEditorAccess;
     _fbRef.set(payload)
       .then(function(){
         setSyncStatus('online', '☁️ Tersimpan ✓');
@@ -2297,6 +2377,7 @@ document.querySelectorAll('.tab-btn').forEach(function(btn){
     if(tab==='siswa')renderSiswa();
     if(tab==='kelompok')renderKelompok();
     if(tab==='peringkat')renderRanking();
+    if(tab==='materi-editor'){ if(canEditMateri()) renderBabEditorStudent(); }
   });
 });
 
@@ -5106,6 +5187,8 @@ document.getElementById('klp-t-save-btn').addEventListener('click', function(){
   if(!k){ document.getElementById('klp-tugas-modal').classList.remove('show'); return; }
   if(!k.tugas) k.tugas = [];
   k.tugas.push({ id: klpTugasUid(), title: title, desc: desc, deadline: dead||null, status: null, inprogressBy: null, doneBy: null });
+  // Kirim notifikasi ke semua member kelompok
+  pushTugasNotif(k.name, title, k.memberIds||[]);
   saveAll();
   renderKelompok();
   document.getElementById('klp-tugas-modal').classList.remove('show');
@@ -5264,10 +5347,17 @@ document.getElementById('klp-save-btn').addEventListener('click', function(){
   if(editingKelompokId){
     var k = window.kelompokList.find(function(x){ return x.id === editingKelompokId; });
     if(k){
+      // Deteksi tugas baru (id baru yang belum ada di k.tugas sebelumnya)
+      var oldTugasIds = (k.tugas||[]).map(function(t){ return t.id; });
       k.name = name;
       k.color = klpSelectedColor;
       k.memberIds = klpSelectedMembers.slice();
       k.tugas = tugas;
+      // Kirim notif untuk tugas yang benar-benar baru
+      var newTugas = tugas.filter(function(t){ return oldTugasIds.indexOf(t.id) < 0; });
+      newTugas.forEach(function(t){
+        pushTugasNotif(k.name, t.title, k.memberIds);
+      });
     }
     showToast('Kelompok diperbarui! ✅');
   } else {
@@ -5282,6 +5372,10 @@ document.getElementById('klp-save-btn').addEventListener('click', function(){
     };
     window.kelompokList.push(newK);
     openKelompokId = newK.id;
+    // Kirim notif untuk semua tugas yang dibuat saat kelompok pertama dibuat
+    tugas.forEach(function(t){
+      pushTugasNotif(newK.name, t.title, newK.memberIds);
+    });
     showToast('Kelompok "'+name+'" dibuat! 🎉');
   }
 
@@ -5342,6 +5436,156 @@ window.siswaProfiles  = loadJSON('dkv_profiles', {});  // Gen Z extended profile
 // STATE SISWA YANG LOGIN
 // ─────────────────────────────────────────────
 var loggedInStudentId = null;
+
+// ─────────────────────────────────────────────
+// SISTEM NOTIFIKASI
+// ─────────────────────────────────────────────
+window.dkvNotif = window.dkvNotif || {};
+window.dkvEditorAccess = window.dkvEditorAccess || [];
+
+// Cek apakah siswa tertentu punya akses edit materi
+function hasEditorAccess(sid){
+  return Array.isArray(window.dkvEditorAccess) && window.dkvEditorAccess.indexOf(sid) >= 0;
+}
+
+// Cek apakah user saat ini (pembina atau siswa editor) boleh edit materi
+function canEditMateri(){
+  if(pembina) return true;
+  if(loggedInStudentId && hasEditorAccess(loggedInStudentId)) return true;
+  return false;
+}
+
+// Format waktu relatif
+function notifTimeAgo(ts){
+  var diff = Date.now() - ts;
+  var m = Math.floor(diff/60000);
+  if(m < 1) return 'Baru saja';
+  if(m < 60) return m + ' menit lalu';
+  var h = Math.floor(m/60);
+  if(h < 24) return h + ' jam lalu';
+  var d = Math.floor(h/24);
+  return d + ' hari lalu';
+}
+
+// Simpan notif ke Firebase langsung (tanpa debounce besar)
+function saveNotifToFirebase(){
+  if(!window.dkvNotif) return;
+  saveJSON('dkv_notif', window.dkvNotif);
+  if(!_fbRef) return;
+  _fbRef.update({dkv_notif: window.dkvNotif}).catch(function(e){ console.error('[DKV] Notif save error:', e); });
+}
+
+// Kirim notifikasi tugas ke semua member kelompok
+function pushTugasNotif(kelompokName, tugasTitle, memberIds){
+  if(!memberIds || memberIds.length === 0) return;
+  if(!window.dkvNotif) window.dkvNotif = {};
+  var ts = Date.now();
+  memberIds.forEach(function(sid){
+    if(!window.dkvNotif[sid]) window.dkvNotif[sid] = [];
+    window.dkvNotif[sid].unshift({
+      id: 'n' + ts + Math.floor(Math.random()*9999),
+      type: 'tugas',
+      title: 'Tugas Baru: ' + tugasTitle,
+      sub: 'Pembina menambahkan tugas di kelompok "' + kelompokName + '"',
+      ts: ts,
+      read: false
+    });
+    // Batasi max 30 notif per siswa
+    if(window.dkvNotif[sid].length > 30) window.dkvNotif[sid] = window.dkvNotif[sid].slice(0, 30);
+  });
+  saveNotifToFirebase();
+  // Update badge jika yang login adalah salah satu member
+  if(loggedInStudentId && memberIds.indexOf(loggedInStudentId) >= 0){
+    renderNotifBadge();
+  }
+}
+
+// Hitung notif belum dibaca untuk siswa yang login
+function getUnreadCount(sid){
+  if(!sid || !window.dkvNotif || !window.dkvNotif[sid]) return 0;
+  return window.dkvNotif[sid].filter(function(n){ return !n.read; }).length;
+}
+
+// Update angka badge di bell
+function renderNotifBadge(){
+  var badge = document.getElementById('notif-badge');
+  var wrap  = document.getElementById('notif-bell-wrap');
+  if(!badge || !wrap) return;
+  if(!loggedInStudentId){ wrap.style.display='none'; return; }
+  wrap.style.display = 'inline-flex';
+  var count = getUnreadCount(loggedInStudentId);
+  if(count > 0){
+    badge.textContent = count > 9 ? '9+' : count;
+    badge.classList.add('show');
+  } else {
+    badge.classList.remove('show');
+  }
+}
+
+// Render isi panel notifikasi
+function renderNotifPanel(){
+  var list = document.getElementById('notif-list');
+  if(!list) return;
+  var notifs = (loggedInStudentId && window.dkvNotif && window.dkvNotif[loggedInStudentId]) || [];
+  if(notifs.length === 0){
+    list.innerHTML = '<div class="notif-empty"><div class="notif-empty-icon">🔕</div><div class="notif-empty-txt">Belum ada notifikasi</div></div>';
+    return;
+  }
+  list.innerHTML = notifs.map(function(n){
+    return '<div class="notif-item'+(n.read?'':' unread')+'" data-nid="'+n.id+'">'+
+      '<div class="notif-item-dot"></div>'+
+      '<div class="notif-item-icon">'+(n.type==='editor'?'✏️':n.type==='info'?'🔔':'📋')+'</div>'+
+      '<div class="notif-item-body">'+
+        '<div class="notif-item-title">'+esc(n.title)+'</div>'+
+        '<div class="notif-item-sub">'+esc(n.sub)+'</div>'+
+        '<div class="notif-item-time">'+notifTimeAgo(n.ts)+'</div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+  // Klik notif → tandai dibaca
+  list.querySelectorAll('.notif-item').forEach(function(el){
+    el.addEventListener('click', function(){
+      var nid = el.dataset.nid;
+      var arr = window.dkvNotif[loggedInStudentId] || [];
+      var n = arr.find(function(x){ return x.id === nid; });
+      if(n && !n.read){
+        n.read = true;
+        saveNotifToFirebase();
+        el.classList.remove('unread');
+        renderNotifBadge();
+      }
+      // Navigasi ke tab Tugas
+      var tabBtn = document.querySelector('.tab-btn[data-tab="kelompok"]');
+      if(tabBtn) tabBtn.click();
+      closeNotifPanel();
+    });
+  });
+}
+
+// Buka panel
+function openNotifPanel(){
+  renderNotifPanel();
+  document.getElementById('notif-panel-overlay').classList.add('show');
+  document.getElementById('notif-panel').classList.add('open');
+}
+
+// Tutup panel
+function closeNotifPanel(){
+  document.getElementById('notif-panel-overlay').classList.remove('show');
+  document.getElementById('notif-panel').classList.remove('open');
+}
+
+// Event bindings notif
+document.getElementById('notif-bell-btn').addEventListener('click', openNotifPanel);
+document.getElementById('notif-panel-overlay').addEventListener('click', closeNotifPanel);
+document.getElementById('notif-panel-close').addEventListener('click', closeNotifPanel);
+document.getElementById('notif-mark-all').addEventListener('click', function(){
+  if(!loggedInStudentId || !window.dkvNotif || !window.dkvNotif[loggedInStudentId]) return;
+  window.dkvNotif[loggedInStudentId].forEach(function(n){ n.read = true; });
+  saveNotifToFirebase();
+  renderNotifPanel();
+  renderNotifBadge();
+});
 
 // Restore session (simple in-memory, reset on page reload for security)
 (function(){
@@ -5496,6 +5740,8 @@ function updateStudentUI(){
   if(!loggedInStudentId){
     if(loginBtn){ loginBtn.textContent = '🎮 Login Siswa'; loginBtn.classList.remove('logged-in'); }
     if(dashBar) dashBar.classList.remove('show');
+    var bellWrap = document.getElementById('notif-bell-wrap');
+    if(bellWrap) bellWrap.style.display = 'none';
     return;
   }
 
@@ -5556,6 +5802,10 @@ function updateStudentUI(){
       }
     }
   }
+  // Selalu update badge notifikasi
+  renderNotifBadge();
+  // Update visibilitas tab editor materi
+  updateMateriEditorTabVisibility();
 }
 // ─────────────────────────────────────────────
 // TAB SWITCHER (Data | Profil)
@@ -6350,6 +6600,244 @@ document.addEventListener('click', function(e){
   openSetStudentAccModal(sid, acc.username||'');
 });
 
+// ─────────────────────────────────────────────
+// EDITOR AKSES MATERI — ADMIN PANEL
+// ─────────────────────────────────────────────
+function renderEditorAccessList(){
+  var el = document.getElementById('editor-access-list');
+  if(!el) return;
+  if(!window.siswaList || window.siswaList.length === 0){
+    el.innerHTML = '<div style="text-align:center;padding:12px;color:#bbb;font-size:12px">Belum ada siswa. Tambahkan di tab Siswa.</div>';
+    return;
+  }
+  el.innerHTML = window.siswaList.map(function(s){
+    var hasAccess = hasEditorAccess(s.id);
+    var hasAccount = window.siswaAccounts[s.id] && window.siswaAccounts[s.id].username;
+    return '<div style="background:#f8f7f4;border-radius:10px;border:1px solid'+(hasAccess?' #378ADD33':' #e8e6e0')+';padding:10px 12px;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;gap:8px;-webkit-transition:border-color .2s;transition:border-color .2s">'+
+      '<div style="width:32px;height:32px;border-radius:50%;background:'+s.color+';display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;-webkit-flex-shrink:0;flex-shrink:0">'+(s.initials||s.name[0])+'</div>'+
+      '<div style="-webkit-flex:1;flex:1;min-width:0">'+
+        '<div style="font-size:12px;font-weight:600;color:#1a1a18;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(s.name)+'</div>'+
+        '<div style="font-size:10px;color:#888">'+esc(s.kelas)+(hasAccess?' · <span style="color:#378ADD;font-weight:700">✏️ Editor Aktif</span>':(!hasAccount?' · <span style="color:#e24b4a">⚠ Belum punya akun login</span>':''))+'</div>'+
+      '</div>'+
+      '<button type="button" data-action="toggle-editor-access" data-sid="'+s.id+'" style="font-family:\'Space Grotesk\',sans-serif;font-size:10px;font-weight:700;padding:5px 10px;border-radius:8px;border:1.5px solid '+(hasAccess?'#e24b4a':'#378ADD')+';background:'+(hasAccess?'#fcebeb':'transparent')+';color:'+(hasAccess?'#e24b4a':'#378ADD')+';cursor:pointer;-webkit-flex-shrink:0;flex-shrink:0">'+(hasAccess?'✕ Cabut':'+ Beri Akses')+'</button>'+
+    '</div>';
+  }).join('');
+}
+
+// Toggle akses editor
+document.addEventListener('click', function(e){
+  var btn = e.target.closest('[data-action="toggle-editor-access"]');
+  if(!btn || !pembina) return;
+  var sid = btn.dataset.sid;
+  if(!window.dkvEditorAccess) window.dkvEditorAccess = [];
+  var idx = window.dkvEditorAccess.indexOf(sid);
+  if(idx >= 0){
+    // Cabut akses
+    window.dkvEditorAccess.splice(idx, 1);
+    saveAll();
+    renderEditorAccessList();
+    updateMateriEditorTabVisibility();
+    var s = window.siswaList.find(function(x){return x.id===sid;});
+    showToast('Akses editor '+(s?s.name:'siswa')+' dicabut.');
+    // Kirim notif pencabutan
+    pushSystemNotif(sid, '🔒 Akses Editor Dicabut', 'Pembina telah mencabut akses edit materi kamu.', 'info');
+  } else {
+    // Cek apakah punya akun login
+    var hasAccount = window.siswaAccounts[sid] && window.siswaAccounts[sid].username;
+    if(!hasAccount){
+      showToast('⚠️ Siswa ini belum punya akun login. Buat akun dulu di bagian Akun Login Siswa.');
+      return;
+    }
+    window.dkvEditorAccess.push(sid);
+    saveAll();
+    renderEditorAccessList();
+    updateMateriEditorTabVisibility();
+    var s2 = window.siswaList.find(function(x){return x.id===sid;});
+    showToast('Akses editor diberikan ke '+(s2?s2.name:'siswa')+'! ✅');
+    // Kirim notif ke siswa
+    pushSystemNotif(sid, '✏️ Akses Edit Materi Diberikan!', 'Kamu mendapat akses untuk mengedit materi. Buka tab ✏️ Materi saat login.', 'editor');
+  }
+});
+
+// Kirim notif sistem (non-tugas) ke siswa
+function pushSystemNotif(sid, title, sub, type){
+  if(!window.dkvNotif) window.dkvNotif = {};
+  if(!window.dkvNotif[sid]) window.dkvNotif[sid] = [];
+  window.dkvNotif[sid].unshift({
+    id: 'n' + Date.now() + Math.floor(Math.random()*9999),
+    type: type || 'info',
+    title: title,
+    sub: sub,
+    ts: Date.now(),
+    read: false
+  });
+  if(window.dkvNotif[sid].length > 30) window.dkvNotif[sid] = window.dkvNotif[sid].slice(0, 30);
+  saveNotifToFirebase();
+  if(loggedInStudentId === sid) renderNotifBadge();
+}
+
+// Show/hide tab ✏️ Materi berdasarkan akses login siswa
+function updateMateriEditorTabVisibility(){
+  var tabBtn = document.getElementById('tab-btn-materi-editor');
+  if(!tabBtn) return;
+  var show = loggedInStudentId && hasEditorAccess(loggedInStudentId);
+  tabBtn.style.display = show ? '' : 'none';
+  // Jika sedang di tab materi-editor tapi akses dicabut → pindah ke quest
+  if(!show){
+    var activeTab = document.querySelector('.tab-btn.active');
+    if(activeTab && activeTab.dataset.tab === 'materi-editor'){
+      document.querySelector('.tab-btn[data-tab="quest"]').click();
+    }
+  }
+}
+
+// Render bab editor versi siswa (sama dengan pembina tapi tanpa hapus bab)
+function renderBabEditorStudent(){
+  var el = document.getElementById('bab-editor-list-student');
+  if(!el) return;
+  // Reuse renderBabEditor logic: clone ke container student
+  // Gunakan renderBabEditor ke bab-editor-list dulu, lalu salin hasilnya
+  var tempDiv = document.createElement('div');
+  var babs = getBabList();
+  if(babs.length === 0){
+    el.innerHTML = '<div style="text-align:center;padding:28px;color:#bbb;font-size:13px">Belum ada bab materi.</div>';
+    return;
+  }
+  // Render ulang dengan editingSubbabId (shared state)
+  el.innerHTML = babs.map(function(bab){
+    var isOpen = openBab['student_'+bab.id];
+    var totalQ = bab.worlds.reduce(function(a,w){return a+w.quests.length;},0);
+    var babLabel = getBabLabel(bab.id);
+    var babIcon  = babLabel.split(' ')[0] || '📚';
+    var babName  = babLabel.replace(/^[^\s]+\s*/,'') || bab.id;
+    var subbabRows = bab.worlds.map(function(w){
+      var isEditing = editingSubbabId === ('student_'+w.id);
+      var qCount = w.quests.length;
+      return '<div class="subbab-row" id="srow-stu-'+w.id+'" style="flex-direction:column;align-items:stretch">'+
+        '<div style="display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;gap:8px">'+
+          '<span style="font-size:15px">'+(w.iconImg?'<img src="'+w.iconImg+'" style="width:18px;height:18px;object-fit:contain;border-radius:3px">':w.icon)+'</span>'+
+          '<div class="subbab-row-name">'+esc(w.name)+'</div>'+
+          '<span class="subbab-row-count">'+qCount+' materi</span>'+
+          '<button class="btn-edit-subbab" type="button" data-action="toggle-subbab-edit-student" data-wid="'+w.id+'">'+(isEditing?'✕ Tutup':'✏️ Edit')+'</button>'+
+        '</div>'+
+        (isEditing ? renderSubbabEditFormStudent(w) : '')+
+      '</div>';
+    }).join('');
+    return '<div class="bab-item" id="bab-item-stu-'+bab.id+'">'+
+      '<div class="bab-item-header" data-action="toggle-bab-student" data-cat="'+bab.id+'">'+
+        '<div class="bab-item-dot" style="background:'+bab.color+'"></div>'+
+        '<span style="font-size:18px;margin-right:2px">'+babIcon+'</span>'+
+        '<div class="bab-item-name">'+esc(babName)+'</div>'+
+        '<span class="bab-item-count">'+bab.worlds.length+' sub-bab · '+totalQ+' materi</span>'+
+        '<span class="bab-chevron'+(isOpen?' open':'')+'" style="margin-left:8px">&#9654;</span>'+
+      '</div>'+
+      (isOpen ?
+        '<div class="bab-item-body open">'+
+          '<div class="subbab-list">'+subbabRows+'</div>'+
+        '</div>'
+      : '')+
+    '</div>';
+  }).join('');
+}
+
+function renderSubbabEditFormStudent(w){
+  var questsHtml = w.quests.map(function(q){
+    return '<div class="subbab-quest-item" id="sqitem-stu-'+q.id+'">'+
+      '<div class="subbab-quest-item-body" style="-webkit-flex:1;flex:1;min-width:0">'+
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:4px">'+
+          '<input id="sqts-'+q.id+'" type="text" placeholder="Judul materi" value="'+esc(q.t)+'" style="font-family:Space Grotesk,sans-serif;padding:7px 9px;border-radius:6px;border:1px solid #ddd;background:#f8f7f4;width:100%;font-size:12px;grid-column:1/-1">'+
+          '<input id="sqds-'+q.id+'" type="text" placeholder="Deskripsi singkat" value="'+esc(q.d)+'" style="font-family:Space Grotesk,sans-serif;padding:7px 9px;border-radius:6px;border:1px solid #ddd;background:#f8f7f4;width:100%;font-size:12px;grid-column:1/-1">'+
+          '<input id="sqls-'+q.id+'" type="text" placeholder="Level (cth: Lv.1)" value="'+esc(q.level||'')+'" style="font-family:Space Grotesk,sans-serif;padding:7px 9px;border-radius:6px;border:1px solid #ddd;background:#f8f7f4;width:100%;font-size:12px">'+
+          '<input id="sqxs-'+q.id+'" type="number" placeholder="XP" value="'+q.xp+'" style="font-family:Space Grotesk,sans-serif;padding:7px 9px;border-radius:6px;border:1px solid #ddd;background:#f8f7f4;width:100%;font-size:12px">'+
+        '</div>'+
+      '</div>'+
+      '<button class="btn-sm btn-sm-del" type="button" data-action="del-materi-student" data-wid="'+w.id+'" data-qid="'+q.id+'">Hapus</button>'+
+    '</div>';
+  }).join('');
+  return '<div style="margin-top:10px;padding-top:10px;border-top:1px solid #e8e6e0">'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">'+
+      '<div style="grid-column:1/-1"><label style="font-size:10px;font-weight:700;color:#378ADD;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px">Nama Sub-bab</label><input id="sefs-name-'+w.id+'" type="text" value="'+esc(w.name)+'" style="font-family:Space Grotesk,sans-serif;padding:7px 9px;border-radius:6px;border:1px solid #ddd;background:#fff;width:100%;font-size:12px"></div>'+
+      '<div style="grid-column:1/-1"><label style="font-size:10px;font-weight:700;color:#378ADD;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px">Subtitle</label><input id="sefs-sub-'+w.id+'" type="text" value="'+esc(w.sub)+'" style="font-family:Space Grotesk,sans-serif;padding:7px 9px;border-radius:6px;border:1px solid #ddd;background:#fff;width:100%;font-size:12px"></div>'+
+    '</div>'+
+    '<div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">📋 Daftar Materi ('+w.quests.length+')</div>'+
+    '<div id="sqlist-stu-'+w.id+'">'+questsHtml+'</div>'+
+    '<button class="add-quest-btn" type="button" data-action="add-materi-student" data-wid="'+w.id+'">+ Tambah Materi</button>'+
+    '<div style="display:-webkit-flex;display:flex;gap:8px;margin-top:10px">'+
+      '<button class="btn-save" type="button" data-action="save-subbab-student" data-wid="'+w.id+'" style="font-size:12px;padding:8px 16px">💾 Simpan</button>'+
+      '<button class="btn-cancel" type="button" data-action="close-subbab-edit-student" data-wid="'+w.id+'" style="font-size:12px;padding:8px 14px">Batal</button>'+
+    '</div>'+
+  '</div>';
+}
+
+// Events untuk bab editor siswa
+document.addEventListener('click', function(e){
+  var btn = e.target.closest('[data-action]');
+  if(!btn) return;
+  var action = btn.dataset.action;
+  var cat    = btn.dataset.cat;
+  var wid    = btn.dataset.wid;
+  var qid    = btn.dataset.qid;
+
+  if(action === 'toggle-bab-student'){
+    openBab['student_'+cat] = !openBab['student_'+cat];
+    renderBabEditorStudent();
+    return;
+  }
+  if(action === 'toggle-subbab-edit-student'){
+    if(!canEditMateri()){ showToast('⚠️ Kamu tidak punya akses edit materi.'); return; }
+    editingSubbabId = (editingSubbabId === 'student_'+wid) ? null : 'student_'+wid;
+    renderBabEditorStudent();
+    return;
+  }
+  if(action === 'close-subbab-edit-student'){
+    editingSubbabId = null;
+    renderBabEditorStudent();
+    return;
+  }
+  if(action === 'add-materi-student'){
+    if(!canEditMateri()){ showToast('⚠️ Kamu tidak punya akses edit materi.'); return; }
+    var w = window.worlds.find(function(x){return x.id===wid;});
+    if(!w) return;
+    w.quests.push({id:'q'+Date.now()+Math.floor(Math.random()*9999),t:'Materi Baru',d:'Deskripsi materi',xp:15,who:'Semua Siswa',level:'Lv.1'});
+    saveAll(); renderBabEditorStudent(); render();
+    return;
+  }
+  if(action === 'del-materi-student'){
+    if(!canEditMateri()){ showToast('⚠️ Kamu tidak punya akses edit materi.'); return; }
+    var w2 = window.worlds.find(function(x){return x.id===wid;});
+    if(!w2) return;
+    customConfirm('Hapus materi ini?', function(ok){
+      if(!ok) return;
+      w2.quests = w2.quests.filter(function(q){return q.id!==qid;});
+      saveAll(); renderBabEditorStudent(); render();
+    });
+    return;
+  }
+  if(action === 'save-subbab-student'){
+    if(!canEditMateri()){ showToast('⚠️ Kamu tidak punya akses edit materi.'); return; }
+    var w3 = window.worlds.find(function(x){return x.id===wid;});
+    if(!w3) return;
+    var nameEl = document.getElementById('sefs-name-'+wid);
+    var subEl  = document.getElementById('sefs-sub-'+wid);
+    if(nameEl) w3.name = nameEl.value.trim() || w3.name;
+    if(subEl)  w3.sub  = subEl.value.trim();
+    w3.quests.forEach(function(q){
+      var tEl = document.getElementById('sqts-'+q.id);
+      var dEl = document.getElementById('sqds-'+q.id);
+      var lEl = document.getElementById('sqls-'+q.id);
+      var xEl = document.getElementById('sqxs-'+q.id);
+      if(tEl) q.t = tEl.value.trim() || q.t;
+      if(dEl) q.d = dEl.value.trim();
+      if(lEl) q.level = lEl.value.trim();
+      if(xEl) q.xp = parseInt(xEl.value)||q.xp;
+    });
+    saveAll(); render(); renderBabEditorStudent();
+    editingSubbabId = null;
+    showToast('Sub-bab disimpan! ✅');
+    return;
+  }
+});
+
 // Set student account modal (reuse existing modal infrastructure)
 function openSetStudentAccModal(sid, currentUsername){
   var s = window.siswaList.find(function(x){return x.id===sid;});
@@ -6441,6 +6929,7 @@ window.toggleEditMode = function(){
   if(editMode){
     setTimeout(function(){
       renderSiswaAccountList();
+      renderEditorAccessList();
     }, 100);
   }
 };
@@ -6727,8 +7216,29 @@ function startAbsenCam(){
   var sesiId=document.getElementById('absen-session-sel').value;
   if(!sesiId){ setAbsenStatus('⚠️ Pilih sesi terlebih dahulu','#BA7517','#fff8ec'); return; }
 
+  // Cek HTTPS — getUserMedia wajib HTTPS atau localhost
+  var proto = location.protocol;
+  var host = location.hostname;
+  var isSecure = proto === 'https:' || host === 'localhost' || host === '127.0.0.1';
+  if(!isSecure){
+    setAbsenStatus(
+      '❌ Kamera butuh koneksi HTTPS. Buka aplikasi ini melalui URL https:// bukan http:// atau file://. ' +
+      'Hosting di Firebase Hosting sudah otomatis HTTPS.',
+      '#e24b4a','#fcebeb'
+    );
+    return;
+  }
+
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
-    setAbsenStatus('❌ Kamera tidak didukung. Gunakan tombol Manual.','#e24b4a','#fcebeb'); return;
+    // Deteksi browser untuk saran yang lebih spesifik
+    var ua = navigator.userAgent||'';
+    var isFirefox = ua.indexOf('Firefox')>=0;
+    var isSafari = /^((?!chrome|android).)*safari/i.test(ua);
+    var browserHint = isFirefox ? ' Firefox tidak mendukung scan QR otomatis — gunakan Chrome.' :
+                      isSafari  ? ' Safari tidak mendukung akses kamera di web app ini — gunakan Chrome.' :
+                                  ' Coba gunakan Chrome versi terbaru.';
+    setAbsenStatus('❌ Browser tidak mendukung akses kamera.' + browserHint + ' Atau gunakan tombol ✍️ Manual.','#e24b4a','#fcebeb');
+    return;
   }
 
   setAbsenStatus('🔄 Meminta akses kamera…','#378ADD','#e8f4ff');
@@ -6749,15 +7259,45 @@ function startAbsenCam(){
           setAbsenStatus('🎯 Arahkan kamera ke QR Code SIM Card siswa…','#639922','#f0fff0');
           startScanLoopAPI();
         } else {
-          // Fallback: tampilkan tombol foto & instruksi
-          setAbsenStatus('📷 Kamera aktif. Arahkan ke QR Code lalu tekan "📸 Foto & Scan"','#BA7517','#fff8ec');
+          // BarcodeDetector tidak tersedia — fallback tombol foto manual
+          var ua2 = navigator.userAgent||'';
+          var isFF = ua2.indexOf('Firefox')>=0;
+          var isSaf = /^((?!chrome|android).)*safari/i.test(ua2);
+          var hint = isFF  ? ' (Firefox tidak mendukung scan otomatis — gunakan Chrome untuk hasil terbaik)' :
+                    isSaf ? ' (Safari tidak mendukung scan otomatis — gunakan Chrome untuk hasil terbaik)' :
+                            ' (Browser ini tidak mendukung BarcodeDetector API — coba Chrome terbaru)';
+          setAbsenStatus('📷 Kamera aktif. Tekan "📸 Foto & Scan" untuk membaca QR Code.' + hint,'#BA7517','#fff8ec');
           showFotoScanBtn();
         }
       })
       .catch(function(err){
-        var msg = err.name==='NotAllowedError'?'Izin kamera ditolak. Buka pengaturan browser dan izinkan akses kamera.':
-                  err.name==='NotFoundError'?'Kamera tidak ditemukan di perangkat ini.':
-                  'Gagal akses kamera: '+err.message;
+        var msg;
+        if(err.name==='NotAllowedError'||err.name==='PermissionDeniedError'){
+          msg='Izin kamera ditolak. Buka Pengaturan browser → izinkan akses Kamera untuk situs ini, lalu coba lagi.';
+        } else if(err.name==='NotFoundError'||err.name==='DevicesNotFoundError'){
+          msg='Kamera tidak ditemukan. Pastikan perangkat memiliki kamera dan tidak digunakan aplikasi lain.';
+        } else if(err.name==='NotReadableError'||err.name==='TrackStartError'){
+          msg='Kamera sedang digunakan aplikasi lain. Tutup aplikasi kamera lain lalu coba lagi.';
+        } else if(err.name==='OverconstrainedError'){
+          msg='Resolusi kamera tidak cocok. Coba lagi — resolusi akan disesuaikan otomatis.';
+          // Retry dengan constraint minimal
+          navigator.mediaDevices.getUserMedia({video:true}).then(function(stream2){
+            _absenCamStream=stream2;
+            var v=document.getElementById('absen-video');
+            var ph=document.getElementById('absen-cam-placeholder');
+            v.srcObject=stream2; v.style.display='block';
+            if(ph) ph.style.display='none';
+            document.getElementById('absen-start-cam').style.display='none';
+            document.getElementById('absen-stop-cam').style.display='';
+            _absenScanPaused=false;
+            setAbsenStatus('📷 Kamera aktif (mode kompatibilitas). Tekan "📸 Foto & Scan".','#BA7517','#fff8ec');
+            showFotoScanBtn();
+          }).catch(function(){ setAbsenStatus('❌ Kamera tidak dapat diakses. Gunakan tombol ✍️ Manual.','#e24b4a','#fcebeb'); });
+          return;
+        } else {
+          msg='Gagal membuka kamera: ' + (err.message||err.name||'error tidak diketahui') +
+              '. Pastikan koneksi HTTPS dan izin kamera sudah diberikan.';
+        }
         setAbsenStatus('❌ '+msg,'#e24b4a','#fcebeb');
       });
   });
@@ -6800,11 +7340,19 @@ function captureAndScan(){
           setTimeout(function(){ _absenScanPaused=false; },2200);
         }
       } else {
-        setAbsenStatus('🔍 QR Code tidak terdeteksi. Pastikan barcode terlihat jelas & dekat.','#BA7517','#fff8ec');
+        setAbsenStatus('🔍 QR Code tidak terdeteksi. Tips: pastikan QR Code terlihat penuh, cahaya cukup, dan tidak blur.','#BA7517','#fff8ec');
       }
-    }).catch(function(){ setAbsenStatus('⚠️ Gagal scan. Coba foto lagi.','#e24b4a','#fcebeb'); });
+    }).catch(function(e){
+      setAbsenStatus('⚠️ Gagal memproses gambar: '+(e&&e.message?e.message:'error tidak diketahui')+'. Coba foto ulang.','#e24b4a','#fcebeb');
+    });
   } else {
-    setAbsenStatus('⚠️ Browser tidak mendukung scan otomatis. Gunakan tombol ✍️ Manual.','#BA7517','#fff8ec');
+    var ua3=navigator.userAgent||'';
+    var isFF3=ua3.indexOf('Firefox')>=0;
+    var isSaf3=/^((?!chrome|android).)*safari/i.test(ua3);
+    var scanHint = isFF3 ? 'Firefox tidak mendukung scan QR — gunakan Chrome.' :
+                   isSaf3 ? 'Safari tidak mendukung scan QR — gunakan Chrome.' :
+                             'Browser ini tidak mendukung BarcodeDetector API.';
+    setAbsenStatus('⚠️ '+scanHint+' Gunakan tombol ✍️ Manual untuk input absensi.','#BA7517','#fff8ec');
   }
 }
 
