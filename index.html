@@ -56,8 +56,10 @@
   </div>
   <div class="pending-list" id="pending-list"></div>
 </div>
-<!-- jsQR: fallback QR scanner for browsers without BarcodeDetector API -->
+<!-- jsQR: QR scanner for camera reading -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.min.js"></script>
+<!-- qrcode-generator: QR Code generator untuk SIM Card siswa -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <!-- Firebase SDK v9 compat (CDN) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
@@ -651,7 +653,7 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
 
 /* ── SIM CARD ── */
 .simcard-wrap{padding:4px 0 8px}
-.simcard{position:relative;border-radius:20px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.22);aspect-ratio:1.586/1;min-height:160px}
+.simcard{position:relative;border-radius:20px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.22);aspect-ratio:1.586/1;min-height:170px}
 .simcard-overlay{position:absolute;inset:0;z-index:1;pointer-events:none}
 .simcard-inner{position:relative;z-index:2;height:100%;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;padding:14px 16px;color:#fff}
 .simcard-top{display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;gap:8px;margin-bottom:8px}
@@ -666,7 +668,10 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
 .simcard-mood{display:-webkit-inline-flex;display:inline-flex;-webkit-align-items:center;align-items:center;background:rgba(255,255,255,.18);border-radius:20px;padding:2px 8px;font-size:9.5px;font-weight:600;margin-top:4px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 .simcard-fields{display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;gap:4px;margin-top:6px}
 .simcard-field-chip{display:-webkit-inline-flex;display:inline-flex;-webkit-align-items:center;align-items:center;gap:3px;background:rgba(255,255,255,.18);border-radius:20px;padding:2px 8px;font-size:9px;font-weight:600;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.2)}
-.simcard-footer{display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:space-between;justify-content:space-between;margin-top:auto;padding-top:8px;border-top:1px solid rgba(255,255,255,.18)}
+.simcard-footer{display:-webkit-flex;display:flex;-webkit-align-items:flex-end;align-items:flex-end;-webkit-justify-content:space-between;justify-content:space-between;margin-top:auto;padding-top:6px;border-top:1px solid rgba(255,255,255,.18);gap:8px}
+/* QR code container di dalam simcard */
+.simcard-qr{flex-shrink:0;width:60px;height:60px;background:#fff;border-radius:8px;overflow:hidden;border:2px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;padding:2px}
+.simcard-qr img,.simcard-qr canvas{width:56px!important;height:56px!important;display:block!important}
 .simcard-xp-badge{font-size:9px;font-weight:800;padding:3px 10px;border-radius:20px;color:#fff;letter-spacing:.03em;text-shadow:0 1px 3px rgba(0,0,0,.2)}
 .simcard-num{font-size:8.5px;font-weight:700;letter-spacing:.1em;opacity:.6;font-family:monospace}
 .simcard-completion{margin-top:10px}
@@ -1487,8 +1492,16 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
 
     <!-- Panduan format barcode -->
     <div style="background:#e8f4ff;border-radius:12px;border:1.5px solid #378ADD33;padding:12px 14px;margin-bottom:14px;font-size:12px;color:#378ADD">
-      <div style="font-weight:700;margin-bottom:4px">💡 Format Barcode SIM Card</div>
-      <div style="color:#555;line-height:1.6">Barcode pada SIM Card siswa harus berisi teks: <strong>DKV_[ID Siswa]</strong><br>Contoh: <code style="background:#fff;padding:2px 6px;border-radius:4px;font-size:11px">DKV_sid_abc123</code><br>ID siswa dapat dilihat di tab Siswa (kode unik tiap siswa).</div>
+      <div style="font-weight:700;margin-bottom:6px">💡 Cara Absensi dengan SIM Card</div>
+      <div style="color:#555;line-height:1.7">
+        <div style="margin-bottom:4px">1️⃣ Pilih sesi, lalu tekan <strong>📷 Aktifkan Kamera</strong></div>
+        <div style="margin-bottom:4px">2️⃣ Arahkan kamera ke <strong>QR Code</strong> di sudut SIM Card siswa</div>
+        <div style="margin-bottom:4px">3️⃣ QR Code berisi: <code style="background:#fff;padding:1px 6px;border-radius:4px;font-size:11px;color:#1a1a18">DKV_[ID Siswa]</code></div>
+        <div>4️⃣ Sistem otomatis mencatat kehadiran ✅</div>
+      </div>
+      <div style="margin-top:8px;padding:7px 10px;background:#fff;border-radius:8px;font-size:11px;color:#888">
+        💬 QR Code ada di pojok kanan bawah SIM Card — siswa bisa menunjukkan SIM Card dari tab Siswa → 🪪 SIM Card
+      </div>
     </div>
 
     <div id="absen-rekap-container"></div>
@@ -3754,6 +3767,16 @@ function renderSiswa(){
     '</div>';
   }).join('');
   grid.innerHTML=html;
+  // Re-render semua QR Code yang ada di DOM setelah list siswa diperbarui
+  setTimeout(function(){
+    if(typeof window.renderQRCodeForSiswa !== 'function') return;
+    var qrWraps = document.querySelectorAll('[id^="qr-inner-"]');
+    qrWraps.forEach(function(el){
+      var sid = el.id.replace('qr-inner-','');
+      // Hanya render jika container masih kosong atau perlu diperbarui
+      if(!el.querySelector('img,canvas,div')) window.renderQRCodeForSiswa(sid);
+    });
+  }, 120);
 }
 
 // Track which tab is open per siswa (persistent across re-renders)
@@ -4524,39 +4547,34 @@ function buildSimCard(s, xp, inlineProfileHtml){
             '<div class="simcard-name">'+esc(s.name)+(nicknameVal?' <span style="font-size:11px;font-weight:400;opacity:.8">@'+esc(nicknameVal)+'</span>':'')+'</div>'+
             '<div class="simcard-kelas">'+esc(s.kelas||'')+'</div>'+
           '</div>'+
-          '<div class="simcard-footer">'+
-            '<div class="simcard-xp-badge" style="background:'+themeColor+'dd">'+
-              (badge2.imgData?'<img src="'+badge2.imgData+'" style="width:12px;height:12px;object-fit:contain;vertical-align:middle;margin-right:3px">':esc(badge2.icon||'⭐')+' ')+
-              esc(badge2.name||'Pemula')+' · '+xp+' XP'+
+          '</div>'+
+          '<div class="simcard-footer" style="display:flex;align-items:flex-end;justify-content:space-between;margin-top:auto;padding-top:6px;border-top:1px solid rgba(255,255,255,.18)">'+
+            '<div style="flex:1;min-width:0">'+
+              '<div class="simcard-xp-badge" style="display:inline-flex;align-items:center;background:'+themeColor+'dd">'+
+                (badge2.imgData?'<img src="'+badge2.imgData+'" style="width:12px;height:12px;object-fit:contain;vertical-align:middle;margin-right:3px">':esc(badge2.icon||'⭐')+' ')+
+                esc(badge2.name||'Pemula')+' · '+xp+' XP'+
+              '</div>'+
+              '<div class="simcard-num" style="margin-top:3px;font-size:8px;opacity:.55;font-family:monospace;letter-spacing:.05em">DKV_'+s.id+'</div>'+
             '</div>'+
-            '<div class="simcard-num">'+simNum+'</div>'+
+            '<div id="qr-wrap-'+s.id+'" class="simcard-qr">'+
+              '<div id="qr-inner-'+s.id+'"></div>'+
+            '</div>'+
           '</div>'+
         '</div>'+
       '</div>'+
-      '<div class="simcard-completion">'+
+      '<div class="simcard-completion" style="margin-top:8px">'+
         '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">'+
           '<span style="font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.04em">Profil '+completion+'% lengkap</span>'+
-          (isLoggedIn?'<button type="button" onclick="openCharModal();setTimeout(function(){switchCharTab(\'profil\')},200)" style="font-family:Space Grotesk,sans-serif;font-size:10px;font-weight:700;padding:3px 9px;border-radius:6px;border:1.5px solid #7F77DD55;background:#7F77DD11;color:#7F77DD;cursor:pointer">✏️ Isi Profil</button>':'')+
+          (isLoggedIn?'<button type="button" onclick="openCharModal();setTimeout(function(){switchCharTab('profil')},200)" style="font-family:Space Grotesk,sans-serif;font-size:10px;font-weight:700;padding:3px 9px;border-radius:6px;border:1.5px solid #7F77DD55;background:#7F77DD11;color:#7F77DD;cursor:pointer">✏️ Isi Profil</button>':'')+
         '</div>'+
         '<div style="height:4px;background:#f0eeea;border-radius:2px;overflow:hidden">'+
           '<div style="height:100%;width:'+completion+'%;background:'+themeColor+';border-radius:2px;transition:width .5s"></div>'+
         '</div>'+
       '</div>'+
       belowCardHtml+
-      // ── QR Code barcode untuk absensi ──
-      '<div style="margin-top:10px;background:#fff;border-radius:12px;border:1.5px solid #378ADD33;padding:12px;display:flex;align-items:center;gap:12px">'+
-        '<div id="qr-wrap-'+s.id+'" style="flex-shrink:0;width:70px;height:70px;display:flex;align-items:center;justify-content:center;background:#f8f7f4;border-radius:8px;border:1.5px solid #e8e6e0;overflow:hidden">'+
-          '<canvas id="qr-canvas-'+s.id+'" width="70" height="70"></canvas>'+
-        '</div>'+
-        '<div style="flex:1;min-width:0">'+
-          '<div style="font-size:11px;font-weight:700;color:#378ADD;margin-bottom:3px">📲 Barcode Absensi</div>'+
-          '<div style="font-size:10px;color:#888;margin-bottom:5px;word-break:break-all;font-family:monospace">DKV_'+s.id+'</div>'+
-          '<div style="font-size:9px;color:#aaa;line-height:1.4">Foto/scan barcode ini saat absensi di tab Absen</div>'+
-        '</div>'+
-      '</div>'+
     '</div>';
 
-  // Render QR code secara async setelah HTML dimasukkan ke DOM
+  // Render QR code pakai qrcode-generator lib
   setTimeout(function(){ renderQRCodeForSiswa(s.id); }, 80);
 
   return html;
@@ -7185,7 +7203,12 @@ function esc2(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;'
 // Contoh: DKV_sid_abc12345
 function barcodeToSid(code){
   var c=(code||'').trim();
-  if(c.toUpperCase().startsWith('DKV_')) return c.slice(4);
+  // Handle: DKV_<id> atau DKV_<id> dengan spasi/newline
+  var upper = c.toUpperCase();
+  if(upper.indexOf('DKV_')===0) return c.slice(4);
+  // Handle jika scanner menambah prefix/suffix
+  var match = c.match(/DKV_([a-zA-Z0-9_]+)/i);
+  if(match) return match[1];
   return c;
 }
 function cariSiswaDariBarcodeCode(code){
@@ -7691,170 +7714,68 @@ document.addEventListener('click',function(e){
   if(btn&&btn.dataset.tab!=='absensi') stopAbsenCam();
 });
 
-// ─── QR Code Generator (self-contained, tanpa library eksternal) ───
-// Implementasi mini QR Code versi 1-3 berbasis Reed-Solomon
-// Cukup untuk encode teks pendek seperti "DKV_sid_abc12345"
-(function(){
-  // ── Tabel GF(256) untuk Reed-Solomon ──
-  var GF_EXP=new Uint8Array(512), GF_LOG=new Uint8Array(256);
-  (function(){
-    var x=1;
-    for(var i=0;i<255;i++){
-      GF_EXP[i]=x; GF_LOG[x]=i;
-      x<<=1; if(x&0x100) x^=0x11d;
-    }
-    for(var i2=255;i2<512;i2++) GF_EXP[i2]=GF_EXP[i2-255];
-  })();
-  function gfMul(a,b){ return (a&&b)?GF_EXP[GF_LOG[a]+GF_LOG[b]]:0; }
-  function gfPoly(n){
-    var p=[1];
-    for(var i=0;i<n;i++){
-      var q=[1,GF_EXP[i]];
-      var r=new Array(p.length+1).fill(0);
-      for(var j=0;j<p.length;j++) for(var k=0;k<q.length;k++) r[j+k]^=gfMul(p[j],q[k]);
-      p=r;
-    }
-    return p;
-  }
-  function rsEncode(data,nec){
-    var gen=gfPoly(nec), out=data.slice();
-    for(var i=0;i<nec;i++) out.push(0);
-    for(var i2=0;i2<data.length;i2++){
-      var c=out[i2];
-      if(c) for(var j=0;j<gen.length;j++) out[i2+j]^=gfMul(gen[j],c);
-    }
-    return out.slice(data.length);
-  }
 
-  // ── QR versi 1 (21x21) ──
-  var VERSION=1, SIZE=21;
-  var EC_BLOCKS=13; // level M
+// ─── QR Code Generator menggunakan qrcodejs library ───
+// Pakai library CDN: qrcodejs — support semua panjang teks, format QR standar
+// Data: "DKV_<siswaId>" → sinkron dengan sistem absensi
 
-  function makeMatrix(bits){
-    var m=[];
-    for(var i=0;i<SIZE;i++){ m.push(new Array(SIZE).fill(null)); }
+window.renderQRCodeForSiswa = function(sid){
+  var container = document.getElementById('qr-inner-'+sid);
+  if(!container) return;
+  // Bersihkan isi container sebelumnya
+  container.innerHTML = '';
+  var text = 'DKV_'+sid;
 
-    // Finder patterns
-    function finder(r,c){
-      for(var dy=-1;dy<=7;dy++) for(var dx=-1;dx<=7;dx++){
-        var rr=r+dy, cc=c+dx;
-        if(rr<0||rr>=SIZE||cc<0||cc>=SIZE) continue;
-        m[rr][cc]=(dy>=0&&dy<=6&&dx>=0&&dx<=6)&&(dy===0||dy===6||dx===0||dx===6||(dy>=2&&dy<=4&&dx>=2&&dx<=4));
-      }
-    }
-    finder(0,0); finder(0,14); finder(14,0);
-
-    // Timing
-    for(var i=8;i<13;i++){
-      if(m[6][i]===null) m[6][i]=(i%2===0);
-      if(m[i][6]===null) m[i][6]=(i%2===0);
-    }
-    // Dark module
-    m[13][8]=true;
-
-    // Format info (mask 0, EC level M = 01)
-    var fmt=[1,0,1,0,1,0,0,0,0,0,1,0,0,1,0];
-    var fi=[0,1,2,3,4,5,7,8,14,13,12,11,10,9,8]; // positions
-    var fmtH=[0,1,2,3,4,5,7,8,8,9,10,11,12,13,14]; // horizontal
-    for(var i2=0;i2<15;i2++){
-      m[8][fmtH[i2]]=fmt[i2];
-      if(fi[i2]<8) m[fi[i2]][8]=fmt[i2];
-      else m[fi[i2]][8]=fmt[i2];
-    }
-
-    // Data placement
-    var col=SIZE-1, row=SIZE-1, dir=-1, bi=0;
-    while(col>=1){
-      if(col===6) col--;
-      for(var step=0;step<SIZE;step++){
-        var rr=dir===-1?(SIZE-1-step):step;
-        for(var dc=0;dc<2;dc++){
-          var cc=col-dc;
-          if(m[rr][cc]!==null) continue;
-          var bit=(bi<bits.length)?bits[bi]:0; bi++;
-          // mask 0: (r+c)%2===0
-          m[rr][cc]=bit^((rr+cc)%2===0?1:0);
-        }
-      }
-      col-=2; dir*=-1;
-    }
-    return m;
-  }
-
-  function encodeText(text){
-    // Byte mode
-    var bytes=[];
-    for(var i=0;i<text.length;i++) bytes.push(text.charCodeAt(i));
-    // Data codewords for version 1-M: 16 total, 13 data
-    var dc=[];
-    dc.push(0x40|(bytes.length>>4));
-    dc.push(((bytes.length&0xf)<<4)|((bytes[0]||0)>>4));
-    for(var i2=0;i2<bytes.length;i2++){
-      var lo=(bytes[i2]&0xf)<<4;
-      var hi=(bytes[i2+1]||0)>>4;
-      if(i2<bytes.length-1) dc.push(lo|hi);
-    }
-    dc.push((bytes[bytes.length-1]&0xf)<<4);
-    // Pad to 13 codewords
-    var pads=[0xec,0x11];
-    var pi=0;
-    while(dc.length<13) dc.push(pads[pi++%2]);
-    dc=dc.slice(0,13);
-    var ec=rsEncode(dc,EC_BLOCKS);
-    var cw=dc.concat(ec);
-    var bits=[];
-    for(var i3=0;i3<cw.length;i3++) for(var b=7;b>=0;b--) bits.push((cw[i3]>>b)&1);
-    return bits;
-  }
-
-  window.renderQRCodeForSiswa=function(sid){
-    var canvas=document.getElementById('qr-canvas-'+sid);
-    if(!canvas) return;
-    var text='DKV_'+sid;
-
-    // Jika teks terlalu panjang untuk versi 1 (maks ~14 byte mode M),
-    // tampilkan teks kode saja sebagai fallback visual
-    if(text.length>14){
-      drawTextFallback(canvas,text); return;
-    }
-
+  // Gunakan qrcodejs jika tersedia
+  if(window.QRCode){
     try{
-      var bits=encodeText(text);
-      var mat=makeMatrix(bits);
-      var sz=70, cell=Math.floor(sz/SIZE), pad=Math.floor((sz-cell*SIZE)/2);
-      canvas.width=sz; canvas.height=sz;
-      var ctx=canvas.getContext('2d');
-      ctx.fillStyle='#fff'; ctx.fillRect(0,0,sz,sz);
-      ctx.fillStyle='#1a1a18';
-      for(var r=0;r<SIZE;r++) for(var c=0;c<SIZE;c++)
-        if(mat[r][c]) ctx.fillRect(pad+c*cell,pad+r*cell,cell,cell);
-    } catch(e){ drawTextFallback(canvas,text); }
-  };
-
-  function drawTextFallback(canvas,text){
-    // Fallback: tampilkan ID sebagai barcode garis sederhana (visual saja)
-    canvas.width=70; canvas.height=70;
-    var ctx=canvas.getContext('2d');
-    ctx.fillStyle='#fff'; ctx.fillRect(0,0,70,70);
-    // Gambar barcode garis dari hash karakter
-    ctx.fillStyle='#1a1a18';
-    var x=4;
-    for(var i=0;i<text.length&&x<66;i++){
-      var w=(text.charCodeAt(i)%3)+1;
-      ctx.fillRect(x,6,w,52);
-      x+=w+((text.charCodeAt(i)%2)+1);
+      new QRCode(container, {
+        text: text,
+        width: 56,
+        height: 56,
+        colorDark: '#1a1a18',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.M
+      });
+      // Pastikan img/canvas tidak overflow
+      var img = container.querySelector('img,canvas');
+      if(img){ img.style.cssText='width:56px;height:56px;display:block;border-radius:0'; }
+    } catch(e){
+      container.innerHTML = '<div style="font-size:6px;word-break:break-all;color:#555;padding:2px;text-align:center">'+text+'</div>';
     }
-    ctx.font='6px monospace'; ctx.fillStyle='#555'; ctx.textAlign='center';
-    ctx.fillText(text.slice(0,12),35,65);
+  } else {
+    // Fallback sederhana: teks kode
+    container.innerHTML = '<div style="font-size:6px;word-break:break-all;color:#555;padding:2px;text-align:center">'+text+'</div>';
+    // Coba lagi setelah lib load
+    var tries = 0;
+    var waitLib = setInterval(function(){
+      tries++;
+      if(window.QRCode){
+        clearInterval(waitLib);
+        window.renderQRCodeForSiswa(sid);
+      } else if(tries > 20){ clearInterval(waitLib); }
+    }, 200);
   }
+};
 
-  // Render ulang QR saat buka tab SIM Card
-  document.addEventListener('click',function(e){
-    var btn=e.target.closest('[data-action="switch-siswa-tab"][data-tab="simcard"]');
-    if(!btn) return;
-    setTimeout(function(){ window.renderQRCodeForSiswa(btn.dataset.sid); },120);
-  });
+// Render ulang QR saat buka tab SIM Card (siswa grid)
+document.addEventListener('click',function(e){
+  var btn=e.target.closest('[data-action="switch-siswa-tab"][data-tab="simcard"]');
+  if(!btn) return;
+  setTimeout(function(){ window.renderQRCodeForSiswa(btn.dataset.sid); },150);
+});
+
+// Juga render saat siswa buka char modal tab profil → SIM Card preview
+(function(){
+  var origSwitch = window.switchCharTab;
+  window.switchCharTab = function(tab){
+    if(typeof origSwitch === 'function') origSwitch(tab);
+    if(tab === 'profil' && window.loggedInStudentId){
+      setTimeout(function(){ window.renderQRCodeForSiswa(window.loggedInStudentId); }, 200);
+    }
+  };
 })();
+
 
 })();
 
