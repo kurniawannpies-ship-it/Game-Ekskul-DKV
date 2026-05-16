@@ -1065,7 +1065,8 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
     <button class="tab-btn active" data-tab="quest" type="button">📋 Quest</button>
     <button class="tab-btn" data-tab="siswa" type="button">👥 Siswa</button>
     <button class="tab-btn" data-tab="kelompok" type="button">📝 Tugas</button>
-    <button class="tab-btn" data-tab="peringkat" type="button">🏆 Peringkat</button>
+    <button class="tab-btn" data-tab="peringkat" type="button">🏆 Rank</button>
+    <button class="tab-btn" data-tab="absensi" type="button">📸 Absen</button>
   </div>
 
   <!-- STUDENT DASHBOARD BAR (visible when student logged in) -->
@@ -1286,6 +1287,99 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
     <div id="rank-container"></div>
   </div>
 
+  <!-- ABSENSI TAB -->
+  <div class="tab-content" id="tab-absensi">
+    <div class="siswa-top">
+      <div>
+        <h2>📸 Absensi Barcode</h2>
+        <div style="font-size:11px;color:#888;margin-top:2px" id="absen-count-label">Scan SIM Card siswa untuk absen</div>
+      </div>
+      <button class="btn-add-siswa" id="btn-absen-session" type="button" style="display:flex">➕ Sesi Baru</button>
+    </div>
+
+    <!-- SCAN PANEL -->
+    <div style="background:#fff;border-radius:16px;border:1.5px solid #e8e6e0;padding:16px;margin-bottom:14px" id="absen-scan-panel">
+      <div style="font-size:12px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">📷 Scan Barcode SIM Card</div>
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px">Sesi Aktif</label>
+        <select id="absen-session-sel" style="font-family:'Space Grotesk',sans-serif;padding:9px 12px;border-radius:8px;border:1px solid #ddd;background:#f8f7f4;color:#1a1a18;width:100%;-webkit-appearance:none;appearance:none">
+          <option value="">— Pilih Sesi —</option>
+        </select>
+      </div>
+      <div style="position:relative;border-radius:12px;overflow:hidden;background:#1a1a18;margin-bottom:10px;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center" id="absen-cam-wrap">
+        <video id="absen-video" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover;display:none"></video>
+        <canvas id="absen-canvas" style="display:none"></canvas>
+        <div id="absen-cam-overlay" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none">
+          <div style="width:200px;height:200px;border:2.5px solid rgba(255,255,255,.6);border-radius:12px;position:relative">
+            <div style="position:absolute;top:-2px;left:-2px;width:24px;height:24px;border-top:4px solid #378ADD;border-left:4px solid #378ADD;border-radius:4px 0 0 0"></div>
+            <div style="position:absolute;top:-2px;right:-2px;width:24px;height:24px;border-top:4px solid #378ADD;border-right:4px solid #378ADD;border-radius:0 4px 0 0"></div>
+            <div style="position:absolute;bottom:-2px;left:-2px;width:24px;height:24px;border-bottom:4px solid #378ADD;border-left:4px solid #378ADD;border-radius:0 0 0 4px"></div>
+            <div style="position:absolute;bottom:-2px;right:-2px;width:24px;height:24px;border-bottom:4px solid #378ADD;border-right:4px solid #378ADD;border-radius:0 0 4px 0"></div>
+          </div>
+        </div>
+        <div id="absen-cam-placeholder" style="text-align:center;color:rgba(255,255,255,.6);padding:20px">
+          <div style="font-size:38px;margin-bottom:8px">📷</div>
+          <div style="font-size:13px;font-weight:600">Kamera belum aktif</div>
+          <div style="font-size:11px;margin-top:4px">Tekan tombol di bawah untuk mulai scan</div>
+        </div>
+      </div>
+      <div id="absen-scan-status" style="min-height:36px;background:#f8f7f4;border-radius:8px;padding:9px 12px;font-size:12px;color:#888;margin-bottom:10px;text-align:center">Pilih sesi dan aktifkan kamera untuk mulai scan</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button id="absen-start-cam" type="button" style="flex:1;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;padding:10px;border-radius:10px;border:none;background:#378ADD;color:#fff;cursor:pointer">📷 Aktifkan Kamera</button>
+        <button id="absen-stop-cam" type="button" style="display:none;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;padding:10px;border-radius:10px;border:1.5px solid #ddd;background:transparent;color:#666;cursor:pointer;flex:1">⏹ Stop Kamera</button>
+        <button id="absen-manual-btn" type="button" style="font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;padding:10px 14px;border-radius:10px;border:1.5px solid #639922;background:transparent;color:#639922;cursor:pointer">✍️ Manual</button>
+      </div>
+    </div>
+
+    <!-- Panduan format barcode -->
+    <div style="background:#e8f4ff;border-radius:12px;border:1.5px solid #378ADD33;padding:12px 14px;margin-bottom:14px;font-size:12px;color:#378ADD">
+      <div style="font-weight:700;margin-bottom:4px">💡 Format Barcode SIM Card</div>
+      <div style="color:#555;line-height:1.6">Barcode pada SIM Card siswa harus berisi teks: <strong>DKV_[ID Siswa]</strong><br>Contoh: <code style="background:#fff;padding:2px 6px;border-radius:4px;font-size:11px">DKV_sid_abc123</code><br>ID siswa dapat dilihat di tab Siswa (kode unik tiap siswa).</div>
+    </div>
+
+    <div id="absen-rekap-container"></div>
+  </div>
+
+</div>
+
+<!-- MODAL SESI BARU -->
+<div class="modal-overlay" id="absen-session-modal">
+  <div class="modal-box">
+    <div class="modal-icon">📋</div>
+    <div class="modal-title">Buat Sesi Absensi</div>
+    <div class="modal-sub">Isi data sesi pertemuan baru</div>
+    <div class="modal-form-row">
+      <label>Nama Sesi / Pertemuan</label>
+      <input type="text" id="asm-nama" placeholder="cth: Pertemuan 1 — Mei 2025" autocomplete="off">
+    </div>
+    <div class="modal-form-row">
+      <label>Tanggal</label>
+      <input type="date" id="asm-tanggal">
+    </div>
+    <div class="modal-form-row">
+      <label>Catatan (opsional)</label>
+      <textarea id="asm-catatan" placeholder="cth: Materi hari ini: Photoshop dasar..." style="font-family:'Space Grotesk',sans-serif;padding:11px 12px;border-radius:9px;border:1.5px solid #ddd;background:#f8f7f4;color:#1a1a18;width:100%;min-height:60px;resize:vertical;outline:none"></textarea>
+    </div>
+    <div class="modal-err" id="asm-err"></div>
+    <button class="modal-btn" id="asm-save-btn" type="button">Simpan Sesi</button>
+    <button class="modal-cancel-btn" id="asm-cancel-btn" type="button">Batal</button>
+  </div>
+</div>
+
+<!-- MODAL ABSEN MANUAL -->
+<div class="modal-overlay" id="absen-manual-modal">
+  <div class="modal-box">
+    <div class="modal-icon">✍️</div>
+    <div class="modal-title">Input Manual Barcode</div>
+    <div class="modal-sub">Ketik atau paste kode barcode SIM Card</div>
+    <div class="modal-form-row">
+      <label>Kode Barcode</label>
+      <input type="text" id="amm-kode" placeholder="cth: DKV_sid_abc123" autocomplete="off" autocapitalize="none">
+    </div>
+    <div class="modal-err" id="amm-err"></div>
+    <button class="modal-btn" id="amm-save-btn" type="button">Proses Absensi</button>
+    <button class="modal-cancel-btn" id="amm-cancel-btn" type="button">Batal</button>
+  </div>
 </div>
 
 <script>
@@ -4228,7 +4322,21 @@ function buildSimCard(s, xp, inlineProfileHtml){
         '</div>'+
       '</div>'+
       belowCardHtml+
+      // ── QR Code barcode untuk absensi ──
+      '<div style="margin-top:10px;background:#fff;border-radius:12px;border:1.5px solid #378ADD33;padding:12px;display:flex;align-items:center;gap:12px">'+
+        '<div id="qr-wrap-'+s.id+'" style="flex-shrink:0;width:70px;height:70px;display:flex;align-items:center;justify-content:center;background:#f8f7f4;border-radius:8px;border:1.5px solid #e8e6e0;overflow:hidden">'+
+          '<canvas id="qr-canvas-'+s.id+'" width="70" height="70"></canvas>'+
+        '</div>'+
+        '<div style="flex:1;min-width:0">'+
+          '<div style="font-size:11px;font-weight:700;color:#378ADD;margin-bottom:3px">📲 Barcode Absensi</div>'+
+          '<div style="font-size:10px;color:#888;margin-bottom:5px;word-break:break-all;font-family:monospace">DKV_'+s.id+'</div>'+
+          '<div style="font-size:9px;color:#aaa;line-height:1.4">Foto/scan barcode ini saat absensi di tab Absen</div>'+
+        '</div>'+
+      '</div>'+
     '</div>';
+
+  // Render QR code secara async setelah HTML dimasukkan ke DOM
+  setTimeout(function(){ renderQRCodeForSiswa(s.id); }, 80);
 
   return html;
 }
@@ -6364,6 +6472,433 @@ setTimeout(function(){
   updateStudentUI();
 }, 500);
 
+</script>
+
+<!-- ═══════════════════════════════════════════════════════
+     MODUL ABSENSI BARCODE — DKV SPENSA
+     SIM Card barcode → foto admin → otomatis catat hadir
+═══════════════════════════════════════════════════════ -->
+<script>
+(function(){
+// ─── State ───
+window.absenSesi = [];
+var _absenCamStream  = null;
+var _absenScanLoop   = null;
+var _absenScanPaused = false;
+
+// ─── Persistensi ───
+function loadAbsensi(){
+  window.absenSesi = loadJSON('dkv_absensi',[]);
+  if(!Array.isArray(window.absenSesi)) window.absenSesi=[];
+}
+function saveAbsensi(){
+  saveJSON('dkv_absensi', window.absenSesi);
+  if(window._fbRef){
+    window._fbRef.child('dkv_absensi').set(window.absenSesi).catch(function(){});
+  }
+}
+
+// Patch Firebase apply agar data absensi juga dimuat saat sync
+var _origApply = window._applyFirebaseData;
+window._applyFirebaseData = function(data){
+  _origApply(data);
+  if(data.dkv_absensi){
+    window.absenSesi = typeof data.dkv_absensi==='string'?JSON.parse(data.dkv_absensi):data.dkv_absensi;
+    if(!Array.isArray(window.absenSesi)) window.absenSesi=[];
+  }
+  if(typeof renderAbsensi==='function') renderAbsensi();
+};
+
+// ─── Utilitas ───
+function genAbsenId(){ return 'sesi_'+Date.now()+'_'+Math.random().toString(36).substr(2,6); }
+function formatTgl(str){
+  if(!str) return '—';
+  var d=new Date(str+'T00:00:00');
+  var mo=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agt','Sep','Okt','Nov','Des'];
+  return d.getDate()+' '+mo[d.getMonth()]+' '+d.getFullYear();
+}
+function esc2(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ─── Barcode → Siswa ───
+// Format SIM Card: DKV_<id siswa>
+// Contoh: DKV_sid_abc12345
+function barcodeToSid(code){
+  var c=(code||'').trim();
+  if(c.toUpperCase().startsWith('DKV_')) return c.slice(4);
+  return c;
+}
+function cariSiswaDariBarcodeCode(code){
+  var sid=barcodeToSid(code);
+  return window.siswaList.find(function(s){ return s.id===sid; })||
+         window.siswaList.find(function(s){ return (s.name||'').toUpperCase()===(sid||'').toUpperCase(); })||
+         null;
+}
+
+// ─── Proses absensi ───
+function prosesAbsen(barcode){
+  var sesiId=document.getElementById('absen-session-sel').value;
+  if(!sesiId){ setAbsenStatus('⚠️ Pilih sesi terlebih dahulu!','#BA7517','#fff8ec'); return; }
+  var sesi=window.absenSesi.find(function(s){ return s.id===sesiId; });
+  if(!sesi){ setAbsenStatus('❌ Sesi tidak ditemukan','#e24b4a','#fcebeb'); return; }
+  var siswa=cariSiswaDariBarcodeCode(barcode);
+  if(!siswa){ setAbsenStatus('❌ Siswa tidak ditemukan — Kode: '+esc2(barcode),'#e24b4a','#fcebeb'); return; }
+  if(!sesi.hadir) sesi.hadir={};
+  if(sesi.hadir[siswa.id]){
+    setAbsenStatus('ℹ️ '+esc2(siswa.name)+' sudah tercatat hadir','#378ADD','#e8f4ff');
+    return;
+  }
+  sesi.hadir[siswa.id]=Date.now();
+  saveAbsensi();
+  renderAbsensi();
+  setAbsenStatus('✅ '+esc2(siswa.name)+' — HADIR! 🎉','#639922','#f0fff0');
+  if(typeof showToast==='function') showToast('✅ '+siswa.name+' hadir!');
+}
+window.prosesAbsen=prosesAbsen;
+
+function setAbsenStatus(msg,color,bg){
+  var el=document.getElementById('absen-scan-status');
+  if(!el) return;
+  el.textContent=msg;
+  el.style.color=color||'#888';
+  el.style.background=bg||'#f8f7f4';
+  el.style.fontWeight='700';
+}
+
+// ─── Render ───
+window.renderAbsensi=function(){
+  renderAbsenSel();
+  renderAbsenRekap();
+  var lbl=document.getElementById('absen-count-label');
+  if(lbl) lbl.textContent=window.absenSesi.length+' sesi · '+totalHadirToday()+' siswa hadir hari ini';
+};
+
+function totalHadirToday(){
+  var today=new Date().toISOString().slice(0,10);
+  var sesiHariIni=window.absenSesi.filter(function(s){ return s.tanggal===today; });
+  var ids={};
+  sesiHariIni.forEach(function(s){ Object.keys(s.hadir||{}).forEach(function(id){ ids[id]=1; }); });
+  return Object.keys(ids).length;
+}
+
+function renderAbsenSel(){
+  var sel=document.getElementById('absen-session-sel');
+  if(!sel) return;
+  var cur=sel.value;
+  sel.innerHTML='<option value="">— Pilih Sesi —</option>';
+  window.absenSesi.slice().reverse().forEach(function(s){
+    var n=Object.keys(s.hadir||{}).length;
+    var opt=document.createElement('option');
+    opt.value=s.id;
+    opt.textContent=s.nama+' ('+formatTgl(s.tanggal)+') — '+n+' hadir';
+    sel.appendChild(opt);
+  });
+  if(cur) sel.value=cur;
+}
+
+function renderAbsenRekap(){
+  var con=document.getElementById('absen-rekap-container');
+  if(!con) return;
+  if(window.absenSesi.length===0){
+    con.innerHTML='<div class="empty-state"><div class="es-icon">📋</div><div class="es-text">Belum ada sesi</div><div class="es-sub">Buat sesi baru dan mulai scan barcode SIM Card</div></div>';
+    return;
+  }
+  var html='';
+  window.absenSesi.slice().reverse().forEach(function(sesi){
+    var hadirIds=Object.keys(sesi.hadir||{});
+    var aktif=window.siswaList.filter(function(s){ return s.status!=='alumni'; });
+    var pct=aktif.length>0?Math.round((hadirIds.length/aktif.length)*100):0;
+    var col=pct>=80?'#639922':pct>=50?'#BA7517':'#e24b4a';
+
+    html+='<div style="background:#fff;border-radius:16px;border:1.5px solid #e8e6e0;overflow:hidden;margin-bottom:12px">';
+    // Header klik expand
+    html+='<div style="display:flex;align-items:center;gap:10px;padding:13px 14px;cursor:pointer" onclick="toggleAbsenDetail(\''+sesi.id+'\')">';
+    html+='<div style="width:40px;height:40px;border-radius:50%;background:'+col+'22;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">📋</div>';
+    html+='<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700;color:#1a1a18;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc2(sesi.nama)+'</div>';
+    html+='<div style="font-size:10px;color:#888;margin-top:1px">'+formatTgl(sesi.tanggal)+(sesi.catatan?' · '+esc2(sesi.catatan.substring(0,50)):'')+'</div></div>';
+    html+='<div style="text-align:right;flex-shrink:0"><div style="font-size:16px;font-weight:700;color:'+col+'">'+hadirIds.length+'/'+aktif.length+'</div><div style="font-size:9px;color:#888">'+pct+'% hadir</div></div>';
+    html+='<span style="font-size:11px;color:#bbb;margin-left:6px;display:inline-block;transition:transform .2s" id="achev-'+sesi.id+'">▶</span></div>';
+    // Progress bar
+    html+='<div style="margin:0 14px 10px;height:5px;background:#f0eeea;border-radius:3px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:'+col+';border-radius:3px;transition:width .5s"></div></div>';
+    // Detail
+    html+='<div id="adet-'+sesi.id+'" style="display:none;padding:0 14px 14px">';
+    // Hadir
+    html+='<div style="font-size:10px;font-weight:700;color:#639922;text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px">✅ Hadir ('+hadirIds.length+')</div>';
+    if(hadirIds.length===0){
+      html+='<div style="font-size:12px;color:#bbb;margin-bottom:12px">Belum ada</div>';
+    } else {
+      html+='<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px">';
+      hadirIds.forEach(function(sid){
+        var s=window.siswaList.find(function(x){ return x.id===sid; });
+        var nm=s?esc2(s.name):'#'+sid;
+        var av=s&&s.photoData?
+          '<img src="'+s.photoData+'" style="width:20px;height:20px;border-radius:50%;object-fit:cover;flex-shrink:0">':
+          '<div style="width:20px;height:20px;border-radius:50%;background:'+(s?s.color:'#639922')+';display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff;flex-shrink:0">'+(s?s.name[0].toUpperCase():'?')+'</div>';
+        html+='<div style="display:flex;align-items:center;gap:4px;background:#f0fff0;border:1px solid #63992233;border-radius:20px;padding:3px 8px 3px 4px">'+av+'<span style="font-size:11px;font-weight:600;color:#639922">'+nm+'</span></div>';
+      });
+      html+='</div>';
+    }
+    // Tidak hadir
+    var absen=aktif.filter(function(s){ return !hadirIds.includes(s.id); });
+    html+='<div style="font-size:10px;font-weight:700;color:#e24b4a;text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px">❌ Tidak Hadir ('+absen.length+')</div>';
+    if(absen.length===0){
+      html+='<div style="font-size:12px;color:#639922;font-weight:700;margin-bottom:12px">🎉 Semua siswa hadir!</div>';
+    } else {
+      html+='<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px">';
+      absen.forEach(function(s){
+        var av=s.photoData?
+          '<img src="'+s.photoData+'" style="width:20px;height:20px;border-radius:50%;object-fit:cover;opacity:.5;flex-shrink:0">':
+          '<div style="width:20px;height:20px;border-radius:50%;background:'+s.color+';display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff;opacity:.4;flex-shrink:0">'+s.name[0].toUpperCase()+'</div>';
+        html+='<div style="display:flex;align-items:center;gap:4px;background:#f8f7f4;border:1px solid #e8e6e0;border-radius:20px;padding:3px 8px 3px 4px">'+av+'<span style="font-size:11px;color:#aaa">'+esc2(s.name)+'</span></div>';
+      });
+      html+='</div>';
+    }
+    // Aksi
+    html+='<div style="display:flex;gap:8px;flex-wrap:wrap">';
+    html+='<button type="button" onclick="unduhAbsensiCSV(\''+sesi.id+'\')" style="font-family:\'Space Grotesk\',sans-serif;font-size:12px;font-weight:700;padding:8px 14px;border-radius:10px;border:1.5px solid #639922;background:transparent;color:#639922;cursor:pointer">📥 Unduh CSV</button>';
+    html+='<button type="button" onclick="hapusAbsenSesi(\''+sesi.id+'\')" style="font-family:\'Space Grotesk\',sans-serif;font-size:12px;font-weight:600;padding:8px 14px;border-radius:10px;border:1px solid #e24b4a;background:transparent;color:#e24b4a;cursor:pointer">🗑 Hapus</button>';
+    html+='</div></div></div>';
+  });
+  con.innerHTML=html;
+}
+
+window.toggleAbsenDetail=function(id){
+  var el=document.getElementById('adet-'+id);
+  var ch=document.getElementById('achev-'+id);
+  if(!el) return;
+  var open=el.style.display==='block';
+  el.style.display=open?'none':'block';
+  if(ch) ch.style.transform=open?'':'rotate(90deg)';
+};
+
+window.hapusAbsenSesi=function(id){
+  if(typeof customConfirm==='function'){
+    customConfirm('Hapus sesi ini?',function(ok){
+      if(!ok) return;
+      window.absenSesi=window.absenSesi.filter(function(s){ return s.id!==id; });
+      saveAbsensi(); renderAbsensi();
+      if(typeof showToast==='function') showToast('Sesi dihapus.');
+    });
+  }
+};
+
+window.unduhAbsensiCSV=function(id){
+  var sesi=window.absenSesi.find(function(s){ return s.id===id; });
+  if(!sesi) return;
+  var hadirIds=Object.keys(sesi.hadir||{});
+  var rows=[['No','Nama Siswa','Kelas','Status Kehadiran','Waktu Scan']];
+  window.siswaList.forEach(function(s,i){
+    var hd=hadirIds.includes(s.id);
+    var wkt=hd?new Date(sesi.hadir[s.id]).toLocaleTimeString('id-ID'):'—';
+    rows.push([i+1,s.name,s.kelas||'—',hd?'HADIR':'TIDAK HADIR',wkt]);
+  });
+  var csv=rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+  var blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;
+  a.download='Absensi_'+sesi.nama.replace(/[^a-z0-9]/gi,'_')+'_'+sesi.tanggal+'.csv';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+  if(typeof showToast==='function') showToast('✅ CSV diunduh!');
+};
+
+// ─── KAMERA & jsQR ───
+function loadJsQR(cb){
+  if(window.jsQR){ cb(); return; }
+  var s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js';
+  s.onload=cb;
+  s.onerror=function(){ if(typeof showToast==='function') showToast('Gagal load library QR'); };
+  document.head.appendChild(s);
+}
+
+function startAbsenCam(){
+  var sesiId=document.getElementById('absen-session-sel').value;
+  if(!sesiId){ setAbsenStatus('⚠️ Pilih sesi terlebih dahulu','#BA7517','#fff8ec'); return; }
+  loadJsQR(function(){
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+      setAbsenStatus('❌ Kamera tidak didukung browser ini','#e24b4a','#fcebeb'); return;
+    }
+    setAbsenStatus('🔄 Meminta akses kamera…','#378ADD','#e8f4ff');
+    navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}}})
+      .then(function(stream){
+        _absenCamStream=stream;
+        var v=document.getElementById('absen-video');
+        var ph=document.getElementById('absen-cam-placeholder');
+        v.srcObject=stream; v.style.display='block';
+        if(ph) ph.style.display='none';
+        document.getElementById('absen-start-cam').style.display='none';
+        document.getElementById('absen-stop-cam').style.display='';
+        setAbsenStatus('🎯 Arahkan kamera ke barcode SIM Card siswa…','#639922','#f0fff0');
+        _absenScanPaused=false;
+        startScanLoop();
+      })
+      .catch(function(err){ setAbsenStatus('❌ Kamera ditolak: '+err.message,'#e24b4a','#fcebeb'); });
+  });
+}
+
+function startScanLoop(){
+  var v=document.getElementById('absen-video');
+  var c=document.getElementById('absen-canvas');
+  var ctx=c.getContext('2d');
+  function tick(){
+    if(!_absenCamStream) return;
+    if(v.readyState===v.HAVE_ENOUGH_DATA){
+      c.width=v.videoWidth; c.height=v.videoHeight;
+      ctx.drawImage(v,0,0,c.width,c.height);
+      if(window.jsQR){
+        var img=ctx.getImageData(0,0,c.width,c.height);
+        var code=window.jsQR(img.data,img.width,img.height,{inversionAttempts:'dontInvert'});
+        if(code&&code.data&&!_absenScanPaused){
+          _absenScanPaused=true;
+          prosesAbsen(code.data);
+          setTimeout(function(){ _absenScanPaused=false; },2200);
+        }
+      }
+    }
+    _absenScanLoop=requestAnimationFrame(tick);
+  }
+  _absenScanLoop=requestAnimationFrame(tick);
+}
+
+function stopAbsenCam(){
+  if(_absenScanLoop){ cancelAnimationFrame(_absenScanLoop); _absenScanLoop=null; }
+  if(_absenCamStream){ _absenCamStream.getTracks().forEach(function(t){ t.stop(); }); _absenCamStream=null; }
+  var v=document.getElementById('absen-video');
+  if(v){ v.style.display='none'; v.srcObject=null; }
+  var ph=document.getElementById('absen-cam-placeholder');
+  if(ph) ph.style.display='';
+  var s=document.getElementById('absen-start-cam');
+  var sp=document.getElementById('absen-stop-cam');
+  if(s) s.style.display='';
+  if(sp) sp.style.display='none';
+  setAbsenStatus('Kamera dinonaktifkan. Tekan tombol untuk scan kembali.','#888','#f8f7f4');
+}
+
+// ─── Event bindings ───
+document.addEventListener('DOMContentLoaded',function(){
+  loadAbsensi();
+
+  var btnSesi=document.getElementById('btn-absen-session');
+  if(btnSesi) btnSesi.addEventListener('click',function(){ openAbsenSessionModal(); });
+
+  var btnStart=document.getElementById('absen-start-cam');
+  if(btnStart) btnStart.addEventListener('click',startAbsenCam);
+
+  var btnStop=document.getElementById('absen-stop-cam');
+  if(btnStop) btnStop.addEventListener('click',stopAbsenCam);
+
+  var btnManual=document.getElementById('absen-manual-btn');
+  if(btnManual) btnManual.addEventListener('click',function(){
+    document.getElementById('amm-kode').value='';
+    document.getElementById('amm-err').textContent='';
+    document.getElementById('absen-manual-modal').classList.add('show');
+    setTimeout(function(){ document.getElementById('amm-kode').focus(); },200);
+  });
+
+  var ammCancel=document.getElementById('amm-cancel-btn');
+  if(ammCancel) ammCancel.addEventListener('click',function(){ document.getElementById('absen-manual-modal').classList.remove('show'); });
+
+  var ammSave=document.getElementById('amm-save-btn');
+  if(ammSave) ammSave.addEventListener('click',function(){
+    var kode=(document.getElementById('amm-kode').value||'').trim();
+    if(!kode){ document.getElementById('amm-err').textContent='Kode tidak boleh kosong'; return; }
+    var sesiId=document.getElementById('absen-session-sel').value;
+    if(!sesiId){ document.getElementById('amm-err').textContent='Pilih sesi terlebih dahulu'; return; }
+    document.getElementById('absen-manual-modal').classList.remove('show');
+    prosesAbsen(kode);
+  });
+
+  var asmCancel=document.getElementById('asm-cancel-btn');
+  if(asmCancel) asmCancel.addEventListener('click',function(){ document.getElementById('absen-session-modal').classList.remove('show'); });
+
+  var asmSave=document.getElementById('asm-save-btn');
+  if(asmSave) asmSave.addEventListener('click',saveAbsenSession);
+
+  setTimeout(function(){ renderAbsensi(); },700);
+});
+
+window.openAbsenSessionModal=function(){
+  document.getElementById('asm-err').textContent='';
+  document.getElementById('asm-nama').value='Pertemuan '+(window.absenSesi.length+1);
+  document.getElementById('asm-tanggal').value=new Date().toISOString().slice(0,10);
+  document.getElementById('asm-catatan').value='';
+  document.getElementById('absen-session-modal').classList.add('show');
+  setTimeout(function(){ document.getElementById('asm-nama').focus(); },200);
+};
+
+function saveAbsenSession(){
+  var nama=(document.getElementById('asm-nama').value||'').trim();
+  var tgl=document.getElementById('asm-tanggal').value;
+  var cat=(document.getElementById('asm-catatan').value||'').trim();
+  var err=document.getElementById('asm-err');
+  if(!nama){ err.textContent='Nama sesi tidak boleh kosong'; return; }
+  if(!tgl){ err.textContent='Tanggal harus diisi'; return; }
+  var sesi={id:genAbsenId(),nama:nama,tanggal:tgl,catatan:cat,hadir:{}};
+  window.absenSesi.push(sesi);
+  saveAbsensi(); renderAbsensi();
+  document.getElementById('absen-session-modal').classList.remove('show');
+  // Pilih sesi baru secara otomatis
+  var sel=document.getElementById('absen-session-sel');
+  if(sel) sel.value=sesi.id;
+  if(typeof showToast==='function') showToast('✅ Sesi berhasil dibuat!');
+}
+
+// Stop kamera saat ganti tab
+document.addEventListener('click',function(e){
+  var btn=e.target.closest('.tab-btn[data-tab]');
+  if(btn&&btn.dataset.tab!=='absensi') stopAbsenCam();
+});
+
+// ─── Render QR Code di SIM Card (pakai qrcode-generator mini) ───
+window.renderQRCodeForSiswa=function(sid){
+  var canvas=document.getElementById('qr-canvas-'+sid);
+  if(!canvas) return;
+  var data='DKV_'+sid;
+  // Gunakan qrcode-generator jika sudah dimuat, atau gambar teks sebagai fallback
+  if(window.qrcode){
+    try{
+      var qr=window.qrcode(0,'M');
+      qr.addData(data);
+      qr.make();
+      var size=70, mods=qr.getModuleCount(), cell=Math.floor(size/mods);
+      var ctx=canvas.getContext('2d');
+      canvas.width=size; canvas.height=size;
+      ctx.fillStyle='#fff'; ctx.fillRect(0,0,size,size);
+      for(var r=0;r<mods;r++){
+        for(var c2=0;c2<mods;c2++){
+          ctx.fillStyle=qr.isDark(r,c2)?'#1a1a18':'#fff';
+          ctx.fillRect(c2*cell,r*cell,cell,cell);
+        }
+      }
+    }catch(e){}
+  } else {
+    // Load qrcode-generator lalu render ulang
+    var s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js';
+    s.onload=function(){ window.renderQRCodeForSiswa(sid); };
+    if(!window._qrScriptLoading){
+      window._qrScriptLoading=true;
+      document.head.appendChild(s);
+    }
+    // Gambar placeholder sementara
+    var ctx2=canvas.getContext('2d');
+    canvas.width=70; canvas.height=70;
+    ctx2.fillStyle='#f8f7f4'; ctx2.fillRect(0,0,70,70);
+    ctx2.fillStyle='#bbb'; ctx2.font='8px sans-serif'; ctx2.textAlign='center';
+    ctx2.fillText('QR',35,38);
+  }
+};
+
+// Render ulang semua QR setelah siswa dibuka
+document.addEventListener('click',function(e){
+  var btn=e.target.closest('[data-action="switch-siswa-tab"][data-tab="simcard"]');
+  if(!btn) return;
+  var sid=btn.dataset.sid;
+  setTimeout(function(){ if(typeof window.renderQRCodeForSiswa==='function') window.renderQRCodeForSiswa(sid); },100);
+});
+
+})();
 </script>
 </body>
 </html>
