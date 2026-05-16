@@ -670,12 +670,8 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
 .simcard-field-chip{display:-webkit-inline-flex;display:inline-flex;-webkit-align-items:center;align-items:center;gap:3px;background:rgba(255,255,255,.18);border-radius:20px;padding:2px 8px;font-size:9px;font-weight:600;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.2)}
 .simcard-footer{display:-webkit-flex;display:flex;-webkit-align-items:flex-end;align-items:flex-end;-webkit-justify-content:space-between;justify-content:space-between;margin-top:auto;padding-top:6px;border-top:1px solid rgba(255,255,255,.18);gap:8px}
 /* QR code container di dalam simcard */
-.simcard-qr{flex-shrink:0;width:60px;height:60px;background:#fff;border-radius:8px;overflow:hidden;border:2px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;padding:2px;margin-bottom:8px;margin-right:8px}
+.simcard-qr{flex-shrink:0;width:60px;height:60px;background:#fff;border-radius:8px;border:2px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;padding:2px}
 .simcard-qr img,.simcard-qr canvas{width:56px!important;height:56px!important;display:block!important}
-@media(min-width:600px){
-.simcard-qr{width:90px;height:90px;margin-bottom:12px;margin-right:12px}
-.simcard-qr img,.simcard-qr canvas{width:86px!important;height:86px!important}
-}
 .simcard-xp-badge{font-size:9px;font-weight:800;padding:3px 10px;border-radius:20px;color:#fff;letter-spacing:.03em;text-shadow:0 1px 3px rgba(0,0,0,.2)}
 .simcard-num{font-size:8.5px;font-weight:700;letter-spacing:.1em;opacity:.6;font-family:monospace}
 .simcard-completion{margin-top:10px}
@@ -7912,7 +7908,7 @@ window.renderQRCodeForSiswa = function(sid){
   // Gunakan qrcodejs jika tersedia
   if(window.QRCode){
     try{
-      var qrPx = window.innerWidth >= 600 ? 86 : 56;
+      var qrPx = 56;
       new QRCode(container, {
         text: text,
         width: qrPx,
