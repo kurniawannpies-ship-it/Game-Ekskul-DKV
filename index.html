@@ -1207,7 +1207,7 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
 
   <div class="tab-bar">
     <button class="tab-btn active" data-tab="quest" type="button">📋 Quest</button>
-    <button class="tab-btn" data-tab="siswa" type="button">👥 Siswa</button>
+    <button class="tab-btn" data-tab="siswa" type="button" id="tab-btn-siswa">👥 Siswa</button>
     <button class="tab-btn" data-tab="kelompok" type="button">📝 Tugas</button>
     <button class="tab-btn" data-tab="peringkat" type="button">🏆 Rank</button>
     <button class="tab-btn" data-tab="absensi" type="button">📸 Absen</button>
@@ -1842,9 +1842,10 @@ function saveAll(){
 
   // 2. Jika Firebase siap, kirim ke cloud (debounce 800ms)
   if(!isFirebaseConfigured() || !_fbRef) return;
+  // Set _isSaving=true SEKARANG agar Firebase listener tidak menimpa data yang baru diubah
+  window._isSaving = true;
   clearTimeout(_saveDebounceTimer);
   _saveDebounceTimer = setTimeout(function(){
-    window._isSaving = true;
     setSyncStatus('connecting', '🔄 Menyimpan…');
     var payload = {
       dkv_worlds:       window.worlds,
@@ -5727,13 +5728,14 @@ document.getElementById('notif-mark-all').addEventListener('click', function(){
 // ─────────────────────────────────────────────
 // SAVE EXTENDED DATA
 // ─────────────────────────────────────────────
+var _saveExtendedTimer = null;
 function saveExtended(){
   saveJSON('dkv_accounts', window.siswaAccounts);
   saveJSON('dkv_profiles', window.siswaProfiles);
-  // Push to Firebase
+  // Push to Firebase — gunakan timer terpisah agar tidak cancel timer saveAll
   if(_fbRef){
-    clearTimeout(_saveDebounceTimer);
-    _saveDebounceTimer = setTimeout(function(){
+    clearTimeout(_saveExtendedTimer);
+    _saveExtendedTimer = setTimeout(function(){
       var extra = {dkv_accounts: window.siswaAccounts, dkv_profiles: window.siswaProfiles};
       _fbRef.update(extra).catch(function(e){console.error('[DKV] Extended save error:',e);});
     }, 800);
@@ -5866,6 +5868,7 @@ function updateStudentUI(){
     if(dashBar) dashBar.classList.remove('show');
     var bellWrap = document.getElementById('notif-bell-wrap');
     if(bellWrap) bellWrap.style.display = 'none';
+    updateMateriEditorTabVisibility();
     return;
   }
 
@@ -6808,10 +6811,16 @@ function updateMateriEditorTabVisibility(){
   var hasAccess = loggedInStudentId && editorList.indexOf(loggedInStudentId) >= 0;
   var show = !pembina && hasAccess;
   tabBtn.style.display = show ? '' : 'none';
-  // Jika sedang di tab materi-editor tapi akses dicabut → pindah ke quest
-  if(!show){
-    var activeTab = document.querySelector('.tab-btn.active');
-    if(activeTab && activeTab.dataset.tab === 'materi-editor'){
+
+  // Tab Siswa: selalu tampil untuk semua orang
+  var siswaBtnTab = document.getElementById('tab-btn-siswa');
+  if(siswaBtnTab) siswaBtnTab.style.display = '';
+
+  // Jika sedang di tab materi-editor tapi tidak punya akses → pindah ke quest
+  var activeTabEl = document.querySelector('.tab-btn.active');
+  if(activeTabEl){
+    var at = activeTabEl.dataset.tab;
+    if(!show && at === 'materi-editor'){
       document.querySelector('.tab-btn[data-tab="quest"]').click();
     }
   }
@@ -7990,12 +7999,28 @@ document.addEventListener('click', function(e){
     // Kita simpan notif dengan key username agar bisa diambil saat login
     pushSystemNotif(newId, '🎉 Pendaftaran Disetujui!', 'Selamat '+reg.name+'! Akun kamu sudah aktif. Silakan login dengan username @'+reg.username+'.', 'editor');
 
-    saveAll();
-    savePendingReg();
-    // Simpan akun ke Firebase
+    // Simpan semua sekaligus dalam satu operasi agar tidak ada race condition
+    // dengan Firebase listener yang bisa overwrite siswaList sebelum tersimpan
+    saveJSON('dkv_siswa', window.siswaList);
+    saveJSON('dkv_sdone', window.siswaDone);
+    saveJSON('dkv_accounts', window.siswaAccounts);
+    saveJSON('dkv_pending_reg', window.dkvPendingReg);
     if(window._fbRef){
-      window._fbRef.update({dkv_accounts: window.siswaAccounts}).catch(function(){});
+      window._isSaving = true;
+      window._fbRef.update({
+        dkv_siswa:        window.siswaList,
+        dkv_sdone:        window.siswaDone,
+        dkv_accounts:     window.siswaAccounts,
+        dkv_pending_reg:  window.dkvPendingReg,
+        dkv_notif:        window.dkvNotif || {}
+      }).then(function(){
+        window._isSaving = false;
+      }).catch(function(e){
+        window._isSaving = false;
+        console.error('[DKV] Approve save error:', e);
+      });
     }
+    updateAdminBell();
     renderSiswa();
     renderPendingList();
     showToast('✅ '+reg.name+' disetujui dan ditambahkan sebagai siswa!');
