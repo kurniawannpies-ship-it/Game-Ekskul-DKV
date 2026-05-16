@@ -58,8 +58,6 @@
 </div>
 <!-- jsQR: QR scanner for camera reading -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.min.js"></script>
-<!-- ZXing: multi-format barcode scanner (QR, Code128, EAN, dll) -->
-<script src="https://unpkg.com/@zxing/library@0.19.1/umd/index.min.js"></script>
 <!-- qrcode-generator: QR Code generator untuk SIM Card siswa -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <!-- Firebase SDK v9 compat (CDN) -->
@@ -7568,337 +7566,236 @@ window.unduhAbsensiCSV=function(id){
 };
 
 // ─── KAMERA & SCAN ───
-// Strategi: BarcodeDetector API → ZXing library → jsQR (QR only) → foto manual
+// Strategi: BarcodeDetector API (Chrome 83+/Edge) → jsQR (QR Code) → foto manual
 
 var _barcodeDetector = null;
-var _zxingReader     = null;   // ZXing multi-format reader
-var _scanMode        = 'none'; // 'barcode_api' | 'zxing' | 'jsqr' | 'manual'
 
 function initBarcodeDetector(cb){
-  // 1) Coba BarcodeDetector (Chrome 83+ Android/Desktop, Edge)
   if(window.BarcodeDetector){
     BarcodeDetector.getSupportedFormats().then(function(formats){
-      if(formats && formats.length>0){
-        _barcodeDetector = new BarcodeDetector({formats:['qr_code','code_128','code_39','ean_13','ean_8','data_matrix','code_93','codabar','itf','aztec','pdf417']});
-        _scanMode='barcode_api';
-        cb('barcode_api');
+      if(formats && formats.length > 0){
+        try{
+          _barcodeDetector = new BarcodeDetector({
+            formats: ['qr_code','code_128','code_39','ean_13','ean_8','data_matrix','code_93','aztec','pdf_417']
+          });
+          cb('barcode_api');
+        } catch(e){
+          cb(window.jsQR ? 'jsqr' : 'manual_only');
+        }
       } else {
-        tryZXing(cb);
+        cb(window.jsQR ? 'jsqr' : 'manual_only');
       }
-    }).catch(function(){ tryZXing(cb); });
+    }).catch(function(){
+      cb(window.jsQR ? 'jsqr' : 'manual_only');
+    });
   } else {
-    tryZXing(cb);
+    cb(window.jsQR ? 'jsqr' : 'manual_only');
   }
-}
-
-function tryZXing(cb){
-  // 2) Coba ZXing library (support Code128, EAN, QR, dll)
-  try{
-    if(window.ZXing || (window.ZXingLibrary)){
-      var ZX = window.ZXing || window.ZXingLibrary;
-      var hints = new Map();
-      // Support semua format barcode yang umum
-      hints.set(ZX.DecodeHintType.POSSIBLE_FORMATS,[
-        ZX.BarcodeFormat.QR_CODE,
-        ZX.BarcodeFormat.CODE_128,
-        ZX.BarcodeFormat.CODE_39,
-        ZX.BarcodeFormat.EAN_13,
-        ZX.BarcodeFormat.EAN_8,
-        ZX.BarcodeFormat.DATA_MATRIX,
-        ZX.BarcodeFormat.AZTEC,
-        ZX.BarcodeFormat.PDF_417
-      ]);
-      hints.set(ZX.DecodeHintType.TRY_HARDER, true);
-      _zxingReader = new ZX.MultiFormatReader();
-      _zxingReader.setHints(hints);
-      _scanMode='zxing';
-      cb('zxing');
-      return;
-    }
-  } catch(e){}
-  // 3) Fallback ke jsQR (QR Code only)
-  if(window.jsQR){
-    _scanMode='jsqr';
-    cb('jsqr');
-    return;
-  }
-  // 4) Manual only
-  _scanMode='manual';
-  cb('manual_only');
 }
 
 function startAbsenCam(){
-  var sesiId=document.getElementById('absen-session-sel').value;
+  var sesiId = document.getElementById('absen-session-sel').value;
   if(!sesiId){ setAbsenStatus('⚠️ Pilih sesi terlebih dahulu','#BA7517','#fff8ec'); return; }
 
-  // Cek HTTPS — getUserMedia wajib HTTPS atau localhost
   var proto = location.protocol;
   var host = location.hostname;
   var isSecure = proto === 'https:' || host === 'localhost' || host === '127.0.0.1';
   if(!isSecure){
-    setAbsenStatus(
-      '❌ Kamera butuh koneksi HTTPS. Buka aplikasi ini melalui URL https:// bukan http:// atau file://. ' +
-      'Hosting di Firebase Hosting sudah otomatis HTTPS.',
-      '#e24b4a','#fcebeb'
-    );
+    setAbsenStatus('❌ Kamera butuh HTTPS. Buka melalui URL https:// atau hosting Firebase.','#e24b4a','#fcebeb');
     return;
   }
 
-  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
-    // Deteksi browser untuk saran yang lebih spesifik
-    var ua = navigator.userAgent||'';
-    var isFirefox = ua.indexOf('Firefox')>=0;
-    var isSafari = /^((?!chrome|android).)*safari/i.test(ua);
-    var browserHint = isFirefox ? ' Firefox tidak mendukung scan QR otomatis — gunakan Chrome.' :
-                      isSafari  ? ' Safari tidak mendukung akses kamera di web app ini — gunakan Chrome.' :
-                                  ' Coba gunakan Chrome versi terbaru.';
-    setAbsenStatus('❌ Browser tidak mendukung akses kamera.' + browserHint + ' Atau gunakan tombol ✍️ Manual.','#e24b4a','#fcebeb');
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    var ua = navigator.userAgent || '';
+    var hint = /Firefox/i.test(ua) ? ' Gunakan Chrome untuk scan otomatis.' :
+               /Safari/i.test(ua) && !/Chrome/i.test(ua) ? ' Gunakan Chrome.' : ' Coba Chrome versi terbaru.';
+    setAbsenStatus('❌ Browser tidak mendukung akses kamera.' + hint + ' Atau gunakan ✍️ Manual.','#e24b4a','#fcebeb');
     return;
   }
 
   setAbsenStatus('🔄 Meminta akses kamera…','#378ADD','#e8f4ff');
 
   initBarcodeDetector(function(mode){
-    navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}}})
+    navigator.mediaDevices.getUserMedia({video:{facingMode:'environment', width:{ideal:1280}, height:{ideal:720}}})
       .then(function(stream){
-        _absenCamStream=stream;
-        var v=document.getElementById('absen-video');
-        var ph=document.getElementById('absen-cam-placeholder');
-        v.srcObject=stream; v.style.display='block';
-        if(ph) ph.style.display='none';
-        document.getElementById('absen-start-cam').style.display='none';
-        document.getElementById('absen-stop-cam').style.display='';
-        _absenScanPaused=false;
-        if(mode==='barcode_api'){
-          setAbsenStatus('🎯 Scan otomatis aktif. Arahkan kamera ke barcode SIM Card…','#639922','#f0fff0');
+        _absenCamStream = stream;
+        var v = document.getElementById('absen-video');
+        var ph = document.getElementById('absen-cam-placeholder');
+        v.srcObject = stream;
+        v.style.display = 'block';
+        if(ph) ph.style.display = 'none';
+        document.getElementById('absen-start-cam').style.display = 'none';
+        document.getElementById('absen-stop-cam').style.display = '';
+        _absenScanPaused = false;
+
+        if(mode === 'barcode_api'){
+          setAbsenStatus('🎯 Scan otomatis aktif. Arahkan kamera ke QR Code SIM Card…','#639922','#f0fff0');
           startScanLoopAPI();
-        } else if(mode==='zxing'){
-          setAbsenStatus('🎯 Scan otomatis aktif (ZXing). Arahkan kamera ke barcode SIM Card…','#639922','#f0fff0');
-          showFotoScanBtn();
-          startZXingLoop();
-        } else if(mode==='jsqr' || window.jsQR){
-          setAbsenStatus('📷 Scan otomatis aktif (QR only). Arahkan kamera ke QR Code SIM Card…','#639922','#f0fff0');
+        } else if(mode === 'jsqr'){
+          setAbsenStatus('📷 Scan otomatis aktif. Arahkan kamera ke QR Code SIM Card…','#639922','#f0fff0');
           showFotoScanBtn();
           startJsQRLoop();
         } else {
           setAbsenStatus('📷 Kamera aktif. Tekan "📸 Foto & Scan" untuk scan, atau gunakan ✍️ Manual.','#BA7517','#fff8ec');
           showFotoScanBtn();
         }
-        }
       })
       .catch(function(err){
         var msg;
-        if(err.name==='NotAllowedError'||err.name==='PermissionDeniedError'){
-          msg='Izin kamera ditolak. Buka Pengaturan browser → izinkan akses Kamera untuk situs ini, lalu coba lagi.';
-        } else if(err.name==='NotFoundError'||err.name==='DevicesNotFoundError'){
-          msg='Kamera tidak ditemukan. Pastikan perangkat memiliki kamera dan tidak digunakan aplikasi lain.';
-        } else if(err.name==='NotReadableError'||err.name==='TrackStartError'){
-          msg='Kamera sedang digunakan aplikasi lain. Tutup aplikasi kamera lain lalu coba lagi.';
-        } else if(err.name==='OverconstrainedError'){
-          msg='Resolusi kamera tidak cocok. Coba lagi — resolusi akan disesuaikan otomatis.';
+        if(err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError'){
+          msg = 'Izin kamera ditolak. Buka Pengaturan browser → izinkan Kamera untuk situs ini, lalu coba lagi.';
+        } else if(err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError'){
+          msg = 'Kamera tidak ditemukan. Pastikan perangkat memiliki kamera dan tidak digunakan aplikasi lain.';
+        } else if(err.name === 'NotReadableError' || err.name === 'TrackStartError'){
+          msg = 'Kamera sedang digunakan aplikasi lain. Tutup aplikasi kamera lain lalu coba lagi.';
+        } else if(err.name === 'OverconstrainedError'){
           // Retry dengan constraint minimal
-          navigator.mediaDevices.getUserMedia({video:true}).then(function(stream2){
-            _absenCamStream=stream2;
-            var v=document.getElementById('absen-video');
-            var ph=document.getElementById('absen-cam-placeholder');
-            v.srcObject=stream2; v.style.display='block';
-            if(ph) ph.style.display='none';
-            document.getElementById('absen-start-cam').style.display='none';
-            document.getElementById('absen-stop-cam').style.display='';
-            _absenScanPaused=false;
+          navigator.mediaDevices.getUserMedia({video: true}).then(function(stream2){
+            _absenCamStream = stream2;
+            var v = document.getElementById('absen-video');
+            var ph = document.getElementById('absen-cam-placeholder');
+            v.srcObject = stream2;
+            v.style.display = 'block';
+            if(ph) ph.style.display = 'none';
+            document.getElementById('absen-start-cam').style.display = 'none';
+            document.getElementById('absen-stop-cam').style.display = '';
+            _absenScanPaused = false;
             setAbsenStatus('📷 Kamera aktif (mode kompatibilitas). Tekan "📸 Foto & Scan".','#BA7517','#fff8ec');
             showFotoScanBtn();
-          }).catch(function(){ setAbsenStatus('❌ Kamera tidak dapat diakses. Gunakan tombol ✍️ Manual.','#e24b4a','#fcebeb'); });
+          }).catch(function(){
+            setAbsenStatus('❌ Kamera tidak dapat diakses. Gunakan tombol ✍️ Manual.','#e24b4a','#fcebeb');
+          });
           return;
         } else {
-          msg='Gagal membuka kamera: ' + (err.message||err.name||'error tidak diketahui') +
-              '. Pastikan koneksi HTTPS dan izin kamera sudah diberikan.';
+          msg = 'Gagal membuka kamera: ' + (err.message || err.name || 'error tidak diketahui') + '. Pastikan koneksi HTTPS.';
         }
-        setAbsenStatus('❌ '+msg,'#e24b4a','#fcebeb');
+        setAbsenStatus('❌ ' + msg,'#e24b4a','#fcebeb');
       });
   });
 }
 
 function showFotoScanBtn(){
-  var statusEl=document.getElementById('absen-scan-status');
+  var statusEl = document.getElementById('absen-scan-status');
   if(!document.getElementById('absen-foto-btn')){
-    var btn=document.createElement('button');
-    btn.id='absen-foto-btn';
-    btn.type='button';
-    btn.textContent='📸 Foto & Scan';
-    btn.style.cssText='display:block;width:100%;margin-top:8px;font-family:Space Grotesk,sans-serif;font-size:14px;font-weight:700;padding:11px;border-radius:10px;border:none;background:#E2884B;color:#fff;cursor:pointer';
-    btn.addEventListener('click',captureAndScan);
-    if(statusEl && statusEl.parentNode) statusEl.parentNode.insertBefore(btn,statusEl.nextSibling);
+    var btn = document.createElement('button');
+    btn.id = 'absen-foto-btn';
+    btn.type = 'button';
+    btn.textContent = '📸 Foto & Scan';
+    btn.style.cssText = 'display:block;width:100%;margin-top:8px;font-family:Space Grotesk,sans-serif;font-size:14px;font-weight:700;padding:11px;border-radius:10px;border:none;background:#E2884B;color:#fff;cursor:pointer';
+    btn.addEventListener('click', captureAndScan);
+    if(statusEl && statusEl.parentNode) statusEl.parentNode.insertBefore(btn, statusEl.nextSibling);
   }
 }
 
 function hideFotoScanBtn(){
-  var b=document.getElementById('absen-foto-btn');
+  var b = document.getElementById('absen-foto-btn');
   if(b) b.remove();
 }
 
 function captureAndScan(){
-  var v=document.getElementById('absen-video');
-  var c=document.getElementById('absen-canvas');
-  if(!v||!c||v.readyState<2){ setAbsenStatus('⚠️ Kamera belum siap, coba lagi','#BA7517','#fff8ec'); return; }
+  var v = document.getElementById('absen-video');
+  var c = document.getElementById('absen-canvas');
+  if(!v || !c || v.readyState < 2){
+    setAbsenStatus('⚠️ Kamera belum siap, coba lagi','#BA7517','#fff8ec');
+    return;
+  }
   var vw = v.videoWidth || 640;
   var vh = v.videoHeight || 480;
-  c.width=vw; c.height=vh;
-  var ctx=c.getContext('2d');
-  ctx.drawImage(v,0,0,vw,vh);
+  c.width = vw; c.height = vh;
+  var ctx = c.getContext('2d');
+  ctx.drawImage(v, 0, 0, vw, vh);
 
-  // Coba BarcodeDetector dari canvas jika tersedia
   if(_barcodeDetector){
     _barcodeDetector.detect(c).then(function(results){
-      if(results && results.length>0){
-        var val=results[0].rawValue||results[0].rawData||'';
+      if(results && results.length > 0){
+        var val = results[0].rawValue || results[0].rawData || '';
         if(val && !_absenScanPaused){
-          _absenScanPaused=true;
-          prosesAbsen(val);
-          setTimeout(function(){ _absenScanPaused=false; },2200);
-        }
-      } else {
-        setAbsenStatus('🔍 QR Code tidak terdeteksi. Tips: pastikan QR Code terlihat penuh, cahaya cukup, dan tidak blur.','#BA7517','#fff8ec');
-      }
-    }).catch(function(e){
-      setAbsenStatus('⚠️ Gagal memproses gambar: '+(e&&e.message?e.message:'error tidak diketahui')+'. Coba foto ulang.','#e24b4a','#fcebeb');
-  } else if(_zxingReader) {
-    // ZXing: support Code128, EAN, QR, dll
-    var imgDataZ = ctx.getImageData(0, 0, vw, vh);
-    try{
-      var ZX = window.ZXing || window.ZXingLibrary;
-      var lumSrc = new ZX.RGBLuminanceSource(imgDataZ.data, vw, vh);
-      var binBmp = new ZX.BinaryBitmap(new ZX.HybridBinarizer(lumSrc));
-      var zRes = _zxingReader.decode(binBmp);
-      if(zRes && zRes.getText){
-        var zVal = zRes.getText();
-        if(zVal && !_absenScanPaused){
-          _absenScanPaused=true;
-          prosesAbsen(zVal);
-          setTimeout(function(){ _absenScanPaused=false; },2200);
-        }
-      } else {
-        setAbsenStatus('🔍 Barcode tidak terdeteksi. Pastikan barcode terlihat penuh, cahaya cukup, kamera fokus.','#BA7517','#fff8ec');
-      }
-    } catch(e){
-      setAbsenStatus('🔍 Barcode tidak terdeteksi. Coba lagi lebih dekat atau pastikan cahaya cukup.','#BA7517','#fff8ec');
-    }
-    });
-  } else if(window.jsQR) {
-    // Fallback: gunakan jsQR library — ambil ImageData sekali saja dari ctx
-    var imgData = ctx.getImageData(0, 0, vw, vh);
-    var result = jsQR(imgData.data, imgData.width, imgData.height, {inversionAttempts:'dontInvert'});
-    if(result && result.data){
-      var val = result.data;
-      if(val && !_absenScanPaused){
-        _absenScanPaused = true;
-        prosesAbsen(val);
-        setTimeout(function(){ _absenScanPaused=false; }, 2200);
-      }
-    } else {
-      // Coba sekali lagi dengan inversi warna (barcode putih di hitam)
-      var result2 = jsQR(imgData.data, imgData.width, imgData.height, {inversionAttempts:'invertFirst'});
-      if(result2 && result2.data){
-        var val2 = result2.data;
-        if(val2 && !_absenScanPaused){
           _absenScanPaused = true;
-          prosesAbsen(val2);
-          setTimeout(function(){ _absenScanPaused=false; }, 2200);
+          prosesAbsen(val);
+          setTimeout(function(){ _absenScanPaused = false; }, 2200);
         }
       } else {
-        setAbsenStatus('🔍 QR Code tidak terdeteksi. Tips: pastikan QR Code terlihat penuh, cahaya cukup, dan tidak blur.','#BA7517','#fff8ec');
+        tryJsQRFromCanvas(ctx, vw, vh);
       }
-    }
+    }).catch(function(){
+      tryJsQRFromCanvas(ctx, vw, vh);
+    });
   } else {
-    setAbsenStatus('⚠️ Library scan belum siap. Coba refresh halaman, atau gunakan tombol ✍️ Manual.','#BA7517','#fff8ec');
+    tryJsQRFromCanvas(ctx, vw, vh);
+  }
+}
+
+function tryJsQRFromCanvas(ctx, vw, vh){
+  if(!window.jsQR){
+    setAbsenStatus('⚠️ Library scan belum siap. Coba refresh halaman, atau gunakan ✍️ Manual.','#BA7517','#fff8ec');
+    return;
+  }
+  var imgData = ctx.getImageData(0, 0, vw, vh);
+  var result = jsQR(imgData.data, imgData.width, imgData.height, {inversionAttempts: 'dontInvert'});
+  if(!result || !result.data){
+    result = jsQR(imgData.data, imgData.width, imgData.height, {inversionAttempts: 'invertFirst'});
+  }
+  if(result && result.data && !_absenScanPaused){
+    _absenScanPaused = true;
+    prosesAbsen(result.data);
+    setTimeout(function(){ _absenScanPaused = false; }, 2200);
+  } else {
+    setAbsenStatus('🔍 QR Code tidak terdeteksi. Pastikan QR terlihat penuh, cahaya cukup, dan kamera fokus.','#BA7517','#fff8ec');
   }
 }
 
 // Loop scan otomatis pakai BarcodeDetector API
 function startScanLoopAPI(){
-  var v=document.getElementById('absen-video');
-  var _scanning=false;
+  var v = document.getElementById('absen-video');
+  var _scanning = false;
   function tick(){
-    if(!_absenCamStream){ _scanning=false; return; }
-    if(!_scanning && v.readyState>=2 && _barcodeDetector && !_absenScanPaused){
-      _scanning=true;
+    if(!_absenCamStream){ _scanning = false; return; }
+    if(!_scanning && v.readyState >= 2 && _barcodeDetector && !_absenScanPaused){
+      _scanning = true;
       _barcodeDetector.detect(v).then(function(results){
-        _scanning=false;
-        if(results && results.length>0){
-          var val=results[0].rawValue||results[0].rawData||'';
+        _scanning = false;
+        if(results && results.length > 0){
+          var val = results[0].rawValue || results[0].rawData || '';
           if(val && !_absenScanPaused){
-            _absenScanPaused=true;
+            _absenScanPaused = true;
             prosesAbsen(val);
-            setTimeout(function(){ _absenScanPaused=false; },2200);
+            setTimeout(function(){ _absenScanPaused = false; }, 2200);
           }
         }
-      }).catch(function(){ _scanning=false; });
+      }).catch(function(){ _scanning = false; });
     }
-    _absenScanLoop=setTimeout(tick,300);
+    _absenScanLoop = setTimeout(tick, 300);
   }
   tick();
 }
 
 function startScanLoop(){
-  // Dipanggil hanya jika mode BarcodeDetector aktif (sekarang pakai startScanLoopAPI)
   startScanLoopAPI();
 }
 
-
-// Loop scan otomatis pakai ZXing (support Code128, EAN, QR, dll)
-function startZXingLoop(){
-  var v=document.getElementById('absen-video');
-  var c=document.getElementById('absen-canvas');
-  function tickZXing(){
-    if(!_absenCamStream){ return; }
-    if(v.readyState>=2 && !_absenScanPaused && _zxingReader){
-      var vw = v.videoWidth||640, vh = v.videoHeight||480;
-      if(c.width!==vw || c.height!==vh){ c.width=vw; c.height=vh; }
-      var ctx = c.getContext('2d');
-      ctx.drawImage(v,0,0,vw,vh);
-      try{
-        var imgData = ctx.getImageData(0,0,vw,vh);
-        var ZX = window.ZXing || window.ZXingLibrary;
-        var luminanceSource = new ZX.RGBLuminanceSource(imgData.data, vw, vh);
-        var binaryBitmap = new ZX.BinaryBitmap(new ZX.HybridBinarizer(luminanceSource));
-        var result = _zxingReader.decode(binaryBitmap);
-        if(result && result.getText && !_absenScanPaused){
-          var val = result.getText();
-          if(val){
-            _absenScanPaused=true;
-            prosesAbsen(val);
-            setTimeout(function(){ _absenScanPaused=false; },2200);
-          }
-        }
-      } catch(e){
-        // NotFoundException normal kalau tidak ada barcode di frame
-      }
-    }
-    _absenScanLoop=setTimeout(tickZXing, 400);
-  }
-  tickZXing();
-}
-
-// Loop scan otomatis pakai jsQR (QR Code only)
+// Loop scan otomatis pakai jsQR
 function startJsQRLoop(){
-  var v=document.getElementById('absen-video');
-  var c=document.getElementById('absen-canvas');
+  var v = document.getElementById('absen-video');
+  var c = document.getElementById('absen-canvas');
   function tickJsQR(){
     if(!_absenCamStream){ return; }
-    if(v.readyState>=2 && !_absenScanPaused && window.jsQR){
-      var vw = v.videoWidth||640, vh = v.videoHeight||480;
-      if(c.width!==vw || c.height!==vh){ c.width=vw; c.height=vh; }
+    if(v.readyState >= 2 && !_absenScanPaused && window.jsQR){
+      var vw = v.videoWidth || 640, vh = v.videoHeight || 480;
+      if(c.width !== vw || c.height !== vh){ c.width = vw; c.height = vh; }
       var ctx = c.getContext('2d');
-      ctx.drawImage(v,0,0,vw,vh);
-      var imgData = ctx.getImageData(0,0,vw,vh);
-      var res = jsQR(imgData.data, imgData.width, imgData.height, {inversionAttempts:'dontInvert'});
+      ctx.drawImage(v, 0, 0, vw, vh);
+      var imgData = ctx.getImageData(0, 0, vw, vh);
+      var res = jsQR(imgData.data, imgData.width, imgData.height, {inversionAttempts: 'dontInvert'});
+      if(!res || !res.data){
+        res = jsQR(imgData.data, imgData.width, imgData.height, {inversionAttempts: 'invertFirst'});
+      }
       if(res && res.data && !_absenScanPaused){
-        _absenScanPaused=true;
+        _absenScanPaused = true;
         prosesAbsen(res.data);
-        setTimeout(function(){ _absenScanPaused=false; },2200);
+        setTimeout(function(){ _absenScanPaused = false; }, 2200);
       }
     }
-    _absenScanLoop=setTimeout(tickJsQR, 500);
+    _absenScanLoop = setTimeout(tickJsQR, 400);
   }
   tickJsQR();
 }
