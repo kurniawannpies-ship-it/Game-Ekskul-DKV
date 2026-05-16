@@ -1806,8 +1806,12 @@ function _applyFirebaseData(data){
     if(!Array.isArray(window.dkvEditorAccess)) window.dkvEditorAccess = [];
   }
   // Pending registrasi (dihandle juga via child listener, tapi fallback di sini)
+  // Jangan timpa jika panel sedang terbuka (admin sedang review) atau sedang saving
   if(data.dkv_pending_reg){
-    window.dkvPendingReg = Array.isArray(data.dkv_pending_reg) ? data.dkv_pending_reg : [];
+    var panelOpen = document.getElementById('pending-panel') && document.getElementById('pending-panel').classList.contains('open');
+    if(!panelOpen && !window._isSaving){
+      window.dkvPendingReg = Array.isArray(data.dkv_pending_reg) ? data.dkv_pending_reg : [];
+    }
   }
   // Re-render semua tampilan
   if(typeof applyAppConfig === 'function') applyAppConfig();
@@ -4559,7 +4563,6 @@ function buildSimCard(s, xp, inlineProfileHtml){
           '<div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:6px 0">'+
             '<div class="simcard-name">'+esc(s.name)+(nicknameVal?' <span style="font-size:11px;font-weight:400;opacity:.8">@'+esc(nicknameVal)+'</span>':'')+'</div>'+
             '<div class="simcard-kelas">'+esc(s.kelas||'')+'</div>'+
-          '</div>'+
           '</div>'+
           '<div class="simcard-footer" style="display:flex;align-items:flex-end;justify-content:space-between;margin-top:auto;padding-top:6px;border-top:1px solid rgba(255,255,255,.18)">'+
             '<div style="flex:1;min-width:0">'+
@@ -8215,24 +8218,31 @@ document.addEventListener('click', function(e){
 });
 
 // ── Hook ke Firebase listener ──
-// Panggil loadPendingRegFromFirebase saat data Firebase masuk
-// Patch _applyFirebaseData untuk load pending
+// Gunakan satu child listener saja untuk dkv_pending_reg
+// Hanya update array jika TIDAK sedang _isSaving (hindari overwrite saat admin sedang approve/reject)
 (function(){
-  var orig = window._applyFirebaseData || null;
-  // Kita hook via Firebase child listener agar real-time
   function attachPendingListener(){
     if(!window._fbRef) { setTimeout(attachPendingListener, 500); return; }
     window._fbRef.child('dkv_pending_reg').on('value', function(snap){
+      // Jangan timpa jika sedang proses save (approve/reject sedang berjalan)
+      if(window._isSaving) return;
       var val = snap.val();
-      window.dkvPendingReg = Array.isArray(val) ? val : [];
-      updateAdminBell();
-      if(document.getElementById('pending-panel').classList.contains('open')){
-        renderPendingList();
+      var incoming = Array.isArray(val) ? val : [];
+      // Hanya update jika isi berbeda (cegah flicker saat panel terbuka)
+      var currentStr = JSON.stringify(window.dkvPendingReg || []);
+      var incomingStr = JSON.stringify(incoming);
+      if(currentStr !== incomingStr){
+        window.dkvPendingReg = incoming;
+        updateAdminBell();
+        // Hanya re-render list jika panel sedang terbuka
+        if(document.getElementById('pending-panel').classList.contains('open')){
+          renderPendingList();
+        }
       }
     });
   }
   setTimeout(attachPendingListener, 800);
-  // Fallback: load dari localStorage
+  // Fallback: load dari localStorage jika belum ada
   if(!window.dkvPendingReg || !window.dkvPendingReg.length){
     window.dkvPendingReg = loadJSON('dkv_pending_reg', []);
   }
