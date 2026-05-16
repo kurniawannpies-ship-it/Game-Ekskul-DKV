@@ -670,8 +670,12 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
 .simcard-field-chip{display:-webkit-inline-flex;display:inline-flex;-webkit-align-items:center;align-items:center;gap:3px;background:rgba(255,255,255,.18);border-radius:20px;padding:2px 8px;font-size:9px;font-weight:600;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.2)}
 .simcard-footer{display:-webkit-flex;display:flex;-webkit-align-items:flex-end;align-items:flex-end;-webkit-justify-content:space-between;justify-content:space-between;margin-top:auto;padding-top:6px;border-top:1px solid rgba(255,255,255,.18);gap:8px}
 /* QR code container di dalam simcard */
-.simcard-qr{flex-shrink:0;width:clamp(52px,14vw,70px);height:clamp(52px,14vw,70px);background:#fff;border-radius:8px;border:2px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;padding:2px;overflow:visible}
-.simcard-qr img,.simcard-qr canvas{width:100%!important;height:100%!important;max-width:66px!important;max-height:66px!important;display:block!important;object-fit:contain}
+.simcard-qr{flex-shrink:0;width:60px;height:60px;background:#fff;border-radius:8px;overflow:hidden;border:2px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;padding:2px;margin-bottom:8px;margin-right:8px}
+.simcard-qr img,.simcard-qr canvas{width:56px!important;height:56px!important;display:block!important}
+@media(min-width:600px){
+.simcard-qr{width:90px;height:90px;margin-bottom:12px;margin-right:12px}
+.simcard-qr img,.simcard-qr canvas{width:86px!important;height:86px!important}
+}
 .simcard-xp-badge{font-size:9px;font-weight:800;padding:3px 10px;border-radius:20px;color:#fff;letter-spacing:.03em;text-shadow:0 1px 3px rgba(0,0,0,.2)}
 .simcard-num{font-size:8.5px;font-weight:700;letter-spacing:.1em;opacity:.6;font-family:monospace}
 .simcard-completion{margin-top:10px}
@@ -7574,16 +7578,15 @@ function initBarcodeDetector(cb){
   // BarcodeDetector tersedia di Chrome 83+, Chrome Android, Edge
   if(window.BarcodeDetector){
     BarcodeDetector.getSupportedFormats().then(function(formats){
-      var fmtLower = formats.map(function(f){ return f.toLowerCase(); });
-      if(fmtLower.indexOf('qr_code')>=0 || formats.length>0){
+      if(formats.indexOf('qr_code')>=0 || formats.indexOf('QR_CODE')>=0 || formats.length>0){
         _barcodeDetector = new BarcodeDetector({formats:['qr_code','code_128','code_39','ean_13','ean_8','data_matrix']});
         cb('barcode_api');
       } else {
-        cb(window.jsQR ? 'jsqr' : 'manual_only');
+        cb('manual_only');
       }
-    }).catch(function(){ cb(window.jsQR ? 'jsqr' : 'manual_only'); });
+    }).catch(function(){ cb('manual_only'); });
   } else {
-    cb(window.jsQR ? 'jsqr' : 'manual_only');
+    cb('manual_only');
   }
 }
 
@@ -7633,7 +7636,7 @@ function startAbsenCam(){
         if(mode==='barcode_api'){
           setAbsenStatus('🎯 Arahkan kamera ke QR Code SIM Card siswa…','#639922','#f0fff0');
           startScanLoopAPI();
-        } else if(mode==='jsqr' || window.jsQR) {
+        } else if(window.jsQR) {
           // jsQR mode: jalankan scan loop otomatis via canvas setiap 500ms
           setAbsenStatus('📷 Kamera aktif. Arahkan ke QR Code — scan otomatis aktif. Atau tekan "📸 Foto & Scan".','#639922','#f0fff0');
           showFotoScanBtn();
@@ -7784,26 +7787,22 @@ function startScanLoop(){
 function startJsQRLoop(){
   var v=document.getElementById('absen-video');
   var c=document.getElementById('absen-canvas');
-  if(!c){ c=document.createElement('canvas'); c.id='absen-canvas'; c.style.display='none'; document.body.appendChild(c); }
   function tickJsQR(){
     if(!_absenCamStream){ return; }
     if(v.readyState>=2 && !_absenScanPaused && window.jsQR){
       var vw = v.videoWidth||640, vh = v.videoHeight||480;
-      if(vw>0 && vh>0){
-        if(c.width!==vw || c.height!==vh){ c.width=vw; c.height=vh; }
-        var ctx = c.getContext('2d');
-        ctx.drawImage(v,0,0,vw,vh);
-        var imgData = ctx.getImageData(0,0,vw,vh);
-        var res = jsQR(imgData.data, imgData.width, imgData.height, {inversionAttempts:'dontInvert'});
-        if(!res) res = jsQR(imgData.data, imgData.width, imgData.height, {inversionAttempts:'invertFirst'});
-        if(res && res.data && !_absenScanPaused){
-          _absenScanPaused=true;
-          prosesAbsen(res.data);
-          setTimeout(function(){ _absenScanPaused=false; },2200);
-        }
+      if(c.width!==vw || c.height!==vh){ c.width=vw; c.height=vh; }
+      var ctx = c.getContext('2d');
+      ctx.drawImage(v,0,0,vw,vh);
+      var imgData = ctx.getImageData(0,0,vw,vh);
+      var res = jsQR(imgData.data, imgData.width, imgData.height, {inversionAttempts:'dontInvert'});
+      if(res && res.data && !_absenScanPaused){
+        _absenScanPaused=true;
+        prosesAbsen(res.data);
+        setTimeout(function(){ _absenScanPaused=false; },2200);
       }
     }
-    _absenScanLoop=setTimeout(tickJsQR, 300);
+    _absenScanLoop=setTimeout(tickJsQR, 500);
   }
   tickJsQR();
 }
@@ -7906,30 +7905,32 @@ document.addEventListener('click',function(e){
 window.renderQRCodeForSiswa = function(sid){
   var container = document.getElementById('qr-inner-'+sid);
   if(!container) return;
+  // Bersihkan isi container sebelumnya
   container.innerHTML = '';
   var text = 'DKV_'+sid;
 
-  // Hitung ukuran QR sesuai wrapper (responsif mobile)
-  var wrap = document.getElementById('qr-wrap-'+sid);
-  var qrSize = wrap ? Math.max(48, Math.min(wrap.offsetWidth - 4, 66)) : 56;
-
+  // Gunakan qrcodejs jika tersedia
   if(window.QRCode){
     try{
+      var qrPx = window.innerWidth >= 600 ? 86 : 56;
       new QRCode(container, {
         text: text,
-        width: qrSize,
-        height: qrSize,
+        width: qrPx,
+        height: qrPx,
         colorDark: '#1a1a18',
         colorLight: '#ffffff',
         correctLevel: QRCode.CorrectLevel.M
       });
+      // Pastikan img/canvas tidak overflow
       var img = container.querySelector('img,canvas');
-      if(img){ img.style.cssText='width:'+qrSize+'px;height:'+qrSize+'px;display:block;border-radius:0;max-width:100%;max-height:100%'; }
+      if(img){ img.style.cssText='width:'+qrPx+'px;height:'+qrPx+'px;display:block;border-radius:0'; }
     } catch(e){
       container.innerHTML = '<div style="font-size:6px;word-break:break-all;color:#555;padding:2px;text-align:center">'+text+'</div>';
     }
   } else {
+    // Fallback sederhana: teks kode
     container.innerHTML = '<div style="font-size:6px;word-break:break-all;color:#555;padding:2px;text-align:center">'+text+'</div>';
+    // Coba lagi setelah lib load
     var tries = 0;
     var waitLib = setInterval(function(){
       tries++;
