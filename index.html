@@ -1511,10 +1511,23 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
   <div class="tab-content" id="tab-materi-editor">
     <div style="display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;gap:10px;margin-bottom:16px;-webkit-flex-wrap:wrap;flex-wrap:wrap">
       <div style="flex:1;min-width:0">
-        <div style="font-size:16px;font-weight:700;color:#1a1a18">✏️ Editor Materi</div>
+        <div style="font-size:16px;font-weight:700;color:#1a1a18">&#x270F;&#xFE0F; Editor Materi</div>
         <div style="font-size:11px;color:#888;margin-top:2px" id="materi-editor-label">Kamu memiliki akses untuk mengedit materi</div>
       </div>
-      <div style="font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;background:#378ADD22;color:#378ADD;border:1px solid #378ADD33;white-space:nowrap">✏️ Editor</div>
+      <button class="btn-save" id="add-bab-btn-student" type="button" style="font-size:12px;padding:8px 14px;white-space:nowrap">+ Tambah Bab</button>
+    </div>
+    <div id="new-bab-form-student" style="display:none;background:#fff8f0;border-radius:12px;border:1.5px solid #BA751733;padding:14px;margin-bottom:12px">
+      <div style="font-size:12px;font-weight:700;color:#BA7517;margin-bottom:10px">&#x2795; Tambah Bab Baru</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+        <div style="grid-column:1/-1"><label style="font-size:10px;font-weight:700;color:#BA7517;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px">Nama Bab</label><input id="snb-name" type="text" placeholder="cth: Multimedia" style="font-family:Space Grotesk,sans-serif;padding:8px 10px;border-radius:7px;border:1px solid #ddd;background:#fff;color:#1a1a18;width:100%;font-size:13px"></div>
+        <div><label style="font-size:10px;font-weight:700;color:#BA7517;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px">Icon (emoji)</label><input id="snb-icon" type="text" placeholder="&#x1F3AC;" value="&#x1F4DA;" maxlength="4" style="font-family:Space Grotesk,sans-serif;padding:8px 10px;border-radius:7px;border:1px solid #ddd;background:#fff;color:#1a1a18;width:100%;font-size:13px"></div>
+        <div><label style="font-size:10px;font-weight:700;color:#BA7517;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px">Warna</label><input id="snb-color" type="color" value="#378ADD" style="height:40px;padding:3px 4px;width:100%;border-radius:7px;border:1px solid #ddd"></div>
+      </div>
+      <div style="font-size:10px;color:#888;margin-bottom:10px">Sub-bab pertama akan otomatis dibuat. Kamu bisa tambah sub-bab lain setelah bab dibuat.</div>
+      <div style="display:-webkit-flex;display:flex;gap:8px">
+        <button class="btn-save" id="snb-confirm" type="button" style="font-size:12px;padding:8px 16px">Buat Bab</button>
+        <button class="btn-cancel" id="snb-cancel" type="button" style="font-size:12px;padding:8px 14px">Batal</button>
+      </div>
     </div>
     <div id="bab-editor-list-student"></div>
   </div>
@@ -6885,20 +6898,16 @@ function updateMateriEditorTabVisibility(){
 function renderBabEditorStudent(){
   var el = document.getElementById('bab-editor-list-student');
   if(!el) return;
-  // Reuse renderBabEditor logic: clone ke container student
-  // Gunakan renderBabEditor ke bab-editor-list dulu, lalu salin hasilnya
-  var tempDiv = document.createElement('div');
   var babs = getBabList();
   if(babs.length === 0){
-    el.innerHTML = '<div style="text-align:center;padding:28px;color:#bbb;font-size:13px">Belum ada bab materi.</div>';
+    el.innerHTML = '<div style="text-align:center;padding:28px;color:#bbb;font-size:13px">Belum ada bab materi. Tekan "+ Tambah Bab" untuk memulai.</div>';
     return;
   }
-  // Render ulang dengan editingSubbabId (shared state)
   el.innerHTML = babs.map(function(bab){
     var isOpen = openBab['student_'+bab.id];
     var totalQ = bab.worlds.reduce(function(a,w){return a+w.quests.length;},0);
     var babLabel = getBabLabel(bab.id);
-    var babIcon  = babLabel.split(' ')[0] || '📚';
+    var babIcon  = babLabel.split(' ')[0] || '&#x1F4DA;';
     var babName  = babLabel.replace(/^[^\s]+\s*/,'') || bab.id;
     var subbabRows = bab.worlds.map(function(w){
       var isEditing = editingSubbabId === ('student_'+w.id);
@@ -6908,11 +6917,31 @@ function renderBabEditorStudent(){
           '<span style="font-size:15px">'+(w.iconImg?'<img src="'+w.iconImg+'" style="width:18px;height:18px;object-fit:contain;border-radius:3px">':w.icon)+'</span>'+
           '<div class="subbab-row-name">'+esc(w.name)+'</div>'+
           '<span class="subbab-row-count">'+qCount+' materi</span>'+
-          '<button class="btn-edit-subbab" type="button" data-action="toggle-subbab-edit-student" data-wid="'+w.id+'">'+(isEditing?'✕ Tutup':'✏️ Edit')+'</button>'+
+          '<button class="btn-edit-subbab" type="button" data-action="toggle-subbab-edit-student" data-wid="'+w.id+'">'+(isEditing?'&#x2715; Tutup':'&#x270F;&#xFE0F; Edit')+'</button>'+
         '</div>'+
         (isEditing ? renderSubbabEditFormStudent(w) : '')+
       '</div>';
     }).join('');
+
+    // Form tambah sub-bab baru (per bab)
+    var addSbFormId = 'stu-add-sb-form-'+bab.id;
+    var addSbForm =
+      '<div id="'+addSbFormId+'" style="display:none;margin-top:8px;background:#f0f7ff;border-radius:10px;border:1.5px solid #378ADD33;padding:13px">'+
+        '<div style="font-size:12px;font-weight:700;color:#378ADD;margin-bottom:10px">&#x2795; Sub-bab Baru di Bab '+esc(babName)+'</div>'+
+        '<div style="display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;gap:8px;margin-bottom:10px">'+
+          '<div><label style="font-size:10px;font-weight:700;color:#378ADD;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px">Nama Sub-bab</label>'+
+            '<input id="ssb-name-'+bab.id+'" type="text" placeholder="cth: Desain Level 1" value="Sub-bab Baru" style="font-family:Space Grotesk,sans-serif;padding:7px 9px;border-radius:6px;border:1px solid #ddd;background:#fff;color:#1a1a18;width:100%;font-size:12px"></div>'+
+          '<div><label style="font-size:10px;font-weight:700;color:#378ADD;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px">Subtitle / Deskripsi</label>'+
+            '<input id="ssb-sub-'+bab.id+'" type="text" placeholder="cth: Fondasi Visual" value="Deskripsi sub-bab" style="font-family:Space Grotesk,sans-serif;padding:7px 9px;border-radius:6px;border:1px solid #ddd;background:#fff;color:#1a1a18;width:100%;font-size:12px"></div>'+
+          '<div><label style="font-size:10px;font-weight:700;color:#378ADD;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px">Icon (emoji)</label>'+
+            '<input id="ssb-icon-'+bab.id+'" type="text" placeholder="&#x2B50;" value="&#x2B50;" maxlength="4" style="font-family:Space Grotesk,sans-serif;padding:7px 9px;border-radius:6px;border:1px solid #ddd;background:#fff;color:#1a1a18;width:100%;font-size:12px"></div>'+
+        '</div>'+
+        '<div style="display:-webkit-flex;display:flex;gap:8px">'+
+          '<button class="btn-save" type="button" data-action="confirm-add-subbab-student" data-cat="'+bab.id+'" style="font-size:12px;padding:7px 14px">Tambah Sub-bab</button>'+
+          '<button class="btn-cancel" type="button" data-action="hide-add-subbab-student" data-cat="'+bab.id+'" style="font-size:12px;padding:7px 14px">Batal</button>'+
+        '</div>'+
+      '</div>';
+
     return '<div class="bab-item" id="bab-item-stu-'+bab.id+'">'+
       '<div class="bab-item-header" data-action="toggle-bab-student" data-cat="'+bab.id+'">'+
         '<div class="bab-item-dot" style="background:'+bab.color+'"></div>'+
@@ -6924,6 +6953,8 @@ function renderBabEditorStudent(){
       (isOpen ?
         '<div class="bab-item-body open">'+
           '<div class="subbab-list">'+subbabRows+'</div>'+
+          '<button class="btn-add-subbab" type="button" data-action="show-add-subbab-student" data-cat="'+bab.id+'">+ Tambah Sub-bab</button>'+
+          addSbForm+
         '</div>'
       : '')+
     '</div>';
@@ -6973,8 +7004,38 @@ document.addEventListener('click', function(e){
     renderBabEditorStudent();
     return;
   }
+  if(action === 'show-add-subbab-student'){
+    if(!canEditMateri()){ showToast('&#x26A0;&#xFE0F; Kamu tidak punya akses edit materi.'); return; }
+    var f = document.getElementById('stu-add-sb-form-'+cat);
+    if(f) f.style.display = (f.style.display==='none'?'block':'none');
+    return;
+  }
+  if(action === 'hide-add-subbab-student'){
+    var f2 = document.getElementById('stu-add-sb-form-'+cat);
+    if(f2) f2.style.display = 'none';
+    return;
+  }
+  if(action === 'confirm-add-subbab-student'){
+    if(!canEditMateri()){ showToast('&#x26A0;&#xFE0F; Kamu tidak punya akses edit materi.'); return; }
+    var name = (document.getElementById('ssb-name-'+cat)||{}).value;
+    var sub  = (document.getElementById('ssb-sub-'+cat)||{}).value;
+    var icon = (document.getElementById('ssb-icon-'+cat)||{}).value;
+    name = (name||'').trim() || 'Sub-bab Baru';
+    sub  = (sub||'').trim()  || 'Deskripsi sub-bab';
+    icon = (icon||'').trim() || '\u2B50';
+    var col  = getCatColor(cat);
+    var existingWorld = window.worlds.find(function(x){return x.cat===cat;});
+    var cName = existingWorld && existingWorld.catName ? existingWorld.catName : null;
+    var nw = {id:wuid(), num:window.worlds.length+1, name:name, sub:sub, color:col, icon:icon, badge:'New', cat:cat, catName:cName, gateQuests:[], finalQuest:'',
+      quests:[{id:uid(), t:'Materi pertama', d:'Deskripsi materi', xp:20, who:'Semua Siswa', level:'Lv.1'}]};
+    window.worlds.push(nw);
+    openBab['student_'+cat] = true;
+    saveAll(); render(); renderBabEditorStudent(); renderSiswa(); renderRanking();
+    showToast('Sub-bab "'+name+'" ditambahkan! \u2705');
+    return;
+  }
   if(action === 'toggle-subbab-edit-student'){
-    if(!canEditMateri()){ showToast('⚠️ Kamu tidak punya akses edit materi.'); return; }
+    if(!canEditMateri()){ showToast('&#x26A0;&#xFE0F; Kamu tidak punya akses edit materi.'); return; }
     editingSubbabId = (editingSubbabId === 'student_'+wid) ? null : 'student_'+wid;
     renderBabEditorStudent();
     return;
@@ -6985,15 +7046,33 @@ document.addEventListener('click', function(e){
     return;
   }
   if(action === 'add-materi-student'){
-    if(!canEditMateri()){ showToast('⚠️ Kamu tidak punya akses edit materi.'); return; }
+    if(!canEditMateri()){ showToast('&#x26A0;&#xFE0F; Kamu tidak punya akses edit materi.'); return; }
     var w = window.worlds.find(function(x){return x.id===wid;});
     if(!w) return;
-    w.quests.push({id:'q'+Date.now()+Math.floor(Math.random()*9999),t:'Materi Baru',d:'Deskripsi materi',xp:15,who:'Semua Siswa',level:'Lv.1'});
+    // Simpan input yang sedang terbuka dulu
+    w.quests.forEach(function(q){
+      var tEl = document.getElementById('sqts-'+q.id);
+      var dEl = document.getElementById('sqds-'+q.id);
+      var lEl = document.getElementById('sqls-'+q.id);
+      var xEl = document.getElementById('sqxs-'+q.id);
+      if(tEl) q.t = tEl.value.trim() || q.t;
+      if(dEl) q.d = dEl.value.trim();
+      if(lEl) q.level = lEl.value.trim();
+      if(xEl) q.xp = parseInt(xEl.value)||q.xp;
+    });
+    var newQ = {id:'q'+Date.now()+Math.floor(Math.random()*9999), t:'Materi Baru', d:'Deskripsi materi', xp:15, who:'Semua Siswa', level:'Lv.1'};
+    w.quests.push(newQ);
     saveAll(); renderBabEditorStudent(); render();
+    // Scroll ke materi baru
+    setTimeout(function(){
+      var sqlist = document.getElementById('sqlist-stu-'+wid);
+      if(sqlist && sqlist.lastElementChild) sqlist.lastElementChild.scrollIntoView({behavior:'smooth',block:'nearest'});
+    }, 100);
+    showToast('Materi baru ditambahkan!');
     return;
   }
   if(action === 'del-materi-student'){
-    if(!canEditMateri()){ showToast('⚠️ Kamu tidak punya akses edit materi.'); return; }
+    if(!canEditMateri()){ showToast('&#x26A0;&#xFE0F; Kamu tidak punya akses edit materi.'); return; }
     var w2 = window.worlds.find(function(x){return x.id===wid;});
     if(!w2) return;
     customConfirm('Hapus materi ini?', function(ok){
@@ -7004,7 +7083,7 @@ document.addEventListener('click', function(e){
     return;
   }
   if(action === 'save-subbab-student'){
-    if(!canEditMateri()){ showToast('⚠️ Kamu tidak punya akses edit materi.'); return; }
+    if(!canEditMateri()){ showToast('&#x26A0;&#xFE0F; Kamu tidak punya akses edit materi.'); return; }
     var w3 = window.worlds.find(function(x){return x.id===wid;});
     if(!w3) return;
     var nameEl = document.getElementById('sefs-name-'+wid);
@@ -7023,7 +7102,46 @@ document.addEventListener('click', function(e){
     });
     saveAll(); render(); renderBabEditorStudent();
     editingSubbabId = null;
-    showToast('Sub-bab disimpan! ✅');
+    showToast('Sub-bab disimpan! \u2705');
+    return;
+  }
+});
+
+// Tombol + Tambah Bab (siswa)
+document.addEventListener('click', function(e){
+  var btn = e.target;
+  if(btn.id === 'add-bab-btn-student'){
+    if(!canEditMateri()){ showToast('&#x26A0;&#xFE0F; Kamu tidak punya akses edit materi.'); return; }
+    var form = document.getElementById('new-bab-form-student');
+    if(form) form.style.display = (form.style.display==='none'?'block':'none');
+    return;
+  }
+  if(btn.id === 'snb-cancel'){
+    var form2 = document.getElementById('new-bab-form-student');
+    if(form2){ form2.style.display='none'; document.getElementById('snb-name').value=''; }
+    return;
+  }
+  if(btn.id === 'snb-confirm'){
+    if(!canEditMateri()){ showToast('&#x26A0;&#xFE0F; Kamu tidak punya akses edit materi.'); return; }
+    var catName = (document.getElementById('snb-name').value||'').trim();
+    var catIcon  = (document.getElementById('snb-icon').value||'').trim() || '\u1F4DA';
+    var catColor = document.getElementById('snb-color').value || '#378ADD';
+    if(!catName){ showToast('Nama bab tidak boleh kosong!'); return; }
+    // Buat ID unik dari nama
+    var catId = catName.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'') + '_' + Date.now().toString(36);
+    // Daftarkan di CAT_LABELS & CAT_COLORS
+    CAT_LABELS[catId] = catIcon + ' ' + catName;
+    CAT_COLORS[catId] = catColor;
+    // Buat sub-bab pertama otomatis
+    var nw = {id:wuid(), num:window.worlds.length+1, name:catName+' — Level 1', sub:'Sub-bab pertama', color:catColor, icon:catIcon, badge:'New', cat:catId, catName:catName, gateQuests:[], finalQuest:'',
+      quests:[{id:uid(), t:'Materi pertama', d:'Deskripsi materi', xp:20, who:'Semua Siswa', level:'Lv.1'}]};
+    window.worlds.push(nw);
+    openBab['student_'+catId] = true;
+    saveAll(); render(); renderBabEditorStudent(); renderSiswa(); renderRanking();
+    // Reset & tutup form
+    document.getElementById('snb-name').value = '';
+    document.getElementById('new-bab-form-student').style.display = 'none';
+    showToast('Bab "'+catName+'" berhasil dibuat! \u2705');
     return;
   }
 });
