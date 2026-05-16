@@ -56,6 +56,8 @@
   </div>
   <div class="pending-list" id="pending-list"></div>
 </div>
+<!-- jsQR: fallback QR scanner for browsers without BarcodeDetector API -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.min.js"></script>
 <!-- Firebase SDK v9 compat (CDN) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
@@ -158,7 +160,8 @@ body{font-family:'Space Grotesk',sans-serif;background:#f8f7f4;color:#1a1a18;min
 .badge-pembina{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:#378ADD22;color:#378ADD;letter-spacing:.04em;text-transform:uppercase;margin-left:6px;vertical-align:middle}
 
 /* Tabs */
-.tab-bar{display:-webkit-flex;display:flex;gap:4px;background:#f0eeea;border-radius:12px;padding:4px;margin-bottom:18px}
+.tab-bar{display:-webkit-flex;display:flex;gap:4px;background:#f0eeea;border-radius:12px;padding:4px;margin-bottom:18px;overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;scrollbar-width:none}
+.tab-bar::-webkit-scrollbar{display:none}
 .tab-btn{-webkit-flex:1;flex:1;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;padding:9px 10px;border-radius:8px;border:none;background:transparent;color:#888;cursor:pointer;-webkit-transition:all .2s;transition:all .2s}
 .tab-btn.active{background:#fff;color:#1a1a18;box-shadow:0 1px 4px rgba(0,0,0,.1)}
 .tab-content{display:none}
@@ -1210,7 +1213,7 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
     <button class="tab-btn" data-tab="siswa" type="button" id="tab-btn-siswa">👥 Siswa</button>
     <button class="tab-btn" data-tab="kelompok" type="button">📝 Tugas</button>
     <button class="tab-btn" data-tab="peringkat" type="button">🏆 Rank</button>
-    <button class="tab-btn" data-tab="absensi" type="button">📸 Absen</button>
+    <button class="tab-btn" data-tab="absensi" type="button" id="tab-btn-absensi">📸 Absen</button>
     <button class="tab-btn" data-tab="materi-editor" type="button" id="tab-btn-materi-editor" style="display:none">✏️ Materi</button>
   </div>
 
@@ -6816,6 +6819,10 @@ function updateMateriEditorTabVisibility(){
   var siswaBtnTab = document.getElementById('tab-btn-siswa');
   if(siswaBtnTab) siswaBtnTab.style.display = '';
 
+  // Tab Absensi: selalu tampil untuk semua orang
+  var absenBtnTab = document.getElementById('tab-btn-absensi');
+  if(absenBtnTab) absenBtnTab.style.display = '';
+
   // Jika sedang di tab materi-editor tapi tidak punya akses → pindah ke quest
   var activeTabEl = document.querySelector('.tab-btn.active');
   if(activeTabEl){
@@ -7393,15 +7400,12 @@ function startAbsenCam(){
         if(mode==='barcode_api'){
           setAbsenStatus('🎯 Arahkan kamera ke QR Code SIM Card siswa…','#639922','#f0fff0');
           startScanLoopAPI();
+        } else if(window.jsQR) {
+          // Fallback: jsQR — tombol foto manual, scan via canvas
+          setAbsenStatus('📷 Kamera aktif. Tekan "📸 Foto & Scan" untuk membaca QR Code.','#639922','#f0fff0');
+          showFotoScanBtn();
         } else {
-          // BarcodeDetector tidak tersedia — fallback tombol foto manual
-          var ua2 = navigator.userAgent||'';
-          var isFF = ua2.indexOf('Firefox')>=0;
-          var isSaf = /^((?!chrome|android).)*safari/i.test(ua2);
-          var hint = isFF  ? ' (Firefox tidak mendukung scan otomatis — gunakan Chrome untuk hasil terbaik)' :
-                    isSaf ? ' (Safari tidak mendukung scan otomatis — gunakan Chrome untuk hasil terbaik)' :
-                            ' (Browser ini tidak mendukung BarcodeDetector API — coba Chrome terbaru)';
-          setAbsenStatus('📷 Kamera aktif. Tekan "📸 Foto & Scan" untuk membaca QR Code.' + hint,'#BA7517','#fff8ec');
+          setAbsenStatus('📷 Kamera aktif. Tekan "📸 Foto & Scan" untuk scan, atau gunakan ✍️ Manual.','#BA7517','#fff8ec');
           showFotoScanBtn();
         }
       })
@@ -7480,14 +7484,22 @@ function captureAndScan(){
     }).catch(function(e){
       setAbsenStatus('⚠️ Gagal memproses gambar: '+(e&&e.message?e.message:'error tidak diketahui')+'. Coba foto ulang.','#e24b4a','#fcebeb');
     });
+  } else if(window.jsQR) {
+    // Fallback: gunakan jsQR library
+    var imgData = c.getContext('2d').getImageData(0, 0, c.width, c.height);
+    var result = jsQR(imgData.data, imgData.width, imgData.height, {inversionAttempts:'dontInvert'});
+    if(result && result.data){
+      var val = result.data;
+      if(val && !_absenScanPaused){
+        _absenScanPaused = true;
+        prosesAbsen(val);
+        setTimeout(function(){ _absenScanPaused=false; }, 2200);
+      }
+    } else {
+      setAbsenStatus('🔍 QR Code tidak terdeteksi. Tips: pastikan QR Code terlihat penuh, cahaya cukup, dan tidak blur.','#BA7517','#fff8ec');
+    }
   } else {
-    var ua3=navigator.userAgent||'';
-    var isFF3=ua3.indexOf('Firefox')>=0;
-    var isSaf3=/^((?!chrome|android).)*safari/i.test(ua3);
-    var scanHint = isFF3 ? 'Firefox tidak mendukung scan QR — gunakan Chrome.' :
-                   isSaf3 ? 'Safari tidak mendukung scan QR — gunakan Chrome.' :
-                             'Browser ini tidak mendukung BarcodeDetector API.';
-    setAbsenStatus('⚠️ '+scanHint+' Gunakan tombol ✍️ Manual untuk input absensi.','#BA7517','#fff8ec');
+    setAbsenStatus('⚠️ Library scan belum siap. Coba refresh halaman, atau gunakan tombol ✍️ Manual.','#BA7517','#fff8ec');
   }
 }
 
