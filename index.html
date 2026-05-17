@@ -672,6 +672,14 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
 /* QR code container di dalam simcard */
 .simcard-qr{flex-shrink:0;width:60px;height:60px;background:#fff;border-radius:8px;border:2px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;padding:2px}
 .simcard-qr img,.simcard-qr canvas{width:56px!important;height:56px!important;display:block!important}
+/* QR Fullscreen Modal */
+.qr-fs-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+.qr-fs-overlay.show{display:flex}
+.qr-fs-box{background:#fff;border-radius:20px;padding:24px;display:flex;flex-direction:column;align-items:center;gap:12px;max-width:320px;width:calc(100%-32px)}
+.qr-fs-label{font-size:12px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;text-align:center}
+.qr-fs-name{font-size:16px;font-weight:700;color:#1a1a18;text-align:center}
+.qr-fs-code{font-size:11px;color:#aaa;font-family:monospace;text-align:center}
+.qr-fs-close{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;padding:12px 32px;border-radius:12px;border:none;background:#1a1a18;color:#fff;cursor:pointer;margin-top:4px}
 .simcard-xp-badge{font-size:9px;font-weight:800;padding:3px 10px;border-radius:20px;color:#fff;letter-spacing:.03em;text-shadow:0 1px 3px rgba(0,0,0,.2)}
 .simcard-num{font-size:8.5px;font-weight:700;letter-spacing:.1em;opacity:.6;font-family:monospace}
 .simcard-completion{margin-top:10px}
@@ -3777,6 +3785,7 @@ function renderSiswa(){
         '<div class="sc2-tab-section'+(activeTab==='simcard'?' active':'')+'" id="sc2-tab-simcard-'+s.id+'">'+
           '<div style="padding:4px 14px 14px">'+
             buildSimCard(s, xp, inlineProfileHtml)+
+            '<button type="button" onclick="openQrFullscreen(\''+s.id+'\',\''+esc(s.name)+'\')'+'" style="width:100%;margin-top:10px;font-family:Space Grotesk,sans-serif;font-size:13px;font-weight:700;padding:10px;border-radius:10px;border:none;background:#378ADD;color:#fff;cursor:pointer">🔍 Perbesar QR untuk Scan</button>'+
           '</div>'+
         '</div>'+
         ''
@@ -7628,6 +7637,12 @@ function startAbsenCam(){
         document.getElementById('absen-stop-cam').style.display = '';
         _absenScanPaused = false;
 
+        // Wajib panggil play() secara eksplisit — tanpa ini video tidak berjalan di mobile
+        var playPromise = v.play();
+        if(playPromise !== undefined){
+          playPromise.catch(function(){});
+        }
+
         if(mode === 'barcode_api'){
           setAbsenStatus('🎯 Scan otomatis aktif. Arahkan kamera ke QR Code SIM Card…','#639922','#f0fff0');
           startScanLoopAPI();
@@ -7659,8 +7674,9 @@ function startAbsenCam(){
             document.getElementById('absen-start-cam').style.display = 'none';
             document.getElementById('absen-stop-cam').style.display = '';
             _absenScanPaused = false;
+            var pp = v.play(); if(pp !== undefined) pp.catch(function(){});
             if(window.jsQR){
-              setAbsenStatus('📷 Scan otomatis aktif (mode kompatibilitas). Arahkan ke QR Code…','#639922','#f0fff0');
+              setAbsenStatus('📷 Scan otomatis aktif (kompatibilitas). Arahkan ke QR Code…','#639922','#f0fff0');
               startJsQRLoop();
             } else {
               setAbsenStatus('📷 Kamera aktif (mode kompatibilitas). Tekan "📸 Foto & Scan".','#BA7517','#fff8ec');
@@ -7783,15 +7799,15 @@ function startJsQRLoop(){
   var c = document.getElementById('absen-canvas');
   function tickJsQR(){
     if(!_absenCamStream){ return; }
-    if(v.readyState >= 2 && !_absenScanPaused && window.jsQR){
-      var vw = v.videoWidth || 640, vh = v.videoHeight || 480;
+    if(v.readyState >= 2 && v.videoWidth > 0 && !_absenScanPaused && window.jsQR){
+      var vw = v.videoWidth, vh = v.videoHeight;
       if(c.width !== vw || c.height !== vh){ c.width = vw; c.height = vh; }
       var ctx = c.getContext('2d');
       ctx.drawImage(v, 0, 0, vw, vh);
       var imgData = ctx.getImageData(0, 0, vw, vh);
       var res = jsQR(imgData.data, imgData.width, imgData.height, {inversionAttempts: 'dontInvert'});
       if(!res || !res.data){
-        res = jsQR(imgData.data, imgData.width, imgData.height, {inversionAttempts: 'invertFirst'});
+        res = jsQR(imgData.data, imgData.width, imgData.height, {inversionAttempts: 'attemptBoth'});
       }
       if(res && res.data && !_absenScanPaused){
         _absenScanPaused = true;
@@ -7801,7 +7817,7 @@ function startJsQRLoop(){
     }
     _absenScanLoop = setTimeout(tickJsQR, 250);
   }
-  tickJsQR();
+  setTimeout(tickJsQR, 500);
 }
 
 function stopAbsenCam(){
@@ -8254,6 +8270,45 @@ document.addEventListener('click', function(e){
 // Hook ke toggleEditMode — updateAdminBell sudah dipanggil dari updateMateriEditorTabVisibility
 // Tapi kita juga perlu panggil saat pembina login
 
+</script>
+
+<!-- QR Fullscreen Modal -->
+<div class="qr-fs-overlay" id="qr-fs-overlay">
+  <div class="qr-fs-box">
+    <div class="qr-fs-label">🪪 SIM Card — Scan QR</div>
+    <div class="qr-fs-name" id="qr-fs-name"></div>
+    <div id="qr-fs-canvas" style="width:220px;height:220px;background:#fff;display:flex;align-items:center;justify-content:center"></div>
+    <div class="qr-fs-code" id="qr-fs-code"></div>
+    <button class="qr-fs-close" id="qr-fs-close">✕ Tutup</button>
+  </div>
+</div>
+<script>
+// QR Fullscreen
+document.getElementById('qr-fs-close').addEventListener('click', function(){
+  document.getElementById('qr-fs-overlay').classList.remove('show');
+});
+window.openQrFullscreen = function(sid, name){
+  var overlay = document.getElementById('qr-fs-overlay');
+  var nameEl = document.getElementById('qr-fs-name');
+  var codeEl = document.getElementById('qr-fs-code');
+  var canvasEl = document.getElementById('qr-fs-canvas');
+  nameEl.textContent = name || sid;
+  codeEl.textContent = 'DKV_'+sid;
+  canvasEl.innerHTML = '';
+  if(window.QRCode){
+    try{
+      new QRCode(canvasEl, {
+        text: 'DKV_'+sid,
+        width: 220, height: 220,
+        colorDark: '#1a1a18', colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.M
+      });
+      var img = canvasEl.querySelector('img,canvas');
+      if(img) img.style.cssText='width:220px;height:220px;display:block;border-radius:0';
+    } catch(e){}
+  }
+  overlay.classList.add('show');
+};
 </script>
 </body>
 </html>
