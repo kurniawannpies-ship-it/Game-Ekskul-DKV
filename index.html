@@ -7628,12 +7628,14 @@ function startAbsenCam(){
         document.getElementById('absen-stop-cam').style.display = '';
         _absenScanPaused = false;
 
+        // Wajib panggil play() — mobile tidak autoplay tanpa ini
+        var _pp = v.play(); if(_pp && _pp.catch) _pp.catch(function(){});
+
         if(mode === 'barcode_api'){
           setAbsenStatus('🎯 Scan otomatis aktif. Arahkan kamera ke QR Code SIM Card…','#639922','#f0fff0');
           startScanLoopAPI();
         } else if(mode === 'jsqr'){
           setAbsenStatus('📷 Scan otomatis aktif. Arahkan kamera ke QR Code SIM Card…','#639922','#f0fff0');
-          showFotoScanBtn();
           startJsQRLoop();
         } else {
           setAbsenStatus('📷 Kamera aktif. Tekan "📸 Foto & Scan" untuk scan, atau gunakan ✍️ Manual.','#BA7517','#fff8ec');
@@ -7779,15 +7781,15 @@ function startJsQRLoop(){
   var c = document.getElementById('absen-canvas');
   function tickJsQR(){
     if(!_absenCamStream){ return; }
-    if(v.readyState >= 2 && !_absenScanPaused && window.jsQR){
-      var vw = v.videoWidth || 640, vh = v.videoHeight || 480;
+    if(v.readyState >= 2 && v.videoWidth > 0 && !_absenScanPaused && window.jsQR){
+      var vw = v.videoWidth, vh = v.videoHeight;
       if(c.width !== vw || c.height !== vh){ c.width = vw; c.height = vh; }
       var ctx = c.getContext('2d');
       ctx.drawImage(v, 0, 0, vw, vh);
       var imgData = ctx.getImageData(0, 0, vw, vh);
       var res = jsQR(imgData.data, imgData.width, imgData.height, {inversionAttempts: 'dontInvert'});
       if(!res || !res.data){
-        res = jsQR(imgData.data, imgData.width, imgData.height, {inversionAttempts: 'invertFirst'});
+        res = jsQR(imgData.data, imgData.width, imgData.height, {inversionAttempts: 'attemptBoth'});
       }
       if(res && res.data && !_absenScanPaused){
         _absenScanPaused = true;
@@ -7795,9 +7797,9 @@ function startJsQRLoop(){
         setTimeout(function(){ _absenScanPaused = false; }, 2200);
       }
     }
-    _absenScanLoop = setTimeout(tickJsQR, 400);
+    _absenScanLoop = setTimeout(tickJsQR, 250);
   }
-  tickJsQR();
+  setTimeout(tickJsQR, 500);
 }
 
 function stopAbsenCam(){
@@ -7914,7 +7916,6 @@ window.renderQRCodeForSiswa = function(sid){
         colorLight: '#ffffff',
         correctLevel: QRCode.CorrectLevel.M
       });
-      // Force white background di semua level agar tidak tembus background foto
       container.style.cssText = 'background:#fff;line-height:0;display:block';
       var wrap = container.parentElement;
       if(wrap){ wrap.style.cssText = (wrap.getAttribute('style')||'')+'background:#fff!important'; }
