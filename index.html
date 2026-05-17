@@ -7628,15 +7628,14 @@ function startAbsenCam(){
         document.getElementById('absen-stop-cam').style.display = '';
         _absenScanPaused = false;
 
-        // Wajib panggil play() eksplisit — mobile Chrome/Safari tidak autoplay tanpa ini
-        var playPromise = v.play();
-        if(playPromise !== undefined){ playPromise.catch(function(){}); }
+        // Wajib panggil play() — mobile tidak autoplay tanpa ini
+        var _pp = v.play(); if(_pp && _pp.catch) _pp.catch(function(){});
 
         if(mode === 'barcode_api'){
-          setAbsenStatus('🎯 Scan otomatis aktif. Arahkan kamera ke QR Code SIM Card…','#639922','#f0fff0');
+          setAbsenStatus('🎯 BarcodeDetector aktif. Arahkan ke QR Code…','#639922','#f0fff0');
           startScanLoopAPI();
         } else if(mode === 'jsqr'){
-          setAbsenStatus('📷 Scan otomatis aktif. Arahkan kamera ke QR Code SIM Card…','#639922','#f0fff0');
+          setAbsenStatus('📷 jsQR aktif. Arahkan kamera ke QR Code SIM Card…','#639922','#f0fff0');
           startJsQRLoop();
         } else {
           setAbsenStatus('📷 Kamera aktif. Tekan "📸 Foto & Scan" untuk scan, atau gunakan ✍️ Manual.','#BA7517','#fff8ec');
@@ -7751,8 +7750,13 @@ function tryJsQRFromCanvas(ctx, vw, vh){
 function startScanLoopAPI(){
   var v = document.getElementById('absen-video');
   var _scanning = false;
+  var _tc = 0;
   function tick(){
     if(!_absenCamStream){ _scanning = false; return; }
+    _tc++;
+    if(_tc % 10 === 0){
+      setAbsenStatus('🎯 BarcodeDetector scanning… readyState:'+v.readyState+' '+v.videoWidth+'x'+v.videoHeight,'#378ADD','#e8f4ff');
+    }
     if(!_scanning && v.readyState >= 2 && _barcodeDetector && !_absenScanPaused){
       _scanning = true;
       _barcodeDetector.detect(v).then(function(results){
@@ -7761,11 +7765,12 @@ function startScanLoopAPI(){
           var val = results[0].rawValue || results[0].rawData || '';
           if(val && !_absenScanPaused){
             _absenScanPaused = true;
+            setAbsenStatus('✅ Barcode: '+val,'#639922','#f0fff0');
             prosesAbsen(val);
             setTimeout(function(){ _absenScanPaused = false; }, 2200);
           }
         }
-      }).catch(function(){ _scanning = false; });
+      }).catch(function(e){ _scanning = false; });
     }
     _absenScanLoop = setTimeout(tick, 300);
   }
@@ -7780,27 +7785,40 @@ function startScanLoop(){
 function startJsQRLoop(){
   var v = document.getElementById('absen-video');
   var c = document.getElementById('absen-canvas');
+  var _tickCount = 0;
   function tickJsQR(){
     if(!_absenCamStream){ return; }
-    if(v.readyState >= 2 && v.videoWidth > 0 && !_absenScanPaused && window.jsQR){
-      var vw = v.videoWidth, vh = v.videoHeight;
+    _tickCount++;
+    var rs = v.readyState, vw = v.videoWidth, vh = v.videoHeight;
+    // Debug: tampilkan status tiap 8 tick (~2 detik)
+    if(_tickCount % 8 === 0){
+      setAbsenStatus(
+        '📡 Scanning… readyState:'+rs+' size:'+vw+'x'+vh+' jsQR:'+(window.jsQR?'✅':'❌'),
+        '#378ADD','#e8f4ff'
+      );
+    }
+    if(rs >= 2 && vw > 0 && !_absenScanPaused){
+      if(!window.jsQR){
+        setAbsenStatus('❌ jsQR tidak tersedia — reload halaman','#e24b4a','#fcebeb');
+        _absenScanLoop = setTimeout(tickJsQR, 1000);
+        return;
+      }
       if(c.width !== vw || c.height !== vh){ c.width = vw; c.height = vh; }
       var ctx = c.getContext('2d');
       ctx.drawImage(v, 0, 0, vw, vh);
       var imgData = ctx.getImageData(0, 0, vw, vh);
-      var res = jsQR(imgData.data, imgData.width, imgData.height, {inversionAttempts: 'dontInvert'});
-      if(!res || !res.data){
-        res = jsQR(imgData.data, imgData.width, imgData.height, {inversionAttempts: 'attemptBoth'});
-      }
+      var res = jsQR(imgData.data, imgData.width, imgData.height, {inversionAttempts:'dontInvert'});
+      if(!res || !res.data) res = jsQR(imgData.data, imgData.width, imgData.height, {inversionAttempts:'attemptBoth'});
       if(res && res.data && !_absenScanPaused){
         _absenScanPaused = true;
+        setAbsenStatus('✅ QR Terdeteksi: '+res.data,'#639922','#f0fff0');
         prosesAbsen(res.data);
         setTimeout(function(){ _absenScanPaused = false; }, 2200);
       }
     }
     _absenScanLoop = setTimeout(tickJsQR, 250);
   }
-  setTimeout(tickJsQR, 500);
+  setTimeout(tickJsQR, 600);
 }
 
 function stopAbsenCam(){
