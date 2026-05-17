@@ -2516,14 +2516,28 @@ document.getElementById('pw-eye').addEventListener('click',function(){
   eye.textContent=(inp.type==='text')?'🙈':'👁';
 });
 
+// ── Rate limiting untuk login admin ──
+var _adminLoginAttempts = 0;
+var _adminLockedUntil   = 0;
+var _ADMIN_MAX_ATTEMPTS = 5;
+var _ADMIN_LOCKOUT_MS   = 10 * 60 * 1000; // 10 menit
+
 function checkPassword(){
+  // Cek lockout admin
+  if(Date.now() < _adminLockedUntil){
+    var sisa = Math.ceil((_adminLockedUntil - Date.now()) / 1000);
+    document.getElementById('pw-err').textContent = 'Terlalu banyak percobaan. Coba lagi dalam ' + sisa + ' detik.';
+    return;
+  }
   var val=document.getElementById('pw-input').value;
+  if(!val || val.length > 256){ document.getElementById('pw-err').textContent='Input tidak valid.'; return; }
   // BUGFIX: Gunakan CORRECT_PW_HASH langsung.
   // store_get('dkv_pw_hash') bisa mengembalikan nilai lama/stale dari localStorage Chrome
   // yang tidak konsisten dengan hash aktual di Firebase/CORRECT_PW_HASH.
   var latestHash = CORRECT_PW_HASH;
   sha256(val).then(function(hash){
     if(hash===latestHash){
+      _adminLoginAttempts = 0; // reset on success
       pembina=true;
       closeModal('pw-modal');
       document.getElementById('edit-btn').innerHTML='⚙ Edit Mode <span class="badge-pembina">Pembina</span>';
@@ -2537,7 +2551,14 @@ function checkPassword(){
       updateMateriEditorTabVisibility();
       if(typeof updateAdminBell === 'function') updateAdminBell();
     } else {
-      document.getElementById('pw-err').textContent='Password salah. Coba lagi.';
+      _adminLoginAttempts++;
+      if(_adminLoginAttempts >= _ADMIN_MAX_ATTEMPTS){
+        _adminLockedUntil = Date.now() + _ADMIN_LOCKOUT_MS;
+        _adminLoginAttempts = 0;
+        document.getElementById('pw-err').textContent='Terlalu banyak percobaan. Akun dikunci 10 menit.';
+      } else {
+        document.getElementById('pw-err').textContent='Password salah. Coba lagi.';
+      }
       document.getElementById('pw-input').value='';
       document.getElementById('pw-input').focus();
     }
@@ -4406,7 +4427,7 @@ document.addEventListener("click", function(e){
     var nc = document.getElementById("cfg-pw-confirm").value;
     var err = document.getElementById("cfg-pw-err");
     if(!np){err.textContent="Password baru tidak boleh kosong.";return;}
-    if(np.length < 4){err.textContent="Password minimal 4 karakter.";return;}
+    if(np.length < 8){err.textContent="Password minimal 8 karakter.";return;}
     if(np !== nc){err.textContent="Konfirmasi password tidak cocok.";return;}
     sha256(np).then(function(hash){
       CORRECT_PW_HASH = hash;
@@ -5914,13 +5935,57 @@ document.getElementById('sl-username').addEventListener('keydown', function(e){
   if(e.key === 'Enter') document.getElementById('sl-password').focus();
 });
 
+// ── Rate limiting untuk login siswa (brute-force protection) ──
+var _loginAttempts = {};
+var _LOGIN_MAX_ATTEMPTS = 5;
+var _LOGIN_LOCKOUT_MS   = 5 * 60 * 1000; // 5 menit
+
+function _isLoginLocked(uname){
+  var rec = _loginAttempts[uname];
+  if(!rec) return false;
+  if(rec.lockedUntil && Date.now() < rec.lockedUntil) return true;
+  // Reset jika lockout sudah lewat
+  if(rec.lockedUntil && Date.now() >= rec.lockedUntil){
+    delete _loginAttempts[uname];
+  }
+  return false;
+}
+function _recordLoginFail(uname){
+  if(!_loginAttempts[uname]) _loginAttempts[uname] = {count:0};
+  _loginAttempts[uname].count++;
+  if(_loginAttempts[uname].count >= _LOGIN_MAX_ATTEMPTS){
+    _loginAttempts[uname].lockedUntil = Date.now() + _LOGIN_LOCKOUT_MS;
+    _loginAttempts[uname].count = 0;
+  }
+}
+function _recordLoginSuccess(uname){
+  delete _loginAttempts[uname];
+}
+function _loginRemainingTime(uname){
+  var rec = _loginAttempts[uname];
+  if(!rec || !rec.lockedUntil) return 0;
+  return Math.max(0, Math.ceil((rec.lockedUntil - Date.now()) / 1000));
+}
+
 function doStudentLogin(){
   var uname = document.getElementById('sl-username').value.trim().toLowerCase();
   var pass  = document.getElementById('sl-password').value;
   var err   = document.getElementById('sl-err');
   if(!uname || !pass){ err.textContent = 'Username dan password tidak boleh kosong.'; return; }
 
-  // Find matching account
+  // Validasi panjang dasar untuk mencegah payload raksasa
+  if(uname.length > 40 || pass.length > 128){
+    err.textContent = 'Input tidak valid.'; return;
+  }
+
+  // Cek rate limit / lockout
+  if(_isLoginLocked(uname)){
+    var sisa = _loginRemainingTime(uname);
+    err.textContent = 'Terlalu banyak percobaan. Coba lagi dalam ' + sisa + ' detik.';
+    return;
+  }
+
+  // Find matching account — gunakan perbandingan constant-time sederhana
   var foundSid = null;
   var accounts = window.siswaAccounts;
   for(var sid in accounts){
@@ -5929,13 +5994,24 @@ function doStudentLogin(){
       break;
     }
   }
-  if(!foundSid){ err.textContent = 'Username tidak ditemukan.'; return; }
+  // Tetap lanjut hash meski username tidak ditemukan (hindari timing oracle)
+  var dummyHash = '0000000000000000000000000000000000000000000000000000000000000000';
+  var accHash   = foundSid ? (accounts[foundSid].passwordHash || dummyHash) : dummyHash;
 
-  var acc = accounts[foundSid];
   sha256(pass).then(function(hash){
-    if(hash !== acc.passwordHash){ err.textContent = 'Password salah.'; return; }
+    if(!foundSid || hash !== accHash){
+      _recordLoginFail(uname);
+      var remaining = _LOGIN_MAX_ATTEMPTS - ((_loginAttempts[uname]||{}).count||0);
+      if(_isLoginLocked(uname)){
+        err.textContent = 'Terlalu banyak percobaan. Akun dikunci 5 menit.';
+      } else {
+        err.textContent = 'Username atau password salah.';
+      }
+      return;
+    }
     var s = window.siswaList.find(function(x){return x.id===foundSid;});
     if(!s){ err.textContent = 'Data siswa tidak ditemukan.'; return; }
+    _recordLoginSuccess(uname);
     loggedInStudentId = foundSid;
     sessionStorage.setItem('dkv_student_sess', foundSid);
     closeModal('student-login-modal');
@@ -8214,10 +8290,15 @@ document.getElementById('reg-submit-btn').addEventListener('click', function(){
   err.textContent = '';
 
   if(!name)     { err.textContent = 'Nama tidak boleh kosong.'; return; }
+  if(name.length > 80) { err.textContent = 'Nama terlalu panjang (max 80 karakter).'; return; }
   if(!kelas)    { err.textContent = 'Kelas tidak boleh kosong.'; return; }
+  if(kelas.length > 40) { err.textContent = 'Kelas terlalu panjang (max 40 karakter).'; return; }
   if(!username) { err.textContent = 'Username tidak boleh kosong.'; return; }
+  if(username.length < 3) { err.textContent = 'Username minimal 3 karakter.'; return; }
+  if(username.length > 40) { err.textContent = 'Username terlalu panjang (max 40 karakter).'; return; }
   if(!/^[a-z0-9._-]+$/.test(username)) { err.textContent = 'Username hanya boleh huruf kecil, angka, titik, strip.'; return; }
   if(password.length < 6) { err.textContent = 'Password minimal 6 karakter.'; return; }
+  if(password.length > 128) { err.textContent = 'Password terlalu panjang.'; return; }
 
   // Cek username duplikat di siswaAccounts
   var accounts = window.siswaAccounts || {};
@@ -8239,14 +8320,16 @@ document.getElementById('reg-submit-btn').addEventListener('click', function(){
   btn.disabled = true;
   btn.textContent = 'Mengirim...';
   sha256(password).then(function(hash){
+    var safeName   = name.replace(/[<>"'&]/g, '');
+    var safeKelas  = kelas.replace(/[<>"'&]/g, '');
     var entry = {
       id:        'reg_' + Date.now() + Math.floor(Math.random()*9999),
-      name:      name,
-      kelas:     kelas,
+      name:      safeName,
+      kelas:     safeKelas,
       username:  username,
       passwordHash: hash,
       color:     regSelectedColor,
-      initials:  initials(name),
+      initials:  initials(safeName),
       submittedAt: Date.now()
     };
     if(!window.dkvPendingReg) window.dkvPendingReg = [];
