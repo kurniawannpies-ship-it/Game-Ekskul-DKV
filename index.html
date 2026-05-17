@@ -63,6 +63,7 @@
 <!-- Firebase SDK v9 compat (CDN) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -825,10 +826,18 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
   <div class="modal-box">
     <div class="modal-icon">🔐</div>
     <div class="modal-title">Akses Pembina</div>
-    <div class="modal-sub">Masukkan password untuk membuka Edit Mode</div>
-    <div class="modal-input-wrap">
-      <input type="password" id="pw-input" placeholder="Password pembina..." autocomplete="current-password">
-      <button class="modal-eye" id="pw-eye" type="button">👁</button>
+    <div class="modal-sub">Login dengan akun pembina untuk membuka Edit Mode</div>
+    <div class="modal-form-row" style="margin-bottom:10px">
+      <label style="font-size:12px;font-weight:600;color:#555;margin-bottom:4px;display:block">Email</label>
+      <input type="email" id="pw-email" placeholder="Email pembina..." autocomplete="email"
+        style="font-family:'Space Grotesk',sans-serif;padding:9px 12px;border-radius:8px;border:1.5px solid #ddd;background:#f8f7f4;color:#1a1a18;width:100%;font-size:13px">
+    </div>
+    <div class="modal-form-row" style="margin-bottom:4px">
+      <label style="font-size:12px;font-weight:600;color:#555;margin-bottom:4px;display:block">Password</label>
+      <div class="modal-input-wrap">
+        <input type="password" id="pw-input" placeholder="Password pembina..." autocomplete="current-password">
+        <button class="modal-eye" id="pw-eye" type="button">👁</button>
+      </div>
     </div>
     <div class="modal-err" id="pw-err"></div>
     <button class="modal-btn" id="pw-submit-btn" type="button">Masuk Edit Mode</button>
@@ -1272,26 +1281,18 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
                 </td>
               </tr>
               <tr style="border-bottom:1px solid #f0eeea">
-                <td style="padding:8px 4px;font-weight:700;color:#888;font-size:10px;text-transform:uppercase;letter-spacing:.06em">Password Baru</td>
+                <td style="padding:8px 4px;font-weight:700;color:#888;font-size:10px;text-transform:uppercase;letter-spacing:.06em">Password Pembina</td>
                 <td style="padding:8px 4px">
-                  <div style="position:relative">
-                    <input type="password" id="cfg-pw-new" placeholder="Password baru..." autocomplete="new-password" style="font-family:'Space Grotesk',sans-serif;padding:7px 36px 7px 10px;border-radius:7px;border:1px solid #ddd;background:#f8f7f4;color:#1a1a18;width:100%;font-size:12px">
-                    <button type="button" id="cfg-pw-eye" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#aaa;font-size:14px;padding:2px;line-height:1">&#128065;</button>
+                  <div style="font-size:11px;color:#888;line-height:1.5">
+                    Password dikelola via <strong>Firebase Console</strong>.<br>
+                    Buka: Authentication → Users → Edit akun pembina.
                   </div>
-                </td>
-              </tr>
-              <tr>
-                <td style="padding:8px 4px;font-weight:700;color:#888;font-size:10px;text-transform:uppercase;letter-spacing:.06em">Konfirmasi PW</td>
-                <td style="padding:8px 4px">
-                  <input type="password" id="cfg-pw-confirm" placeholder="Ulangi password baru..." autocomplete="new-password" style="font-family:'Space Grotesk',sans-serif;padding:7px 10px;border-radius:7px;border:1px solid #ddd;background:#f8f7f4;color:#1a1a18;width:100%;font-size:12px">
                 </td>
               </tr>
             </tbody>
           </table>
-          <div id="cfg-pw-err" style="font-size:11px;color:#e24b4a;min-height:14px;margin:4px 0 6px"></div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
             <button class="btn-save" id="save-app-config-btn" type="button" style="font-size:12px;padding:7px 14px">Simpan Konfigurasi</button>
-            <button class="btn-save" id="save-pw-btn" type="button" style="font-size:12px;padding:7px 14px">Simpan Password</button>
           </div>
 
           <!-- BADGE LEVEL EDITOR -->
@@ -1680,6 +1681,39 @@ function initFirebase(){
     _fbDb  = firebase.database();
     _fbRef = _fbDb.ref(FB_PATH);
     _fbInitError = null;
+
+    // ── Firebase Auth: pantau status login pembina ──
+    firebase.auth().onAuthStateChanged(function(user){
+      if(user && user.email === PEMBINA_EMAIL){
+        // Pembina sudah login Firebase Auth — set flag & update UI
+        window._fbAuthUser = user;
+        if(!pembina){
+          pembina = true;
+          var editBtn = document.getElementById('edit-btn');
+          if(editBtn) editBtn.innerHTML = '⚙ Edit Mode <span class="badge-pembina">Pembina</span>';
+          var addBtn = document.getElementById('btn-add-siswa');
+          if(addBtn) addBtn.style.display = 'block';
+          var absenTab = document.getElementById('tab-btn-absensi');
+          if(absenTab) absenTab.style.display = '';
+          if(typeof updateAdminBell === 'function') updateAdminBell();
+        }
+      } else {
+        // Bukan pembina atau logout
+        window._fbAuthUser = null;
+        if(pembina){
+          pembina  = false;
+          editMode = false;
+          var editBtn = document.getElementById('edit-btn');
+          if(editBtn){ editBtn.innerHTML = '🔒 Edit Mode'; editBtn.classList.remove('active-mode'); }
+          var addBtn = document.getElementById('btn-add-siswa');
+          if(addBtn) addBtn.style.display = 'none';
+          var panel = document.getElementById('edit-panel');
+          if(panel) panel.classList.remove('open');
+          if(typeof updateAdminBell === 'function') updateAdminBell();
+        }
+      }
+    });
+
     setSyncStatus('connecting', '🔄 Menghubungkan…');
     // Listen realtime — update semua tab/device secara langsung
     _fbRef.on('value', function(snapshot){
@@ -1790,15 +1824,6 @@ function _applyFirebaseData(data){
     var cfg = typeof data.dkv_cfg === 'string' ? JSON.parse(data.dkv_cfg) : data.dkv_cfg;
     window._appConfig = cfg;
     appConfig = cfg;
-  }
-  if(data.dkv_pw_hash){
-    CORRECT_PW_HASH = data.dkv_pw_hash;
-    store_set('dkv_pw_hash', data.dkv_pw_hash);
-  } else {
-    // BUGFIX: Jika Firebase tidak menyimpan dkv_pw_hash (terhapus oleh saveAll lama),
-    // reset ke nilai hardcoded default agar localStorage lama tidak dipakai.
-    CORRECT_PW_HASH = '89fb490244aa84f7e98c894139167db5faf2542b11d03daaad03364c1a9eda7d';
-    store_set('dkv_pw_hash', CORRECT_PW_HASH);
   }
   // Extended data: akun siswa & profil
   if(data.dkv_accounts && !window._isSaving){
@@ -1915,9 +1940,6 @@ function saveAll(){
       dkv_kelompok:     window.kelompokList
     };
     if(window._appConfig) payload.dkv_cfg = window._appConfig;
-    // BUGFIX: Selalu sertakan dkv_pw_hash agar tidak terhapus oleh _fbRef.set()
-    // _fbRef.set() menghapus semua key yang tidak ada di payload!
-    payload.dkv_pw_hash = CORRECT_PW_HASH;
     // Extended data
     if(window.siswaAccounts) payload.dkv_accounts = window.siswaAccounts;
     if(window.siswaProfiles)  payload.dkv_profiles  = window.siswaProfiles;
@@ -2416,13 +2438,10 @@ document.getElementById('confirm-cancel-btn').addEventListener('click',function(
 });
 
 // ─────────────────────────────────────────────
-// PASSWORD / AUTH — hash SHA-256, tidak disimpan plaintext
+// SHA-256 — digunakan untuk hash password siswa
 // ─────────────────────────────────────────────
-// Hash default untuk 'Rambutan002'
-var CORRECT_PW_HASH = '89fb490244aa84f7e98c894139167db5faf2542b11d03daaad03364c1a9eda7d';
-
 // SHA-256 pure JS — bekerja di file://, http://, dan https://
-// (crypto.subtle hanya tersedia di HTTPS/localhost, tidak bisa dipakai saat buka file langsung)
+// (crypto.subtle hanya tersedia di HTTPS/localhost)
 function sha256(message){
   // Pure JS SHA-256 implementation (RFC 6234)
   function _sha256(msg){
@@ -2491,22 +2510,18 @@ function sha256(message){
   return Promise.resolve(_sha256(toUTF8(message)));
 }
 
-// Load hash dari localStorage/Firebase jika sudah pernah diganti
-(function(){
-  var saved = store_get('dkv_pw_hash');
-  if(saved) CORRECT_PW_HASH = saved;
-})();
-
 document.getElementById('edit-btn').addEventListener('click',function(){
   if(pembina){toggleEditMode();}
   else{
     document.getElementById('pw-modal').classList.add('show');
+    document.getElementById('pw-email').value='';
     document.getElementById('pw-input').value='';
     document.getElementById('pw-err').textContent='';
-    setTimeout(function(){document.getElementById('pw-input').focus();},200);
+    setTimeout(function(){document.getElementById('pw-email').focus();},200);
   }
 });
 document.getElementById('pw-submit-btn').addEventListener('click',checkPassword);
+document.getElementById('pw-email').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('pw-input').focus();});
 document.getElementById('pw-input').addEventListener('keydown',function(e){if(e.key==='Enter')checkPassword();});
 document.getElementById('pw-cancel-btn').addEventListener('click',function(){closeModal('pw-modal');});
 document.getElementById('pw-eye').addEventListener('click',function(){
@@ -2516,53 +2531,87 @@ document.getElementById('pw-eye').addEventListener('click',function(){
   eye.textContent=(inp.type==='text')?'🙈':'👁';
 });
 
-// ── Rate limiting untuk login admin ──
+// ═══════════════════════════════════════════════════════════════
+// FIREBASE AUTH — LOGIN PEMBINA
+// Email pembina yang diizinkan sebagai admin
+// ═══════════════════════════════════════════════════════════════
+var PEMBINA_EMAIL = 'pembinadkv@spensa.id'; // ← ganti jika email berubah
+
+// ── Rate limiting untuk login admin (sebagai lapisan tambahan) ──
 var _adminLoginAttempts = 0;
 var _adminLockedUntil   = 0;
 var _ADMIN_MAX_ATTEMPTS = 5;
 var _ADMIN_LOCKOUT_MS   = 10 * 60 * 1000; // 10 menit
 
 function checkPassword(){
-  // Cek lockout admin
+  // Cek lockout
   if(Date.now() < _adminLockedUntil){
     var sisa = Math.ceil((_adminLockedUntil - Date.now()) / 1000);
     document.getElementById('pw-err').textContent = 'Terlalu banyak percobaan. Coba lagi dalam ' + sisa + ' detik.';
     return;
   }
-  var val=document.getElementById('pw-input').value;
-  if(!val || val.length > 256){ document.getElementById('pw-err').textContent='Input tidak valid.'; return; }
-  // BUGFIX: Gunakan CORRECT_PW_HASH langsung.
-  // store_get('dkv_pw_hash') bisa mengembalikan nilai lama/stale dari localStorage Chrome
-  // yang tidak konsisten dengan hash aktual di Firebase/CORRECT_PW_HASH.
-  var latestHash = CORRECT_PW_HASH;
-  sha256(val).then(function(hash){
-    if(hash===latestHash){
-      _adminLoginAttempts = 0; // reset on success
-      pembina=true;
+
+  var email = document.getElementById('pw-email').value.trim().toLowerCase();
+  var pass  = document.getElementById('pw-input').value;
+  var err   = document.getElementById('pw-err');
+
+  if(!email || !pass){ err.textContent = 'Email dan password tidak boleh kosong.'; return; }
+  if(pass.length > 256){ err.textContent = 'Input tidak valid.'; return; }
+
+  // Blokir jika email bukan pembina sebelum request ke Firebase
+  if(email !== PEMBINA_EMAIL.toLowerCase()){
+    _adminLoginAttempts++;
+    if(_adminLoginAttempts >= _ADMIN_MAX_ATTEMPTS){
+      _adminLockedUntil    = Date.now() + _ADMIN_LOCKOUT_MS;
+      _adminLoginAttempts  = 0;
+      err.textContent = 'Terlalu banyak percobaan. Akun dikunci 10 menit.';
+    } else {
+      err.textContent = 'Email atau password salah.';
+    }
+    document.getElementById('pw-input').value = '';
+    return;
+  }
+
+  var btn = document.getElementById('pw-submit-btn');
+  btn.disabled    = true;
+  btn.textContent = 'Memverifikasi...';
+  err.textContent = '';
+
+  firebase.auth().signInWithEmailAndPassword(email, pass)
+    .then(function(cred){
+      // Verifikasi ulang email di sisi klien (defense in depth)
+      if(!cred.user || cred.user.email.toLowerCase() !== PEMBINA_EMAIL.toLowerCase()){
+        return firebase.auth().signOut().then(function(){
+          throw new Error('Akun tidak diizinkan.');
+        });
+      }
+      _adminLoginAttempts = 0;
+      btn.disabled    = false;
+      btn.textContent = 'Masuk Edit Mode';
       closeModal('pw-modal');
-      document.getElementById('edit-btn').innerHTML='⚙ Edit Mode <span class="badge-pembina">Pembina</span>';
-      document.getElementById('btn-add-siswa').style.display='block';
-      // Tampilkan tab Absensi untuk admin
-      var absenTab = document.getElementById('tab-btn-absensi');
-      if(absenTab) absenTab.style.display='';
+      document.getElementById('pw-email').value = '';
+      document.getElementById('pw-input').value = '';
+      // pembina=true sudah di-set oleh onAuthStateChanged
       showToast('Selamat datang, Pembina! 🎉');
       toggleEditMode();
       renderSiswa();
       updateMateriEditorTabVisibility();
-      if(typeof updateAdminBell === 'function') updateAdminBell();
-    } else {
+    })
+    .catch(function(e){
       _adminLoginAttempts++;
       if(_adminLoginAttempts >= _ADMIN_MAX_ATTEMPTS){
-        _adminLockedUntil = Date.now() + _ADMIN_LOCKOUT_MS;
+        _adminLockedUntil   = Date.now() + _ADMIN_LOCKOUT_MS;
         _adminLoginAttempts = 0;
-        document.getElementById('pw-err').textContent='Terlalu banyak percobaan. Akun dikunci 10 menit.';
+        err.textContent = 'Terlalu banyak percobaan. Akun dikunci 10 menit.';
       } else {
-        document.getElementById('pw-err').textContent='Password salah. Coba lagi.';
+        // Pesan generik — jangan ungkap apakah email atau password yang salah
+        err.textContent = 'Email atau password salah.';
       }
-      document.getElementById('pw-input').value='';
+      btn.disabled    = false;
+      btn.textContent = 'Masuk Edit Mode';
+      document.getElementById('pw-input').value = '';
       document.getElementById('pw-input').focus();
-    }
-  });
+    });
 }
 function closeModal(id){document.getElementById(id).classList.remove('show');}
 
@@ -2651,6 +2700,10 @@ function toggleEditMode(){
     renderBadgeLevelEditor();
   }
   else{
+    // Logout dari Firebase Auth saat pembina tutup edit mode
+    if(firebase && firebase.auth && firebase.auth().currentUser){
+      firebase.auth().signOut().catch(function(){});
+    }
     pembina=false;
     editMode=false;
     document.getElementById('edit-panel').classList.remove('open');
@@ -4417,38 +4470,6 @@ function switchRankTab(catId){
     }
   });
 }
-
-// ─────────────────────────────────────────────
-// GANTI PASSWORD
-// ─────────────────────────────────────────────
-document.addEventListener("click", function(e){
-  if(e.target && e.target.id === "save-pw-btn"){
-    var np = document.getElementById("cfg-pw-new").value;
-    var nc = document.getElementById("cfg-pw-confirm").value;
-    var err = document.getElementById("cfg-pw-err");
-    if(!np){err.textContent="Password baru tidak boleh kosong.";return;}
-    if(np.length < 8){err.textContent="Password minimal 8 karakter.";return;}
-    if(np !== nc){err.textContent="Konfirmasi password tidak cocok.";return;}
-    sha256(np).then(function(hash){
-      CORRECT_PW_HASH = hash;
-      store_set('dkv_pw_hash', hash);
-      // Simpan hash ke Firebase juga jika tersambung
-      if(_fbRef){
-        _fbRef.child('dkv_pw_hash').set(hash).catch(function(){});
-      }
-      err.textContent="";
-      document.getElementById("cfg-pw-new").value="";
-      document.getElementById("cfg-pw-confirm").value="";
-      showToast("Password berhasil diubah! 🔒");
-    });
-  }
-  if(e.target && e.target.id === "cfg-pw-eye"){
-    var inp = document.getElementById("cfg-pw-new");
-    var eye = document.getElementById("cfg-pw-eye");
-    inp.type = inp.type === "password" ? "text" : "password";
-    eye.textContent = inp.type === "text" ? "🙈" : "👁";
-  }
-});
 
 // ─────────────────────────────────────────────
 // TABEL PROFIL — ADMIN FIELD CONFIGURATOR
