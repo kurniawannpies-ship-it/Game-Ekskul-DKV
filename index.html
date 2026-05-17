@@ -4558,7 +4558,7 @@ function buildSimCard(s, xp, inlineProfileHtml){
               '<svg width="22" height="16" viewBox="0 0 22 16" fill="none"><rect width="22" height="16" rx="3" fill="rgba(255,255,255,.25)"/><rect x="1" y="4" width="20" height="8" rx="1" fill="rgba(255,255,255,.18)"/><line x1="7" y1="0" x2="7" y2="16" stroke="rgba(255,255,255,.2)" stroke-width="1"/><line x1="15" y1="0" x2="15" y2="16" stroke="rgba(255,255,255,.2)" stroke-width="1"/></svg>'+
             '</div>'+
             '<div style="flex:1"></div>'+
-            '<div class="simcard-label">STUDENT ID</div>'+
+            '<div class="simcard-label">DKV SPENSA ID</div>'+
           '</div>'+
           '<div style="flex:1;display:flex;flex-direction:row;align-items:center">'+
             '<div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:6px 0">'+
@@ -4593,7 +4593,7 @@ function buildSimCard(s, xp, inlineProfileHtml){
         'padding:11px 0;border-radius:12px;border:none;background:linear-gradient(135deg,#1a1a18,#3a3a38);'+
         'color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;'+
         'box-shadow:0 2px 8px rgba(0,0,0,.18);letter-spacing:.01em">'+
-        '<span style="font-size:16px">⬇️</span> Download Kartu (Print Ready)'+
+        '<span style="font-size:16px">⬇️</span> Download SIM Card'+
       '</button>'+
     '</div>';
 
@@ -7933,86 +7933,105 @@ window.renderQRCodeForSiswa = function(sid){
 
 // ─── Download SIM Card sebagai PNG siap print ───
 window.downloadSimCard = function(sid){
-  var cardEl = document.getElementById('qr-abs-'+sid);
-  if(!cardEl){ alert('Kartu tidak ditemukan.'); return; }
+  var simcardEl = document.getElementById('qr-abs-'+sid);
+  if(!simcardEl) simcardEl = document.querySelector('[id^="qr-abs-"]');
+  simcardEl = simcardEl ? simcardEl.closest('.simcard') : null;
+  if(!simcardEl){ if(typeof showToast==='function') showToast('❌ Kartu tidak ditemukan.'); return; }
 
-  // Cari elemen .simcard terdekat dari qr-abs
-  var simcardEl = cardEl.closest('.simcard');
-  if(!simcardEl){ alert('Elemen kartu tidak ditemukan.'); return; }
-
-  var s = (window.siswaList||[]).find(function(x){ return x.id === sid; });
+  var s = (window.siswaList||[]).find(function(x){ return x.id===sid; });
   var nama = s ? s.name : sid;
+  if(typeof showToast==='function') showToast('⏳ Menyiapkan kartu...');
 
-  // Tampilkan loading toast
-  if(typeof showToast === 'function') showToast('⏳ Menyiapkan kartu...');
+  // Render ulang QR dulu pastikan sudah ada, lalu tunggu sebentar
+  if(typeof window.renderQRCodeForSiswa==='function') window.renderQRCodeForSiswa(sid);
 
-  // Ukuran CR80 standar kartu fisik: 85.6mm × 54mm @ 300dpi = 1012 × 638px
-  var SCALE = 3; // render 3× untuk kualitas cetak
+  setTimeout(function(){
+    // Ukuran CR80: 85.6mm x 54mm @ 300dpi
+    var W_PX = 1012, H_PX = 638;
+    var SCALE = 4; // tinggi untuk kualitas cetak
 
-  html2canvas(simcardEl, {
-    scale: SCALE,
-    useCORS: true,
-    allowTaint: true,
-    backgroundColor: null,
-    logging: false,
-    onclone: function(doc, el){
-      // Pastikan QR ter-render di clone
-      el.style.borderRadius = '20px';
-      el.style.overflow = 'hidden';
-    }
-  }).then(function(canvas){
-    // Buat canvas final ukuran CR80 @ 300dpi
-    var DPI = 300;
-    var W_MM = 85.6, H_MM = 54;
-    var W_PX = Math.round(W_MM / 25.4 * DPI); // 1012px
-    var H_PX = Math.round(H_MM / 25.4 * DPI); // 638px
+    html2canvas(simcardEl, {
+      scale: SCALE,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: null,
+      logging: false,
+      imageTimeout: 0,
+      onclone: function(cloneDoc, cloneEl){
+        // Pastikan QR canvas ter-copy dengan benar di clone
+        // Ambil canvas QR dari DOM asli, copy imageData ke clone
+        var origQr = document.getElementById('qr-abs-'+sid);
+        var cloneQr = cloneEl.querySelector('[id="qr-abs-'+sid+'"]') ||
+                      cloneEl.id === 'qr-abs-'+sid ? cloneEl : null;
+        if(!cloneQr) cloneQr = cloneDoc.getElementById('qr-abs-'+sid);
 
-    var final = document.createElement('canvas');
-    final.width  = W_PX;
-    final.height = H_PX;
-    var ctx = final.getContext('2d');
+        if(origQr && cloneQr){
+          // Ambil canvas/img dari original
+          var origCanvas = origQr.querySelector('canvas');
+          var origImg    = origQr.querySelector('img');
+          var src = null;
 
-    // Background putih
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, W_PX, H_PX);
+          if(origCanvas){
+            try{ src = origCanvas.toDataURL('image/png'); } catch(e){}
+          } else if(origImg && origImg.src){
+            src = origImg.src;
+          }
 
-    // Scale & center gambar kartu ke dalam canvas CR80
-    var srcW = canvas.width, srcH = canvas.height;
-    var scaleF = Math.min(W_PX / srcW, H_PX / srcH);
-    var dw = Math.round(srcW * scaleF);
-    var dh = Math.round(srcH * scaleF);
-    var dx = Math.round((W_PX - dw) / 2);
-    var dy = Math.round((H_PX - dh) / 2);
+          if(src){
+            // Replace isi clone QR dengan img dari data asli
+            cloneQr.innerHTML = '';
+            cloneQr.style.padding = '3px';
+            cloneQr.style.background = '#fff';
+            var img = cloneDoc.createElement('img');
+            img.src = src;
+            img.style.cssText = 'width:66px;height:66px;display:block;image-rendering:pixelated';
+            cloneQr.appendChild(img);
+          }
+        }
+        cloneEl.style.borderRadius = '20px';
+        cloneEl.style.overflow = 'hidden';
+      }
+    }).then(function(canvas){
+      // Buat canvas final CR80
+      var out = document.createElement('canvas');
+      out.width  = W_PX;
+      out.height = H_PX;
+      var ctx = out.getContext('2d');
 
-    // Rounded corners pada canvas final
-    var r = Math.round(20 * scaleF);
-    ctx.save();
-    ctx.beginPath();
-    ctx.moveTo(dx + r, dy);
-    ctx.lineTo(dx + dw - r, dy);
-    ctx.quadraticCurveTo(dx + dw, dy, dx + dw, dy + r);
-    ctx.lineTo(dx + dw, dy + dh - r);
-    ctx.quadraticCurveTo(dx + dw, dy + dh, dx + dw - r, dy + dh);
-    ctx.lineTo(dx + r, dy + dh);
-    ctx.quadraticCurveTo(dx, dy + dh, dx, dy + dh - r);
-    ctx.lineTo(dx, dy + r);
-    ctx.quadraticCurveTo(dx, dy, dx + r, dy);
-    ctx.closePath();
-    ctx.clip();
-    ctx.drawImage(canvas, dx, dy, dw, dh);
-    ctx.restore();
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0,0,W_PX,H_PX);
 
-    // Download
-    var link = document.createElement('a');
-    link.download = 'SimCard_DKV_' + nama.replace(/\s+/g,'_') + '.png';
-    link.href = final.toDataURL('image/png');
-    link.click();
+      var sw = canvas.width, sh = canvas.height;
+      var sf = Math.min(W_PX/sw, H_PX/sh);
+      var dw = Math.round(sw*sf), dh = Math.round(sh*sf);
+      var dx = Math.round((W_PX-dw)/2), dy = Math.round((H_PX-dh)/2);
+      var r  = Math.round(20*sf);
 
-    if(typeof showToast === 'function') showToast('✅ Kartu berhasil didownload! Siap cetak ukuran 85.6×54mm');
-  }).catch(function(err){
-    console.error(err);
-    if(typeof showToast === 'function') showToast('❌ Gagal export kartu. Coba lagi.');
-  });
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(dx+r,dy); ctx.lineTo(dx+dw-r,dy);
+      ctx.quadraticCurveTo(dx+dw,dy,dx+dw,dy+r);
+      ctx.lineTo(dx+dw,dy+dh-r);
+      ctx.quadraticCurveTo(dx+dw,dy+dh,dx+dw-r,dy+dh);
+      ctx.lineTo(dx+r,dy+dh);
+      ctx.quadraticCurveTo(dx,dy+dh,dx,dy+dh-r);
+      ctx.lineTo(dx,dy+r);
+      ctx.quadraticCurveTo(dx,dy,dx+r,dy);
+      ctx.closePath();
+      ctx.clip();
+      ctx.drawImage(canvas,dx,dy,dw,dh);
+      ctx.restore();
+
+      var link = document.createElement('a');
+      link.download = 'SimCard_DKV_'+nama.replace(/[^a-zA-Z0-9]/g,'_')+'.png';
+      link.href = out.toDataURL('image/png');
+      link.click();
+      if(typeof showToast==='function') showToast('✅ SIM Card berhasil didownload!');
+    }).catch(function(err){
+      console.error(err);
+      if(typeof showToast==='function') showToast('❌ Gagal export. Coba lagi.');
+    });
+  }, 400); // tunggu QR render sempurna
 };
 
 // Render ulang QR saat buka tab SIM Card (siswa grid)
