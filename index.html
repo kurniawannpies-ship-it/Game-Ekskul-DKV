@@ -1757,11 +1757,30 @@ function _applyFirebaseData(data){
   if(data.dkv_done){
     window.done = typeof data.dkv_done === 'string' ? JSON.parse(data.dkv_done) : data.dkv_done;
   }
-  if(data.dkv_siswa){
-    window.siswaList = typeof data.dkv_siswa === 'string' ? JSON.parse(data.dkv_siswa) : data.dkv_siswa;
-  }
-  if(data.dkv_sdone){
-    window.siswaDone = typeof data.dkv_sdone === 'string' ? JSON.parse(data.dkv_sdone) : data.dkv_sdone;
+  // BUGFIX: Jangan timpa siswaList / siswaDone / siswaAccounts / pending_reg
+  // saat _isSaving = true (proses approve/reject sedang berlangsung).
+  // Snapshot Firebase yang datang saat ini bisa berisi data LAMA (sebelum approve)
+  // karena Firebase listener bisa menembak lebih cepat dari konfirmasi .then().
+  if(!window._isSaving){
+    if(data.dkv_siswa){
+      window.siswaList = typeof data.dkv_siswa === 'string' ? JSON.parse(data.dkv_siswa) : data.dkv_siswa;
+    }
+    if(data.dkv_sdone){
+      window.siswaDone = typeof data.dkv_sdone === 'string' ? JSON.parse(data.dkv_sdone) : data.dkv_sdone;
+    }
+  } else {
+    // Tetap izinkan update dkv_siswa dari Firebase HANYA jika snapshot sudah mengandung
+    // siswa baru yang ditambahkan (deteksi: jumlah item >= jumlah lokal)
+    if(data.dkv_siswa){
+      var incoming = typeof data.dkv_siswa === 'string' ? JSON.parse(data.dkv_siswa) : data.dkv_siswa;
+      if(incoming.length >= window.siswaList.length){
+        window.siswaList = incoming;
+      }
+      // jika incoming lebih sedikit, abaikan — snapshot lama dari sebelum approve
+    }
+    if(data.dkv_sdone){
+      window.siswaDone = typeof data.dkv_sdone === 'string' ? JSON.parse(data.dkv_sdone) : data.dkv_sdone;
+    }
   }
   if(data.dkv_badge_levels){
     window.badgeLevels = typeof data.dkv_badge_levels === 'string' ? JSON.parse(data.dkv_badge_levels) : data.dkv_badge_levels;
@@ -1782,9 +1801,16 @@ function _applyFirebaseData(data){
     store_set('dkv_pw_hash', CORRECT_PW_HASH);
   }
   // Extended data: akun siswa & profil
-  if(data.dkv_accounts){
+  if(data.dkv_accounts && !window._isSaving){
     window.siswaAccounts = typeof data.dkv_accounts === 'string' ? JSON.parse(data.dkv_accounts) : data.dkv_accounts;
     if(typeof window.siswaAccounts !== 'object' || Array.isArray(window.siswaAccounts)) window.siswaAccounts = {};
+  } else if(data.dkv_accounts && window._isSaving) {
+    // Merge saja, jangan replace — akun baru dari approve mungkin belum ada di snapshot Firebase
+    var incomingAcc = typeof data.dkv_accounts === 'string' ? JSON.parse(data.dkv_accounts) : data.dkv_accounts;
+    if(typeof incomingAcc === 'object' && !Array.isArray(incomingAcc)){
+      // Merge: local wins (lebih baru)
+      window.siswaAccounts = Object.assign({}, incomingAcc, window.siswaAccounts);
+    }
   } else {
     if(!window.siswaAccounts || typeof window.siswaAccounts !== 'object') window.siswaAccounts = {};
   }
@@ -1897,6 +1923,10 @@ function saveAll(){
     if(window.siswaProfiles)  payload.dkv_profiles  = window.siswaProfiles;
     if(window.dkvNotif)       payload.dkv_notif          = window.dkvNotif;
     if(window.dkvEditorAccess) payload.dkv_editor_access  = window.dkvEditorAccess;
+    // BUGFIX: Sertakan dkv_pending_reg agar tidak terhapus oleh _fbRef.set()
+    // Jika saveAll() dipanggil saat ada pending registrasi, tanpa key ini
+    // Firebase akan menghapus seluruh antrian pendaftaran siswa!
+    if(window.dkvPendingReg && window.dkvPendingReg.length > 0) payload.dkv_pending_reg = window.dkvPendingReg;
     _fbRef.set(payload)
       .then(function(){
         window._isSaving = false;
@@ -8316,6 +8346,10 @@ document.addEventListener('click', function(e){
   var reg = list[idx];
 
   if(action === 'approve-reg'){
+    // BUGFIX: Set _isSaving = true SEBELUM memodifikasi data agar Firebase listener
+    // tidak menimpa siswaList dengan snapshot lama saat proses approve berlangsung
+    window._isSaving = true;
+
     // Buat siswa baru
     var newId = suid();
     var newSiswa = {
@@ -8340,18 +8374,23 @@ document.addEventListener('click', function(e){
     // Hapus dari pending
     window.dkvPendingReg.splice(idx, 1);
 
-    // Kirim notif ke siswa (jika ada akun) — via dkvNotif tapi siswa baru jadi kita simpan pakai id baru
-    // Kita simpan notif dengan key username agar bisa diambil saat login
+    // Kirim notif ke siswa
     pushSystemNotif(newId, '🎉 Pendaftaran Disetujui!', 'Selamat '+reg.name+'! Akun kamu sudah aktif. Silakan login dengan username @'+reg.username+'.', 'editor');
 
-    // Simpan semua sekaligus dalam satu operasi agar tidak ada race condition
-    // dengan Firebase listener yang bisa overwrite siswaList sebelum tersimpan
+    // Simpan ke localStorage sebagai cache offline terlebih dahulu
     saveJSON('dkv_siswa', window.siswaList);
     saveJSON('dkv_sdone', window.siswaDone);
     saveJSON('dkv_accounts', window.siswaAccounts);
     saveJSON('dkv_pending_reg', window.dkvPendingReg);
+
+    // BUGFIX: Render UI segera dari data lokal yang sudah diperbarui
+    // (sebelum konfirmasi Firebase agar UX terasa cepat)
+    updateAdminBell();
+    renderSiswa();
+    renderPendingList();
+    showToast('✅ '+reg.name+' disetujui dan ditambahkan sebagai siswa!');
+
     if(window._fbRef){
-      window._isSaving = true;
       window._fbRef.update({
         dkv_siswa:        window.siswaList,
         dkv_sdone:        window.siswaDone,
@@ -8359,16 +8398,23 @@ document.addEventListener('click', function(e){
         dkv_pending_reg:  window.dkvPendingReg,
         dkv_notif:        window.dkvNotif || {}
       }).then(function(){
+        // BUGFIX: Lepas _isSaving hanya setelah Firebase benar-benar konfirmasi tersimpan.
+        // Dengan cara ini listener tidak akan overwrite data yang baru saja di-approve
+        // sebelum Firebase selesai commit.
         window._isSaving = false;
+        // Re-render sekali lagi setelah Firebase confirm untuk pastikan UI sinkron
+        renderSiswa();
+        renderPendingList();
       }).catch(function(e){
         window._isSaving = false;
         console.error('[DKV] Approve save error:', e);
+        showToast('⚠️ Gagal simpan ke cloud. Data tersimpan lokal.');
+        renderSiswa();
       });
+    } else {
+      // Tidak ada Firebase — langsung lepas flag
+      window._isSaving = false;
     }
-    updateAdminBell();
-    renderSiswa();
-    renderPendingList();
-    showToast('✅ '+reg.name+' disetujui dan ditambahkan sebagai siswa!');
 
   } else {
     // Tolak — hapus dari pending saja
