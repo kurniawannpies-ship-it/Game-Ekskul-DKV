@@ -7633,7 +7633,6 @@ function startAbsenCam(){
           startScanLoopAPI();
         } else if(mode === 'jsqr'){
           setAbsenStatus('📷 Scan otomatis aktif. Arahkan kamera ke QR Code SIM Card…','#639922','#f0fff0');
-          showFotoScanBtn();
           startJsQRLoop();
         } else {
           setAbsenStatus('📷 Kamera aktif. Tekan "📸 Foto & Scan" untuk scan, atau gunakan ✍️ Manual.','#BA7517','#fff8ec');
@@ -7660,8 +7659,13 @@ function startAbsenCam(){
             document.getElementById('absen-start-cam').style.display = 'none';
             document.getElementById('absen-stop-cam').style.display = '';
             _absenScanPaused = false;
-            setAbsenStatus('📷 Kamera aktif (mode kompatibilitas). Tekan "📸 Foto & Scan".','#BA7517','#fff8ec');
-            showFotoScanBtn();
+            if(window.jsQR){
+              setAbsenStatus('📷 Scan otomatis aktif (mode kompatibilitas). Arahkan ke QR Code…','#639922','#f0fff0');
+              startJsQRLoop();
+            } else {
+              setAbsenStatus('📷 Kamera aktif (mode kompatibilitas). Tekan "📸 Foto & Scan".','#BA7517','#fff8ec');
+              showFotoScanBtn();
+            }
           }).catch(function(){
             setAbsenStatus('❌ Kamera tidak dapat diakses. Gunakan tombol ✍️ Manual.','#e24b4a','#fcebeb');
           });
@@ -7795,7 +7799,7 @@ function startJsQRLoop(){
         setTimeout(function(){ _absenScanPaused = false; }, 2200);
       }
     }
-    _absenScanLoop = setTimeout(tickJsQR, 400);
+    _absenScanLoop = setTimeout(tickJsQR, 250);
   }
   tickJsQR();
 }
