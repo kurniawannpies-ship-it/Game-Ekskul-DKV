@@ -670,8 +670,8 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
 .simcard-field-chip{display:-webkit-inline-flex;display:inline-flex;-webkit-align-items:center;align-items:center;gap:3px;background:rgba(255,255,255,.18);border-radius:20px;padding:2px 8px;font-size:9px;font-weight:600;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.2)}
 .simcard-footer{display:-webkit-flex;display:flex;-webkit-align-items:flex-end;align-items:flex-end;-webkit-justify-content:space-between;justify-content:space-between;margin-top:auto;padding-top:6px;border-top:1px solid rgba(255,255,255,.18);gap:8px}
 /* QR code container di dalam simcard */
-.simcard-qr{position:static;width:68px;height:68px;background:#fff;border-radius:6px;border:4px solid #fff;display:flex;align-items:center;justify-content:center;padding:0;box-shadow:0 0 0 1.5px rgba(0,0,0,.3),0 2px 6px rgba(0,0,0,.35);z-index:10;flex-shrink:0}
-.simcard-qr img,.simcard-qr canvas{width:60px!important;height:60px!important;display:block!important;background:#fff!important}
+.simcard-qr{position:absolute;bottom:14px;right:14px;width:80px;height:80px;background:#fff;border-radius:6px;border:4px solid #fff;display:flex;align-items:center;justify-content:center;padding:0;box-shadow:0 0 0 1.5px rgba(0,0,0,.3),0 2px 6px rgba(0,0,0,.35);z-index:10}
+.simcard-qr img,.simcard-qr canvas{width:72px!important;height:72px!important;display:block!important;background:#fff!important}
 .simcard-xp-badge{font-size:9px;font-weight:800;padding:3px 10px;border-radius:20px;color:#fff;letter-spacing:.03em;text-shadow:0 1px 3px rgba(0,0,0,.2)}
 .simcard-num{font-size:8.5px;font-weight:700;letter-spacing:.1em;opacity:.6;font-family:monospace}
 .simcard-completion{margin-top:10px}
@@ -4567,15 +4567,15 @@ function buildSimCard(s, xp, inlineProfileHtml){
             '</div>'+
           '</div>'+
           '<div class="simcard-footer" style="display:flex;align-items:flex-end;justify-content:space-between;margin-top:auto;padding-top:6px;border-top:1px solid rgba(255,255,255,.18)">'+
-            '<div style="flex:1;min-width:0">'+
+            '<div style="flex:1;min-width:0;padding-right:90px">'+
               '<div class="simcard-xp-badge" style="display:inline-flex;align-items:center;background:'+themeColor+'dd">'+
                 (badge2.imgData?'<img src="'+badge2.imgData+'" style="width:12px;height:12px;object-fit:contain;vertical-align:middle;margin-right:3px">':esc(badge2.icon||'⭐')+' ')+
                 esc(badge2.name||'Pemula')+' · '+xp+' XP'+
               '</div>'+
               '<div class="simcard-num" style="margin-top:3px;font-size:8px;opacity:.55;font-family:monospace;letter-spacing:.05em">DKV_'+s.id+'</div>'+
             '</div>'+
-            '<div id="qr-wrap-'+s.id+'" class="simcard-qr"><div id="qr-inner-'+s.id+'" style="background:#fff;line-height:0"></div></div>'+
           '</div>'+
+          '<div id="qr-wrap-'+s.id+'" class="simcard-qr"><div id="qr-inner-'+s.id+'" style="background:#fff;line-height:0"></div></div>'+
         '</div>'+
       '</div>'+
       '<div class="simcard-completion" style="margin-top:8px">'+
