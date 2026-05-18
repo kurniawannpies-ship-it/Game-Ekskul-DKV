@@ -6337,11 +6337,12 @@ function logoutStudent(){
 // Dipanggil setelah setiap perubahan state login
 // ═══════════════════════════════════════════════════════════════
 function updateToolbarByRole(){
-  var editBtn   = document.getElementById('edit-btn');
-  var addSiswa  = document.getElementById('btn-add-siswa');
-  var absenTab  = document.getElementById('tab-btn-absensi');
-  var adminBell = document.getElementById('admin-bell-wrap');
-  var notifBell = document.getElementById('notif-bell-wrap');
+  var editBtn    = document.getElementById('edit-btn');
+  var addSiswa   = document.getElementById('btn-add-siswa');
+  var absenTab   = document.getElementById('tab-btn-absensi');
+  var adminBell  = document.getElementById('admin-bell-wrap');
+  var notifBell  = document.getElementById('notif-bell-wrap');
+  var logoutBtn  = document.getElementById('global-logout-btn');
 
   if(window.pembina){
     // ── MODE PEMBINA ──
@@ -6349,6 +6350,7 @@ function updateToolbarByRole(){
     if(addSiswa) addSiswa.style.display = 'block';
     if(absenTab) absenTab.style.display = '';
     if(adminBell) adminBell.style.display = '';
+    if(logoutBtn){ logoutBtn.style.display = ''; logoutBtn.textContent = 'Logout Pembina'; }
   } else if(window.loggedInStudentId){
     // ── MODE SISWA ──
     if(editBtn) editBtn.style.display = 'none';
@@ -6356,6 +6358,7 @@ function updateToolbarByRole(){
     if(absenTab) absenTab.style.display = 'none';
     if(adminBell) adminBell.style.display = 'none';
     if(notifBell) notifBell.style.display = '';
+    if(logoutBtn){ logoutBtn.style.display = ''; logoutBtn.textContent = 'Logout'; }
   } else {
     // ── TAMU (belum login) ──
     if(editBtn) editBtn.style.display = 'none';
@@ -6363,8 +6366,21 @@ function updateToolbarByRole(){
     if(absenTab) absenTab.style.display = 'none';
     if(adminBell) adminBell.style.display = 'none';
     if(notifBell) notifBell.style.display = 'none';
+    if(logoutBtn) logoutBtn.style.display = 'none';
   }
 }
+
+// Fungsi logout global — deteksi role lalu logout yang sesuai
+function doGlobalLogout(){
+  if(window.pembina){
+    if(typeof gateDoLogoutPembina === 'function') gateDoLogoutPembina();
+    // Kembali ke lobby
+    document.getElementById('lobby-screen').style.display = 'flex';
+  } else if(window.loggedInStudentId){
+    if(typeof logoutStudent === 'function') logoutStudent();
+  }
+}
+window.doGlobalLogout = doGlobalLogout;
 window.updateToolbarByRole = updateToolbarByRole;
 
 
