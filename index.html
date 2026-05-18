@@ -780,6 +780,327 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
 </head>
 <body>
 
+<!-- ═══════ EKSKUL LOGIN GATE MODAL ═══════ -->
+<div id="ekskul-gate-overlay" style="
+  display:none;position:fixed;inset:0;z-index:10500;
+  background:rgba(0,0,0,.72);backdrop-filter:blur(6px);
+  align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;
+">
+  <div style="
+    background:#1a1916;border:1.5px solid #2e2c29;border-radius:22px;
+    padding:32px 28px;width:100%;max-width:360px;margin:0 20px;
+    position:relative;
+  ">
+    <!-- Judul -->
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="font-size:28px;margin-bottom:8px">🎮</div>
+      <div style="font-size:17px;font-weight:700;color:#f0ede8">Masuk ke Ruang Ekskul</div>
+      <div style="font-size:12px;color:#6e6b64;margin-top:4px">Pilih jenis akun untuk melanjutkan</div>
+    </div>
+
+    <!-- Tab pilihan -->
+    <div id="gate-tab-row" style="display:flex;gap:8px;margin-bottom:22px">
+      <button id="gate-tab-siswa" type="button" onclick="gateSetTab('siswa')" style="
+        flex:1;padding:9px;border-radius:10px;border:1.5px solid #7F77DD;
+        background:#7F77DD;color:#fff;font-family:'Space Grotesk',sans-serif;
+        font-size:13px;font-weight:700;cursor:pointer;transition:all .2s
+      ">🎮 Siswa</button>
+      <button id="gate-tab-pembina" type="button" onclick="gateSetTab('pembina')" style="
+        flex:1;padding:9px;border-radius:10px;border:1.5px solid #2e2c29;
+        background:transparent;color:#9e9b95;font-family:'Space Grotesk',sans-serif;
+        font-size:13px;font-weight:700;cursor:pointer;transition:all .2s
+      ">⚙️ Pembina</button>
+    </div>
+
+    <!-- Form Siswa -->
+    <div id="gate-form-siswa">
+      <div id="gate-siswa-logged" style="display:none;text-align:center;padding:8px 0 16px">
+        <div style="font-size:13px;color:#639922;font-weight:700;margin-bottom:4px">✅ Sudah login sebagai</div>
+        <div id="gate-siswa-logged-name" style="font-size:15px;font-weight:700;color:#f0ede8"></div>
+        <button type="button" onclick="gateEnterAsSiswa()" style="
+          margin-top:14px;width:100%;padding:12px;border-radius:11px;border:none;
+          background:#7F77DD;color:#fff;font-family:'Space Grotesk',sans-serif;
+          font-size:14px;font-weight:700;cursor:pointer
+        ">Masuk Sekarang →</button>
+        <button type="button" onclick="gateDoLogoutSiswa()" style="
+          margin-top:8px;width:100%;padding:9px;border-radius:11px;border:none;
+          background:transparent;color:#888;font-family:'Space Grotesk',sans-serif;
+          font-size:12px;cursor:pointer
+        ">Ganti Akun</button>
+      </div>
+      <div id="gate-siswa-form">
+        <div style="margin-bottom:12px">
+          <label style="font-size:11px;color:#9e9b95;font-weight:600;letter-spacing:.04em;text-transform:uppercase">Username</label>
+          <input id="gate-sl-username" type="text" placeholder="username kamu..." autocomplete="off" autocapitalize="none" style="
+            margin-top:5px;width:100%;padding:10px 12px;border-radius:9px;
+            border:1.5px solid #2e2c29;background:#0f0e14;color:#f0ede8;
+            font-family:'Space Grotesk',sans-serif;font-size:14px;outline:none;box-sizing:border-box
+          ">
+        </div>
+        <div style="margin-bottom:16px;position:relative">
+          <label style="font-size:11px;color:#9e9b95;font-weight:600;letter-spacing:.04em;text-transform:uppercase">Password</label>
+          <input id="gate-sl-password" type="password" placeholder="password..." style="
+            margin-top:5px;width:100%;padding:10px 36px 10px 12px;border-radius:9px;
+            border:1.5px solid #2e2c29;background:#0f0e14;color:#f0ede8;
+            font-family:'Space Grotesk',sans-serif;font-size:14px;outline:none;box-sizing:border-box
+          ">
+          <button id="gate-sl-eye" type="button" onclick="gateToggleEye('gate-sl-password','gate-sl-eye')" style="
+            position:absolute;right:10px;bottom:10px;background:none;border:none;cursor:pointer;font-size:14px
+          ">👁</button>
+        </div>
+        <div id="gate-sl-err" style="font-size:12px;color:#e05252;min-height:16px;margin-bottom:10px"></div>
+        <button type="button" id="gate-sl-submit" style="
+          width:100%;padding:12px;border-radius:11px;border:none;
+          background:#7F77DD;color:#fff;font-family:'Space Grotesk',sans-serif;
+          font-size:14px;font-weight:700;cursor:pointer
+        ">Masuk →</button>
+        <button type="button" id="gate-open-reg" onclick="gateOpenReg()" style="
+          margin-top:8px;width:100%;padding:9px;border-radius:11px;border:none;
+          background:transparent;color:#639922;font-family:'Space Grotesk',sans-serif;
+          font-size:12px;font-weight:600;cursor:pointer
+        ">✏️ Belum punya akun? Daftar</button>
+      </div>
+    </div>
+
+    <!-- Form Pembina -->
+    <div id="gate-form-pembina" style="display:none">
+      <div id="gate-pembina-logged" style="display:none;text-align:center;padding:8px 0 16px">
+        <div style="font-size:13px;color:#f5c842;font-weight:700;margin-bottom:4px">⚙️ Sudah login sebagai Pembina</div>
+        <button type="button" onclick="gateEnterAsPembina()" style="
+          margin-top:14px;width:100%;padding:12px;border-radius:11px;border:none;
+          background:linear-gradient(135deg,#f5c842,#e8774a);color:#0f0e14;
+          font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer
+        ">Masuk + Edit Mode →</button>
+        <button type="button" onclick="gateDoLogoutPembina()" style="
+          margin-top:8px;width:100%;padding:9px;border-radius:11px;border:none;
+          background:transparent;color:#888;font-family:'Space Grotesk',sans-serif;
+          font-size:12px;cursor:pointer
+        ">Logout Pembina</button>
+      </div>
+      <div id="gate-pembina-form">
+        <div style="margin-bottom:16px;position:relative">
+          <label style="font-size:11px;color:#9e9b95;font-weight:600;letter-spacing:.04em;text-transform:uppercase">Password Pembina</label>
+          <input id="gate-pw-input" type="password" placeholder="Password pembina..." autocomplete="current-password" style="
+            margin-top:5px;width:100%;padding:10px 36px 10px 12px;border-radius:9px;
+            border:1.5px solid #2e2c29;background:#0f0e14;color:#f0ede8;
+            font-family:'Space Grotesk',sans-serif;font-size:14px;outline:none;box-sizing:border-box
+          ">
+          <button id="gate-pw-eye" type="button" onclick="gateToggleEye('gate-pw-input','gate-pw-eye')" style="
+            position:absolute;right:10px;bottom:10px;background:none;border:none;cursor:pointer;font-size:14px
+          ">👁</button>
+        </div>
+        <div id="gate-pw-err" style="font-size:12px;color:#e05252;min-height:16px;margin-bottom:10px"></div>
+        <button type="button" id="gate-pw-submit" style="
+          width:100%;padding:12px;border-radius:11px;border:none;
+          background:linear-gradient(135deg,#f5c842,#e8774a);color:#0f0e14;
+          font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer
+        ">Masuk →</button>
+      </div>
+    </div>
+
+    <!-- Tutup -->
+    <button type="button" onclick="closeEkskulGate()" style="
+      margin-top:18px;width:100%;padding:9px;border-radius:11px;border:none;
+      background:transparent;color:#555;font-family:'Space Grotesk',sans-serif;
+      font-size:12px;cursor:pointer
+    ">Batal / Kembali</button>
+  </div>
+</div>
+
+<!-- ═══════ LOBBY — PILIH RUANGAN ═══════ -->
+<div id="lobby-screen" style="
+  position:fixed;inset:0;z-index:9999;
+  background:#0f0e14;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:24px;
+  font-family:'Space Grotesk',sans-serif;
+">
+  <!-- bg pattern -->
+  <div style="position:absolute;inset:0;opacity:.04;background-image:radial-gradient(circle,#fff 1px,transparent 1px);background-size:28px 28px;pointer-events:none"></div>
+
+  <!-- logo & title -->
+  <div style="text-align:center;margin-bottom:48px;position:relative">
+    <div style="font-size:40px;margin-bottom:12px">🎨</div>
+    <div style="font-size:22px;font-weight:700;color:#f0ede8;letter-spacing:-.02em">Ekskul DKV</div>
+    <div style="font-size:13px;color:#6e6b64;margin-top:4px">SMPN 1 Sumenep</div>
+    <div style="width:40px;height:2px;background:#f5c842;margin:14px auto 0;border-radius:99px"></div>
+  </div>
+
+  <!-- dua kotak -->
+  <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;max-width:560px;width:100%">
+
+    <!-- Kotak 1: Ruang Ekskul -->
+    <button id="lobby-ekskul-btn" type="button" style="
+      flex:1;min-width:220px;max-width:260px;
+      background:#1a1916;border:1.5px solid #2e2c29;
+      border-radius:18px;padding:32px 24px;
+      cursor:pointer;text-align:left;
+      transition:border-color .2s,transform .18s,box-shadow .2s;
+      font-family:'Space Grotesk',sans-serif;
+      position:relative;overflow:hidden;
+    "
+    onmouseover="this.style.borderColor='#f5c842';this.style.transform='translateY(-3px)';this.style.boxShadow='0 12px 32px rgba(245,200,66,.12)'"
+    onmouseout="this.style.borderColor='#2e2c29';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+      <div style="font-size:32px;margin-bottom:14px">🎮</div>
+      <div style="font-size:17px;font-weight:700;color:#f0ede8;margin-bottom:6px">Ruang Ekskul</div>
+      <div style="font-size:12px;color:#6e6b64;line-height:1.6">Quest, profil siswa,<br>absensi & materi</div>
+      <div style="
+        position:absolute;bottom:16px;right:18px;
+        font-size:11px;font-weight:600;color:#f5c842;
+        opacity:.7;letter-spacing:.04em;
+      ">MASUK →</div>
+    </button>
+
+    <!-- Kotak 2: Ruang Ujian -->
+    <button id="lobby-ujian-btn" type="button" style="
+      flex:1;min-width:220px;max-width:260px;
+      background:#1a1916;border:1.5px solid #2e2c29;
+      border-radius:18px;padding:32px 24px;
+      cursor:pointer;text-align:left;
+      transition:border-color .2s,transform .18s,box-shadow .2s;
+      font-family:'Space Grotesk',sans-serif;
+      position:relative;overflow:hidden;
+    "
+    onmouseover="this.style.borderColor='#e8774a';this.style.transform='translateY(-3px)';this.style.boxShadow='0 12px 32px rgba(232,119,74,.12)'"
+    onmouseout="this.style.borderColor='#2e2c29';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+      <div style="font-size:32px;margin-bottom:14px">📝</div>
+      <div style="font-size:17px;font-weight:700;color:#f0ede8;margin-bottom:6px">Ruang Ujian</div>
+      <div style="font-size:12px;color:#6e6b64;line-height:1.6">Kerjakan soal,<br>lihat nilai & riwayat</div>
+      <div style="
+        position:absolute;bottom:16px;right:18px;
+        font-size:11px;font-weight:600;color:#e8774a;
+        opacity:.7;letter-spacing:.04em;
+      ">MASUK →</div>
+    </button>
+
+  </div>
+
+  <div style="margin-top:36px;font-size:11px;color:#3e3c38">Pilih ruangan untuk melanjutkan</div>
+</div>
+
+<!-- ═══════ RUANG UJIAN OVERLAY ═══════ -->
+<div id="ujian-screen" style="display:none;position:fixed;inset:0;z-index:9998;background:#0f0e14;overflow-y:auto;font-family:'Space Grotesk',sans-serif">
+
+  <!-- Header Ujian -->
+  <div style="position:sticky;top:0;z-index:10;background:rgba(15,14,20,.92);backdrop-filter:blur(10px);border-bottom:1px solid #2e2c29;padding:14px 20px;display:flex;align-items:center;justify-content:space-between">
+    <div style="font-size:15px;font-weight:700;color:#f0ede8">📝 Ruang Ujian</div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div id="ujian-timer-badge" style="display:none;font-family:monospace;font-size:13px;padding:5px 12px;border-radius:99px;background:#1a1916;border:1px solid #2e2c29;color:#f0ede8"></div>
+      <button id="ujian-back-btn" type="button" style="font-size:12px;font-weight:600;padding:6px 14px;border-radius:99px;border:1px solid #2e2c29;background:transparent;color:#9e9b95;cursor:pointer;font-family:'Space Grotesk',sans-serif">← Kembali</button>
+    </div>
+  </div>
+
+  <div style="max-width:680px;margin:0 auto;padding:28px 20px 80px">
+
+    <!-- STATE: belum login -->
+    <div id="ujian-login-state">
+      <div style="background:#1a1916;border:1.5px solid #2e2c29;border-radius:16px;padding:28px 24px;max-width:380px;margin:40px auto">
+        <div style="font-size:28px;margin-bottom:12px">🔐</div>
+        <div style="font-size:17px;font-weight:700;color:#f0ede8;margin-bottom:6px">Login Siswa</div>
+        <div style="font-size:12px;color:#6e6b64;margin-bottom:20px">Masuk untuk mengerjakan ujian</div>
+        <label style="font-size:11px;font-weight:600;color:#9e9b95;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px">Username</label>
+        <input id="ujian-username" type="text" placeholder="Username kamu..." autocomplete="username" style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid #2e2c29;background:#242220;color:#f0ede8;font-family:'Space Grotesk',sans-serif;font-size:13px;margin-bottom:12px">
+        <label style="font-size:11px;font-weight:600;color:#9e9b95;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px">Password</label>
+        <input id="ujian-password" type="password" placeholder="Password kamu..." autocomplete="current-password" style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid #2e2c29;background:#242220;color:#f0ede8;font-family:'Space Grotesk',sans-serif;font-size:13px;margin-bottom:6px">
+        <div id="ujian-login-err" style="font-size:12px;color:#e05252;min-height:16px;margin-bottom:10px"></div>
+        <button id="ujian-login-btn" type="button" style="width:100%;padding:11px;border-radius:8px;border:none;background:#e8774a;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Masuk</button>
+      </div>
+    </div>
+
+    <!-- STATE: sudah login — daftar ujian -->
+    <div id="ujian-list-state" style="display:none">
+      <div style="margin-bottom:20px">
+        <div style="font-size:20px;font-weight:700;color:#f0ede8" id="ujian-welcome-txt">Halo!</div>
+        <div style="font-size:13px;color:#6e6b64;margin-top:4px">Pilih ujian yang ingin dikerjakan</div>
+      </div>
+      <div id="ujian-cards-wrap" style="display:flex;flex-direction:column;gap:12px"></div>
+      <div id="ujian-empty" style="display:none;text-align:center;padding:60px 0;color:#3e3c38;font-size:14px">Belum ada ujian tersedia 📭</div>
+      <button id="ujian-logout-btn" type="button" style="margin-top:28px;font-size:12px;font-weight:500;padding:8px 16px;border-radius:99px;border:1px solid #2e2c29;background:transparent;color:#6e6b64;cursor:pointer;font-family:'Space Grotesk',sans-serif">Keluar akun</button>
+    </div>
+
+    <!-- STATE: sedang mengerjakan ujian -->
+    <div id="ujian-kerja-state" style="display:none">
+      <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+        <div>
+          <div style="font-size:18px;font-weight:700;color:#f0ede8" id="ujian-kerja-title"></div>
+          <div style="font-size:12px;color:#6e6b64;margin-top:3px" id="ujian-kerja-meta"></div>
+        </div>
+        <div id="ujian-progress-txt" style="font-size:12px;color:#9e9b95"></div>
+      </div>
+      <!-- Progress bar -->
+      <div style="height:4px;background:#2e2c29;border-radius:99px;margin-bottom:28px;overflow:hidden">
+        <div id="ujian-progress-bar" style="height:100%;background:#e8774a;border-radius:99px;transition:width .3s;width:0%"></div>
+      </div>
+      <div id="ujian-soal-wrap"></div>
+      <div style="margin-top:28px;display:flex;gap:10px;flex-wrap:wrap">
+        <button id="ujian-prev-btn" type="button" style="padding:10px 20px;border-radius:8px;border:1.5px solid #2e2c29;background:transparent;color:#9e9b95;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;cursor:pointer">← Sebelumnya</button>
+        <button id="ujian-next-btn" type="button" style="padding:10px 20px;border-radius:8px;border:none;background:#e8774a;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer">Selanjutnya →</button>
+        <button id="ujian-submit-btn" type="button" style="display:none;padding:10px 24px;border-radius:8px;border:none;background:#4caf7d;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer">✓ Kumpulkan</button>
+      </div>
+    </div>
+
+    <!-- STATE: hasil ujian -->
+    <div id="ujian-hasil-state" style="display:none;text-align:center;padding:40px 0">
+      <div style="font-size:52px;margin-bottom:16px" id="ujian-hasil-emoji">🎉</div>
+      <div style="font-size:22px;font-weight:700;color:#f0ede8;margin-bottom:8px" id="ujian-hasil-nilai"></div>
+      <div style="font-size:13px;color:#6e6b64;margin-bottom:28px" id="ujian-hasil-detail"></div>
+      <div style="background:#1a1916;border:1px solid #2e2c29;border-radius:12px;padding:20px;max-width:360px;margin:0 auto 24px;text-align:left" id="ujian-hasil-breakdown"></div>
+      <button id="ujian-selesai-btn" type="button" style="padding:11px 28px;border-radius:8px;border:none;background:#e8774a;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Kembali ke Daftar Ujian</button>
+    </div>
+
+    <!-- STATE: Pembina — kelola ujian -->
+    <div id="ujian-admin-state" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+        <div>
+          <div style="font-size:20px;font-weight:700;color:#f0ede8">Panel Pembina</div>
+          <div style="font-size:12px;color:#6e6b64;margin-top:3px">Kelola ujian & lihat hasil siswa</div>
+        </div>
+        <button id="ujian-buat-btn" type="button" style="padding:9px 18px;border-radius:8px;border:none;background:#f5c842;color:#0f0e0c;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer">+ Buat Ujian</button>
+      </div>
+
+      <!-- Form buat ujian -->
+      <div id="ujian-form-wrap" style="display:none;background:#1a1916;border:1.5px solid #2e2c29;border-radius:14px;padding:24px;margin-bottom:20px">
+        <div style="font-size:15px;font-weight:700;color:#f0ede8;margin-bottom:16px" id="ujian-form-title-label">Buat Ujian Baru</div>
+        <label style="font-size:11px;font-weight:600;color:#9e9b95;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px">Judul Ujian</label>
+        <input id="uf-judul" type="text" placeholder="cth: Ujian Teori DKV Semester 1" style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid #2e2c29;background:#242220;color:#f0ede8;font-family:'Space Grotesk',sans-serif;font-size:13px;margin-bottom:12px">
+        <label style="font-size:11px;font-weight:600;color:#9e9b95;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px">Durasi (menit)</label>
+        <input id="uf-durasi" type="number" placeholder="cth: 60" min="1" max="300" style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid #2e2c29;background:#242220;color:#f0ede8;font-family:'Space Grotesk',sans-serif;font-size:13px;margin-bottom:12px">
+        <label style="font-size:11px;font-weight:600;color:#9e9b95;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px">Deskripsi (opsional)</label>
+        <input id="uf-desc" type="text" placeholder="Keterangan tambahan..." style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid #2e2c29;background:#242220;color:#f0ede8;font-family:'Space Grotesk',sans-serif;font-size:13px;margin-bottom:16px">
+
+        <!-- Soal builder -->
+        <div style="font-size:13px;font-weight:700;color:#f0ede8;margin-bottom:10px">Daftar Soal <span id="uf-soal-count" style="color:#6e6b64;font-weight:400">(0 soal)</span></div>
+        <div id="uf-soal-list" style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px"></div>
+        <button id="uf-add-pg" type="button" style="padding:7px 14px;border-radius:7px;border:1.5px dashed #2e2c29;background:transparent;color:#9e9b95;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;cursor:pointer;margin-right:8px">+ Pilihan Ganda</button>
+        <button id="uf-add-essay" type="button" style="padding:7px 14px;border-radius:7px;border:1.5px dashed #2e2c29;background:transparent;color:#9e9b95;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;cursor:pointer">+ Essay</button>
+
+        <div id="uf-err" style="font-size:12px;color:#e05252;min-height:16px;margin-top:10px"></div>
+        <div style="display:flex;gap:10px;margin-top:16px">
+          <button id="uf-save-btn" type="button" style="padding:10px 22px;border-radius:8px;border:none;background:#f5c842;color:#0f0e0c;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer">Simpan Ujian</button>
+          <button id="uf-cancel-btn" type="button" style="padding:10px 18px;border-radius:8px;border:1.5px solid #2e2c29;background:transparent;color:#9e9b95;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;cursor:pointer">Batal</button>
+        </div>
+      </div>
+
+      <!-- Daftar ujian yang ada -->
+      <div id="ujian-admin-list" style="display:flex;flex-direction:column;gap:12px"></div>
+
+      <!-- Panel nilai siswa -->
+      <div id="ujian-nilai-panel" style="display:none;margin-top:20px;background:#1a1916;border:1.5px solid #2e2c29;border-radius:14px;padding:20px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <div style="font-size:14px;font-weight:700;color:#f0ede8" id="nilai-panel-title">Hasil Ujian</div>
+          <button id="nilai-panel-close" type="button" style="font-size:12px;color:#6e6b64;background:none;border:none;cursor:pointer">✕ Tutup</button>
+        </div>
+        <div id="nilai-panel-table"></div>
+      </div>
+
+      <button id="ujian-admin-logout-btn" type="button" style="margin-top:28px;font-size:12px;font-weight:500;padding:8px 16px;border-radius:99px;border:1px solid #2e2c29;background:transparent;color:#6e6b64;cursor:pointer;font-family:'Space Grotesk',sans-serif">Keluar akun pembina</button>
+    </div>
+
+  </div><!-- end padding wrap -->
+</div>
+<!-- ═══════ END RUANG UJIAN ═══════ -->
+
 <!-- ═══════ NOTIFIKASI PANEL ═══════ -->
 <div class="notif-panel-overlay" id="notif-panel-overlay"></div>
 <div class="notif-panel" id="notif-panel">
@@ -1207,8 +1528,7 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
       </div>
       <button class="btn-student-login" id="student-login-btn" type="button">🎮 Login Siswa</button>
       <button class="btn-student-login" id="reg-open-btn" type="button" style="border-color:#639922;color:#639922">✏️ Daftar</button>
-
-    </div>
+      <button type="button" id="back-to-lobby-btn" style="font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;padding:6px 13px;border-radius:99px;border:1px solid #c5c0b8;background:transparent;color:#888;cursor:pointer">← Lobby</button>
   </div>
 
   <div class="tab-bar">
@@ -2540,6 +2860,8 @@ function checkPassword(){
       closeModal('pw-modal');
       document.getElementById('edit-btn').innerHTML='⚙ Edit Mode <span class="badge-pembina">Pembina</span>';
       document.getElementById('btn-add-siswa').style.display='block';
+      var regBtnPw = document.getElementById('reg-open-btn');
+      if(regBtnPw) regBtnPw.style.display='none';
       // Tampilkan tab Absensi untuk admin
       var absenTab = document.getElementById('tab-btn-absensi');
       if(absenTab) absenTab.style.display='';
@@ -2655,6 +2977,8 @@ function toggleEditMode(){
     btn.innerHTML='🔒 Edit Mode';
     btn.classList.remove('active-mode');
     document.getElementById('btn-add-siswa').style.display='none';
+    var regBtnToggle = document.getElementById('reg-open-btn');
+    if(regBtnToggle && !window.loggedInStudentId) regBtnToggle.style.display='';
     // Sembunyikan tab Absensi dan pindah ke tab Quest
     var absenTabBtn = document.getElementById('tab-btn-absensi');
     if(absenTabBtn){
@@ -6029,9 +6353,14 @@ function updateStudentUI(){
     if(dashBar) dashBar.classList.remove('show');
     var bellWrap = document.getElementById('notif-bell-wrap');
     if(bellWrap) bellWrap.style.display = 'none';
+    var regBtnOut = document.getElementById('reg-open-btn');
+    if(regBtnOut && !window.pembina) regBtnOut.style.display = '';
     updateMateriEditorTabVisibility();
     return;
   }
+  // Sembunyikan tombol daftar saat siswa sudah login
+  var regBtnIn = document.getElementById('reg-open-btn');
+  if(regBtnIn) regBtnIn.style.display = 'none';
 
   var s = window.siswaList.find(function(x){return x.id===loggedInStudentId;});
   if(!s){
@@ -8538,6 +8867,869 @@ document.addEventListener('click', function(e){
 // Hook ke toggleEditMode — updateAdminBell sudah dipanggil dari updateMateriEditorTabVisibility
 // Tapi kita juga perlu panggil saat pembina login
 
+</script>
+<!-- ═══════════════════════════════════════════════════════════
+     RUANG UJIAN — JAVASCRIPT
+════════════════════════════════════════════════════════════ -->
+<script>
+(function(){
+  // ── Konstanta & State ──────────────────────────────────────
+  var PEMBINA_PW_HASH = window.CORRECT_PW_HASH || null;
+  var _ujianRef       = null;
+  var _ujianState     = {
+    loggedIn : false,
+    isPembina: false,
+    siswaId  : null,
+    siswaName: null,
+    // ujian yang sedang dikerjakan
+    aktif    : null,   // object ujian
+    jawaban  : {},     // {soalIdx: jawaban}
+    soalIdx  : 0,
+    timer    : null,
+    sisaDetik: 0,
+    // rate limit login ujian
+    attempts : 0,
+    lockUntil: 0
+  };
+  var _soalFormItems = []; // [{type,pertanyaan,opsi:[],kunci}]
+  var _editUjianId   = null;
+
+  // ── Inisialisasi Firebase ref untuk ujian ─────────────────
+  function initUjianRef(){
+    if(_ujianRef) return;
+    try{
+      var db = firebase.database();
+      _ujianRef = db.ref('ekskul_dkv_spensa/dkv_ujian');
+    }catch(e){ _ujianRef = null; }
+  }
+
+  // ── Helpers ───────────────────────────────────────────────
+  function esc(s){ return String(s).replace(/[<>"'&]/g,function(c){return({'<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','&':'&amp;'})[c];}); }
+  function fmtTimer(s){ var m=Math.floor(s/60),sc=s%60; return (m<10?'0':'')+m+':'+(sc<10?'0':'')+sc; }
+  function showUjianToast(msg){
+    var t=document.getElementById('toast');
+    if(!t)return;
+    t.textContent=msg;t.classList.add('show');
+    setTimeout(function(){t.classList.remove('show');},2800);
+  }
+
+  // ── LOBBY ──────────────────────────────────────────────────
+  document.getElementById('lobby-ekskul-btn').addEventListener('click',function(){
+    openEkskulGate();
+  });
+
+  // Tombol kembali ke lobby dari Ruang Ekskul
+  document.getElementById('back-to-lobby-btn').addEventListener('click',function(){
+    document.getElementById('lobby-screen').style.display='flex';
+  });
+
+  document.getElementById('lobby-ujian-btn').addEventListener('click',function(){
+    document.getElementById('lobby-screen').style.display='none';
+    document.getElementById('ujian-screen').style.display='block';
+    initUjianRef();
+    renderUjianScreen();
+  });
+
+  document.getElementById('ujian-back-btn').addEventListener('click',function(){
+    if(_ujianState.timer){ clearInterval(_ujianState.timer); _ujianState.timer=null; }
+    document.getElementById('ujian-timer-badge').style.display='none';
+    document.getElementById('ujian-screen').style.display='none';
+    document.getElementById('lobby-screen').style.display='flex';
+  });
+
+  // ── RENDER UJIAN SCREEN ────────────────────────────────────
+  function renderUjianScreen(){
+    hideAllUjianStates();
+    if(_ujianState.isPembina){
+      document.getElementById('ujian-admin-state').style.display='block';
+      loadAdminUjianList();
+    } else if(_ujianState.loggedIn){
+      document.getElementById('ujian-list-state').style.display='block';
+      document.getElementById('ujian-welcome-txt').textContent='Halo, '+esc(_ujianState.siswaName)+'! 👋';
+      loadSiswaUjianList();
+    } else {
+      document.getElementById('ujian-login-state').style.display='block';
+    }
+  }
+
+  function hideAllUjianStates(){
+    ['ujian-login-state','ujian-list-state','ujian-kerja-state','ujian-hasil-state','ujian-admin-state']
+      .forEach(function(id){ document.getElementById(id).style.display='none'; });
+  }
+
+  // ── LOGIN SISWA (UJIAN) ────────────────────────────────────
+  document.getElementById('ujian-login-btn').addEventListener('click', doUjianLogin);
+  document.getElementById('ujian-password').addEventListener('keydown', function(e){ if(e.key==='Enter') doUjianLogin(); });
+
+  function doUjianLogin(){
+    var uname = document.getElementById('ujian-username').value.trim().toLowerCase();
+    var pass  = document.getElementById('ujian-password').value;
+    var err   = document.getElementById('ujian-login-err');
+
+    if(!uname||!pass){ err.textContent='Username dan password tidak boleh kosong.'; return; }
+    if(uname.length>40||pass.length>128){ err.textContent='Input tidak valid.'; return; }
+
+    // Rate limit
+    if(Date.now()<_ujianState.lockUntil){
+      var sisa=Math.ceil((_ujianState.lockUntil-Date.now())/1000);
+      err.textContent='Terlalu banyak percobaan. Coba lagi dalam '+sisa+' detik.';
+      return;
+    }
+
+    // Cek apakah ini pembina (via CORRECT_PW_HASH di parent scope)
+    var pwHash = window.CORRECT_PW_HASH;
+    sha256(pass).then(function(hash){
+      // Cek pembina dulu
+      if(hash===pwHash && uname==='pembina'){
+        _ujianState.loggedIn  = true;
+        _ujianState.isPembina = true;
+        _ujianState.attempts  = 0;
+        err.textContent='';
+        document.getElementById('ujian-username').value='';
+        document.getElementById('ujian-password').value='';
+        renderUjianScreen();
+        return;
+      }
+
+      // Cek akun siswa dari window.siswaAccounts
+      var accounts = window.siswaAccounts || {};
+      var foundSid = null;
+      var dummyHash= '0000000000000000000000000000000000000000000000000000000000000000';
+      var accHash  = dummyHash;
+      for(var sid in accounts){
+        if(accounts[sid]&&accounts[sid].username&&accounts[sid].username.toLowerCase()===uname){
+          foundSid = sid; accHash = accounts[sid].passwordHash||dummyHash; break;
+        }
+      }
+      if(!foundSid||hash!==accHash){
+        _ujianState.attempts++;
+        if(_ujianState.attempts>=5){
+          _ujianState.lockUntil=Date.now()+5*60*1000;
+          _ujianState.attempts=0;
+          err.textContent='Terlalu banyak percobaan. Akun dikunci 5 menit.';
+        } else {
+          err.textContent='Username atau password salah.';
+        }
+        document.getElementById('ujian-password').value='';
+        return;
+      }
+      var siswa = (window.siswaList||[]).find(function(x){return x.id===foundSid;});
+      _ujianState.loggedIn  = true;
+      _ujianState.isPembina = false;
+      _ujianState.siswaId   = foundSid;
+      _ujianState.siswaName = siswa?siswa.name:uname;
+      _ujianState.attempts  = 0;
+      err.textContent='';
+      document.getElementById('ujian-username').value='';
+      document.getElementById('ujian-password').value='';
+      renderUjianScreen();
+    });
+  }
+
+  // ── LOGOUT ─────────────────────────────────────────────────
+  document.getElementById('ujian-logout-btn').addEventListener('click', doUjianLogout);
+  document.getElementById('ujian-admin-logout-btn').addEventListener('click', doUjianLogout);
+  function doUjianLogout(){
+    if(_ujianState.timer){clearInterval(_ujianState.timer);_ujianState.timer=null;}
+    _ujianState={loggedIn:false,isPembina:false,siswaId:null,siswaName:null,aktif:null,jawaban:{},soalIdx:0,timer:null,sisaDetik:0,attempts:_ujianState.attempts,lockUntil:_ujianState.lockUntil};
+    document.getElementById('ujian-timer-badge').style.display='none';
+    renderUjianScreen();
+  }
+
+  // ── LOAD DAFTAR UJIAN (SISWA) ──────────────────────────────
+  function loadSiswaUjianList(){
+    var wrap=document.getElementById('ujian-cards-wrap');
+    var empty=document.getElementById('ujian-empty');
+    wrap.innerHTML='<div style="color:#6e6b64;font-size:13px">Memuat ujian...</div>';
+    if(!_ujianRef){ wrap.innerHTML=''; empty.style.display='block'; return; }
+    _ujianRef.child('soal').once('value').then(function(snap){
+      var data=snap.val()||{};
+      var keys=Object.keys(data);
+      if(!keys.length){ wrap.innerHTML=''; empty.style.display='block'; return; }
+      empty.style.display='none';
+      // Cek jawaban yang sudah dikumpulkan
+      _ujianRef.child('jawaban/'+_ujianState.siswaId).once('value').then(function(jSnap){
+        var sudahKumpul=jSnap.val()||{};
+        wrap.innerHTML='';
+        keys.forEach(function(uid){
+          var u=data[uid];
+          var sudah=!!sudahKumpul[uid];
+          var totalSoal=(u.soal||[]).length;
+          var nilaiTxt='';
+          if(sudah&&sudahKumpul[uid].nilai_pg!==undefined){
+            var np=sudahKumpul[uid].nilai_pg||0;
+            var ne=sudahKumpul[uid].nilai_essay!==undefined?sudahKumpul[uid].nilai_essay:null;
+            nilaiTxt='Nilai PG: '+np+(ne!==null?' | Essay: '+ne:'');
+          }
+          var card=document.createElement('div');
+          card.style.cssText='background:#1a1916;border:1.5px solid '+(sudah?'#4caf7d':'#2e2c29')+';border-radius:14px;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;';
+          card.innerHTML='<div>'+
+            '<div style="font-size:15px;font-weight:700;color:#f0ede8;margin-bottom:4px">'+esc(u.judul||'Ujian')+'</div>'+
+            '<div style="font-size:12px;color:#6e6b64">'+totalSoal+' soal &bull; '+esc(u.durasi||60)+' menit'+(u.desc?' &bull; '+esc(u.desc):'')+'</div>'+
+            (nilaiTxt?'<div style="font-size:11px;color:#4caf7d;margin-top:4px">'+esc(nilaiTxt)+'</div>':'')+
+            '</div>'+
+            (sudah
+              ?'<div style="font-size:11px;font-weight:700;color:#4caf7d;white-space:nowrap">✓ Selesai</div>'
+              :'<button data-uid="'+uid+'" class="mulai-ujian-btn" type="button" style="padding:8px 16px;border-radius:8px;border:none;background:#e8774a;color:#fff;font-family:\'Space Grotesk\',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">Mulai →</button>'
+            );
+          wrap.appendChild(card);
+        });
+        wrap.querySelectorAll('.mulai-ujian-btn').forEach(function(btn){
+          btn.addEventListener('click',function(){ mulaiUjian(btn.dataset.uid, data[btn.dataset.uid]); });
+        });
+      });
+    }).catch(function(){ wrap.innerHTML='<div style="color:#e05252;font-size:13px">Gagal memuat ujian.</div>'; });
+  }
+
+  // ── MULAI UJIAN ────────────────────────────────────────────
+  function mulaiUjian(uid, ujian){
+    _ujianState.aktif   = {uid:uid, data:ujian};
+    _ujianState.jawaban = {};
+    _ujianState.soalIdx = 0;
+    hideAllUjianStates();
+    document.getElementById('ujian-kerja-state').style.display='block';
+    document.getElementById('ujian-kerja-title').textContent=ujian.judul||'Ujian';
+    var soal=ujian.soal||[];
+    document.getElementById('ujian-kerja-meta').textContent=soal.length+' soal &bull; '+ujian.durasi+' menit';
+    // Timer
+    _ujianState.sisaDetik=(ujian.durasi||60)*60;
+    startTimer();
+    renderSoal();
+  }
+
+  function startTimer(){
+    var badge=document.getElementById('ujian-timer-badge');
+    badge.style.display='block';
+    badge.style.border='1px solid #2e2c29';
+    badge.style.color='#f0ede8';
+    if(_ujianState.timer)clearInterval(_ujianState.timer);
+    _ujianState.timer=setInterval(function(){
+      _ujianState.sisaDetik--;
+      badge.textContent='⏱ '+fmtTimer(_ujianState.sisaDetik);
+      if(_ujianState.sisaDetik<=300){badge.style.color='#e05252';badge.style.border='1px solid #e05252';}
+      if(_ujianState.sisaDetik<=0){clearInterval(_ujianState.timer);_ujianState.timer=null;kumpulkanUjian(true);}
+    },1000);
+    badge.textContent='⏱ '+fmtTimer(_ujianState.sisaDetik);
+  }
+
+  function renderSoal(){
+    var soal=(_ujianState.aktif.data.soal||[]);
+    var idx=_ujianState.soalIdx;
+    var total=soal.length;
+    // progress
+    var pct=total?Math.round((idx/total)*100):0;
+    document.getElementById('ujian-progress-bar').style.width=pct+'%';
+    document.getElementById('ujian-progress-txt').textContent='Soal '+(idx+1)+' dari '+total;
+    // nav buttons
+    document.getElementById('ujian-prev-btn').style.display=idx>0?'':'none';
+    var isLast=idx===total-1;
+    document.getElementById('ujian-next-btn').style.display=isLast?'none':'';
+    document.getElementById('ujian-submit-btn').style.display=isLast?'':'none';
+
+    var s=soal[idx];
+    var wrap=document.getElementById('ujian-soal-wrap');
+    var saved=_ujianState.jawaban[idx];
+    var html='<div style="background:#1a1916;border:1.5px solid #2e2c29;border-radius:14px;padding:22px">';
+    html+='<div style="font-size:11px;font-weight:600;color:#6e6b64;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">';
+    html+=s.type==='pg'?'📋 Pilihan Ganda':'✏️ Essay';
+    html+='</div>';
+    html+='<div style="font-size:15px;color:#f0ede8;line-height:1.6;margin-bottom:18px">'+esc(s.pertanyaan)+'</div>';
+    if(s.type==='pg'){
+      var opsi=s.opsi||[];
+      opsi.forEach(function(o,i){
+        var huruf=String.fromCharCode(65+i);
+        var checked=saved===huruf;
+        html+='<label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;border:1.5px solid '+(checked?'#e8774a':'#2e2c29')+';background:'+(checked?'rgba(232,119,74,.08)':'transparent')+';cursor:pointer;margin-bottom:8px;transition:.15s">';
+        html+='<input type="radio" name="pg-soal" value="'+huruf+'" style="accent-color:#e8774a"'+(checked?' checked':'')+'>';
+        html+='<span style="font-size:13px;color:#f0ede8"><b style="color:#e8774a">'+huruf+'.</b> '+esc(o)+'</span>';
+        html+='</label>';
+      });
+    } else {
+      html+='<textarea id="essay-input" placeholder="Tulis jawabanmu di sini..." rows="5" style="width:100%;padding:10px 12px;border-radius:8px;border:1.5px solid #2e2c29;background:#242220;color:#f0ede8;font-family:\'Space Grotesk\',sans-serif;font-size:13px;resize:vertical;line-height:1.6">'+esc(saved||'')+'</textarea>';
+    }
+    html+='</div>';
+    wrap.innerHTML=html;
+
+    // Simpan jawaban saat berubah
+    if(s.type==='pg'){
+      wrap.querySelectorAll('input[name="pg-soal"]').forEach(function(radio){
+        radio.addEventListener('change',function(){
+          _ujianState.jawaban[idx]=this.value;
+          renderSoal(); // re-render for highlight
+        });
+      });
+    } else {
+      var ta=document.getElementById('essay-input');
+      if(ta) ta.addEventListener('input',function(){ _ujianState.jawaban[idx]=this.value; });
+    }
+  }
+
+  document.getElementById('ujian-next-btn').addEventListener('click',function(){
+    var soal=(_ujianState.aktif.data.soal||[]);
+    if(_ujianState.soalIdx<soal.length-1){ _ujianState.soalIdx++; renderSoal(); }
+  });
+  document.getElementById('ujian-prev-btn').addEventListener('click',function(){
+    if(_ujianState.soalIdx>0){ _ujianState.soalIdx--; renderSoal(); }
+  });
+  document.getElementById('ujian-submit-btn').addEventListener('click',function(){
+    kumpulkanUjian(false);
+  });
+
+  // ── KUMPULKAN UJIAN ────────────────────────────────────────
+  function kumpulkanUjian(habisWaktu){
+    if(_ujianState.timer){clearInterval(_ujianState.timer);_ujianState.timer=null;}
+    document.getElementById('ujian-timer-badge').style.display='none';
+    var soal=(_ujianState.aktif.data.soal||[]);
+    // Hitung nilai PG
+    var pgBenar=0,pgTotal=0;
+    var essayJawaban={};
+    soal.forEach(function(s,i){
+      if(s.type==='pg'){
+        pgTotal++;
+        if(_ujianState.jawaban[i]===s.kunci) pgBenar++;
+      } else {
+        essayJawaban[i]=_ujianState.jawaban[i]||'';
+      }
+    });
+    var nilaiPG=pgTotal?Math.round((pgBenar/pgTotal)*100):null;
+    var payload={
+      submitted_at: Date.now(),
+      nilai_pg    : nilaiPG,
+      nilai_essay : null, // diisi pembina
+      jawaban_pg  : {},
+      jawaban_essay: essayJawaban
+    };
+    soal.forEach(function(s,i){
+      if(s.type==='pg') payload.jawaban_pg[i]=_ujianState.jawaban[i]||null;
+    });
+    // Simpan ke Firebase
+    var uid=_ujianState.aktif.uid;
+    var sid=_ujianState.siswaId;
+    if(_ujianRef&&sid){
+      _ujianRef.child('jawaban/'+sid+'/'+uid).set(payload).catch(function(){});
+    }
+    // Tampilkan hasil
+    hideAllUjianStates();
+    document.getElementById('ujian-hasil-state').style.display='block';
+    var emoji=nilaiPG>=80?'🎉':nilaiPG>=60?'👍':'💪';
+    document.getElementById('ujian-hasil-emoji').textContent=habisWaktu?'⏰':emoji;
+    document.getElementById('ujian-hasil-nilai').textContent=
+      nilaiPG!==null?'Nilai Pilihan Ganda: '+nilaiPG+'/100':'Ujian Selesai';
+    document.getElementById('ujian-hasil-detail').textContent=
+      habisWaktu?'Waktu habis — jawaban otomatis dikumpulkan.':'Jawaban berhasil dikumpulkan!';
+    var breakdown='<div style="font-size:12px;color:#9e9b95;margin-bottom:8px;font-weight:600">Ringkasan</div>';
+    breakdown+='<div style="font-size:13px;color:#f0ede8;margin-bottom:4px">PG benar: '+pgBenar+' / '+pgTotal+'</div>';
+    if(Object.keys(essayJawaban).length){
+      breakdown+='<div style="font-size:13px;color:#f0ede8">Essay: menunggu penilaian pembina</div>';
+    }
+    document.getElementById('ujian-hasil-breakdown').innerHTML=breakdown;
+  }
+
+  document.getElementById('ujian-selesai-btn').addEventListener('click',function(){
+    hideAllUjianStates();
+    document.getElementById('ujian-list-state').style.display='block';
+    loadSiswaUjianList();
+  });
+
+  // ── ADMIN: LOAD DAFTAR UJIAN ───────────────────────────────
+  function loadAdminUjianList(){
+    var list=document.getElementById('ujian-admin-list');
+    list.innerHTML='<div style="color:#6e6b64;font-size:13px">Memuat...</div>';
+    if(!_ujianRef){ list.innerHTML='<div style="color:#e05252;font-size:13px">Firebase tidak terhubung.</div>'; return; }
+    _ujianRef.child('soal').once('value').then(function(snap){
+      var data=snap.val()||{};
+      var keys=Object.keys(data);
+      list.innerHTML='';
+      if(!keys.length){
+        list.innerHTML='<div style="color:#6e6b64;font-size:13px;padding:20px 0">Belum ada ujian. Klik "+ Buat Ujian" untuk memulai.</div>';
+        return;
+      }
+      keys.forEach(function(uid){
+        var u=data[uid];
+        var card=document.createElement('div');
+        card.style.cssText='background:#1a1916;border:1.5px solid #2e2c29;border-radius:14px;padding:18px 20px;';
+        card.innerHTML=
+          '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">'+
+          '<div>'+
+            '<div style="font-size:15px;font-weight:700;color:#f0ede8;margin-bottom:3px">'+esc(u.judul||'Ujian')+'</div>'+
+            '<div style="font-size:12px;color:#6e6b64">'+(u.soal||[]).length+' soal &bull; '+esc(u.durasi||60)+' menit</div>'+
+          '</div>'+
+          '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+            '<button data-uid="'+uid+'" class="admin-lihat-nilai" type="button" style="padding:7px 13px;border-radius:7px;border:1.5px solid #2e2c29;background:transparent;color:#9e9b95;font-family:\'Space Grotesk\',sans-serif;font-size:12px;font-weight:600;cursor:pointer">📊 Nilai</button>'+
+            '<button data-uid="'+uid+'" data-judul="'+esc(u.judul)+'" class="admin-edit-ujian" type="button" style="padding:7px 13px;border-radius:7px;border:1.5px solid #2e2c29;background:transparent;color:#9e9b95;font-family:\'Space Grotesk\',sans-serif;font-size:12px;font-weight:600;cursor:pointer">✏️ Edit</button>'+
+            '<button data-uid="'+uid+'" class="admin-hapus-ujian" type="button" style="padding:7px 13px;border-radius:7px;border:1.5px solid #3e2020;background:transparent;color:#e05252;font-family:\'Space Grotesk\',sans-serif;font-size:12px;font-weight:600;cursor:pointer">🗑 Hapus</button>'+
+          '</div>'+
+          '</div>';
+        list.appendChild(card);
+      });
+      // Event listeners
+      list.querySelectorAll('.admin-lihat-nilai').forEach(function(btn){
+        btn.addEventListener('click',function(){ lihatNilai(btn.dataset.uid, data[btn.dataset.uid]); });
+      });
+      list.querySelectorAll('.admin-hapus-ujian').forEach(function(btn){
+        btn.addEventListener('click',function(){
+          if(!confirm('Hapus ujian "'+data[btn.dataset.uid].judul+'"?')) return;
+          _ujianRef.child('soal/'+btn.dataset.uid).remove().then(function(){ loadAdminUjianList(); });
+        });
+      });
+      list.querySelectorAll('.admin-edit-ujian').forEach(function(btn){
+        btn.addEventListener('click',function(){ bukaFormUjian(btn.dataset.uid, data[btn.dataset.uid]); });
+      });
+    });
+  }
+
+  // ── ADMIN: LIHAT NILAI SISWA ───────────────────────────────
+  function lihatNilai(uid, ujian){
+    var panel=document.getElementById('ujian-nilai-panel');
+    var tableDiv=document.getElementById('nilai-panel-table');
+    document.getElementById('nilai-panel-title').textContent='📊 Hasil: '+esc(ujian.judul||'Ujian');
+    panel.style.display='block';
+    tableDiv.innerHTML='<div style="color:#6e6b64;font-size:13px">Memuat...</div>';
+    _ujianRef.child('jawaban').once('value').then(function(snap){
+      var allJawaban=snap.val()||{};
+      var siswaList=window.siswaList||[];
+      var rows='';
+      var ada=false;
+      siswaList.forEach(function(s){
+        var j=allJawaban[s.id]&&allJawaban[s.id][uid];
+        if(!j)return;
+        ada=true;
+        var tgl=j.submitted_at?new Date(j.submitted_at).toLocaleString('id-ID'):'—';
+        var npg=j.nilai_pg!==null&&j.nilai_pg!==undefined?j.nilai_pg:'—';
+        var ne=j.nilai_essay!==null&&j.nilai_essay!==undefined?j.nilai_essay:'Belum dinilai';
+        rows+='<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #2e2c29;gap:10px;flex-wrap:wrap">>';
+        rows+='<div><div style="font-size:13px;font-weight:600;color:#f0ede8">'+esc(s.name)+'</div>';
+        rows+='<div style="font-size:11px;color:#6e6b64">'+tgl+'</div></div>';
+        rows+='<div style="display:flex;gap:10px;align-items:center">';
+        rows+='<span style="font-size:12px;color:#4caf7d;font-weight:700">PG: '+npg+'</span>';
+        rows+='<span style="font-size:12px;color:#9e9b95">Essay: ';
+        if(j.nilai_essay===null||j.nilai_essay===undefined){
+          rows+='<input type="number" min="0" max="100" placeholder="0-100" data-sid="'+s.id+'" data-uid="'+uid+'" class="essay-nilai-input" style="width:64px;padding:3px 7px;border-radius:6px;border:1px solid #2e2c29;background:#242220;color:#f0ede8;font-size:12px;font-family:\'Space Grotesk\',sans-serif"> ';
+          rows+='<button data-sid="'+s.id+'" data-uid="'+uid+'" class="essay-nilai-save" style="padding:3px 9px;border-radius:6px;border:none;background:#f5c842;color:#0f0e0c;font-size:11px;font-weight:700;cursor:pointer;font-family:\'Space Grotesk\',sans-serif">Simpan</button>';
+        } else {
+          rows+=ne;
+        }
+        rows+='</span></div></div>';
+      });
+      if(!ada) tableDiv.innerHTML='<div style="color:#6e6b64;font-size:13px">Belum ada siswa yang mengumpulkan.</div>';
+      else {
+        tableDiv.innerHTML=rows;
+        tableDiv.querySelectorAll('.essay-nilai-save').forEach(function(btn){
+          btn.addEventListener('click',function(){
+            var inp=tableDiv.querySelector('.essay-nilai-input[data-sid="'+btn.dataset.sid+'"][data-uid="'+btn.dataset.uid+'"]');
+            var val=parseInt(inp.value);
+            if(isNaN(val)||val<0||val>100){alert('Nilai harus antara 0–100.');return;}
+            _ujianRef.child('jawaban/'+btn.dataset.sid+'/'+btn.dataset.uid+'/nilai_essay').set(val).then(function(){
+              showUjianToast('Nilai essay disimpan!');
+              lihatNilai(uid,ujian);
+            });
+          });
+        });
+      }
+    });
+  }
+
+  document.getElementById('nilai-panel-close').addEventListener('click',function(){
+    document.getElementById('ujian-nilai-panel').style.display='none';
+  });
+
+  // ── ADMIN: FORM BUAT / EDIT UJIAN ─────────────────────────
+  document.getElementById('ujian-buat-btn').addEventListener('click',function(){ bukaFormUjian(null,null); });
+  document.getElementById('uf-cancel-btn').addEventListener('click',function(){
+    document.getElementById('ujian-form-wrap').style.display='none';
+    _soalFormItems=[];_editUjianId=null;
+  });
+
+  function bukaFormUjian(uid, ujian){
+    _editUjianId=uid;
+    _soalFormItems=[];
+    var form=document.getElementById('ujian-form-wrap');
+    document.getElementById('ujian-form-title-label').textContent=uid?'Edit Ujian':'Buat Ujian Baru';
+    document.getElementById('uf-judul').value=ujian?ujian.judul:'';
+    document.getElementById('uf-durasi').value=ujian?ujian.durasi:'';
+    document.getElementById('uf-desc').value=ujian&&ujian.desc?ujian.desc:'';
+    document.getElementById('uf-err').textContent='';
+    // Load soal existing
+    if(ujian&&ujian.soal){
+      _soalFormItems=JSON.parse(JSON.stringify(ujian.soal));
+    }
+    renderSoalForm();
+    form.style.display='block';
+    form.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+
+  document.getElementById('uf-add-pg').addEventListener('click',function(){
+    _soalFormItems.push({type:'pg',pertanyaan:'',opsi:['','','',''],kunci:'A'});
+    renderSoalForm();
+  });
+  document.getElementById('uf-add-essay').addEventListener('click',function(){
+    _soalFormItems.push({type:'essay',pertanyaan:''});
+    renderSoalForm();
+  });
+
+  function renderSoalForm(){
+    var list=document.getElementById('uf-soal-list');
+    document.getElementById('uf-soal-count').textContent='('+_soalFormItems.length+' soal)';
+    list.innerHTML='';
+    _soalFormItems.forEach(function(s,i){
+      var div=document.createElement('div');
+      div.style.cssText='background:#242220;border:1.5px solid #2e2c29;border-radius:10px;padding:14px;';
+      var html='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">';
+      html+='<span style="font-size:11px;font-weight:700;color:#9e9b95;text-transform:uppercase;letter-spacing:.05em">Soal '+(i+1)+' — '+(s.type==='pg'?'Pilihan Ganda':'Essay')+'</span>';
+      html+='<button data-i="'+i+'" class="hapus-soal-btn" type="button" style="font-size:11px;color:#e05252;background:none;border:none;cursor:pointer">✕ Hapus</button>';
+      html+='</div>';
+      html+='<textarea data-i="'+i+'" class="sf-pertanyaan" placeholder="Pertanyaan..." rows="2" style="width:100%;padding:8px 10px;border-radius:7px;border:1px solid #3e3c38;background:#1a1916;color:#f0ede8;font-family:\'Space Grotesk\',sans-serif;font-size:12px;resize:vertical;margin-bottom:8px">'+esc(s.pertanyaan)+'</textarea>';
+      if(s.type==='pg'){
+        s.opsi.forEach(function(o,j){
+          var huruf=String.fromCharCode(65+j);
+          html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">';
+          html+='<span style="font-size:12px;font-weight:700;color:#e8774a;width:14px">'+huruf+'.</span>';
+          html+='<input type="text" data-i="'+i+'" data-j="'+j+'" class="sf-opsi" value="'+esc(o)+'" placeholder="Pilihan '+huruf+'..." style="flex:1;padding:7px 10px;border-radius:7px;border:1px solid #3e3c38;background:#1a1916;color:#f0ede8;font-family:\'Space Grotesk\',sans-serif;font-size:12px">';
+          html+='<label style="font-size:11px;color:#9e9b95;display:flex;align-items:center;gap:4px;cursor:pointer"><input type="radio" name="kunci-'+i+'" value="'+huruf+'"'+(s.kunci===huruf?' checked':'')+' style="accent-color:#4caf7d"> Kunci</label>';
+          html+='</div>';
+        });
+      }
+      html+='';
+      div.innerHTML=html;
+      list.appendChild(div);
+    });
+    // Events
+    list.querySelectorAll('.hapus-soal-btn').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        _soalFormItems.splice(parseInt(btn.dataset.i),1);
+        renderSoalForm();
+      });
+    });
+    list.querySelectorAll('.sf-pertanyaan').forEach(function(ta){
+      ta.addEventListener('input',function(){ _soalFormItems[parseInt(ta.dataset.i)].pertanyaan=ta.value; });
+    });
+    list.querySelectorAll('.sf-opsi').forEach(function(inp){
+      inp.addEventListener('input',function(){ _soalFormItems[parseInt(inp.dataset.i)].opsi[parseInt(inp.dataset.j)]=inp.value; });
+    });
+    list.querySelectorAll('input[type="radio"]').forEach(function(radio){
+      radio.addEventListener('change',function(){
+        if(this.checked) _soalFormItems[parseInt(this.name.split('-')[1])].kunci=this.value;
+      });
+    });
+  }
+
+  document.getElementById('uf-save-btn').addEventListener('click',function(){
+    var judul=document.getElementById('uf-judul').value.trim();
+    var durasi=parseInt(document.getElementById('uf-durasi').value);
+    var desc=document.getElementById('uf-desc').value.trim();
+    var err=document.getElementById('uf-err');
+    if(!judul){ err.textContent='Judul tidak boleh kosong.'; return; }
+    if(!durasi||durasi<1||durasi>300){ err.textContent='Durasi harus antara 1–300 menit.'; return; }
+    if(!_soalFormItems.length){ err.textContent='Tambahkan minimal 1 soal.'; return; }
+    // Validasi soal
+    for(var i=0;i<_soalFormItems.length;i++){
+      var s=_soalFormItems[i];
+      if(!s.pertanyaan.trim()){ err.textContent='Pertanyaan soal '+(i+1)+' tidak boleh kosong.'; return; }
+      if(s.type==='pg'){
+        var isiOpsi=s.opsi.filter(function(o){return o.trim();});
+        if(isiOpsi.length<2){ err.textContent='Soal '+(i+1)+' butuh minimal 2 pilihan.'; return; }
+      }
+    }
+    err.textContent='';
+    var uid=_editUjianId||('ujian_'+Date.now());
+    var payload={id:uid,judul:judul,durasi:durasi,soal:_soalFormItems};
+    if(desc) payload.desc=desc;
+    if(!_ujianRef){ err.textContent='Firebase tidak terhubung.'; return; }
+    _ujianRef.child('soal/'+uid).set(payload).then(function(){
+      document.getElementById('ujian-form-wrap').style.display='none';
+      _soalFormItems=[];_editUjianId=null;
+      showUjianToast('Ujian berhasil disimpan! ✓');
+      loadAdminUjianList();
+    }).catch(function(e){ err.textContent='Gagal menyimpan: '+e.message; });
+  });
+
+})();
+
+// ═══════════════════════════════════════════════════════
+// EKSKUL GATE — Login sebelum masuk Ruang Ekskul
+// ═══════════════════════════════════════════════════════
+(function(){
+  var _gateTab = 'siswa'; // 'siswa' | 'pembina'
+  var _gateAdminAttempts = 0;
+  var _gateAdminLockedUntil = 0;
+
+  // ── Buka / tutup gate ──────────────────────────────
+  window.openEkskulGate = function(){
+    var overlay = document.getElementById('ekskul-gate-overlay');
+    overlay.style.display = 'flex';
+    // Reset errors
+    document.getElementById('gate-sl-err').textContent = '';
+    document.getElementById('gate-pw-err').textContent = '';
+    // Jika siswa sudah login lewat sessionStorage, langsung masuk
+    var sess = sessionStorage.getItem('dkv_student_sess');
+    if(sess && window.loggedInStudentId){
+      // Sudah login siswa — langsung masuk tanpa perlu isi lagi
+      overlay.style.display = 'none';
+      enterEkskul();
+      return;
+    }
+    // Jika pembina sudah login di session ini
+    if(window.pembina){
+      overlay.style.display = 'none';
+      enterEkskul();
+      return;
+    }
+    // Deteksi sesi siswa yang masih valid dari sessionStorage (restore belum selesai)
+    if(sess){
+      // Tampilkan gate tab siswa, tampilkan status "sudah login"
+      gateSetTab('siswa');
+      _updateGateSiswaView(sess);
+    } else {
+      gateSetTab('siswa');
+    }
+  };
+
+  window.closeEkskulGate = function(){
+    document.getElementById('ekskul-gate-overlay').style.display = 'none';
+    // Bersihkan field
+    document.getElementById('gate-sl-username').value = '';
+    document.getElementById('gate-sl-password').value = '';
+    document.getElementById('gate-pw-input').value = '';
+  };
+
+  // ── Set tab aktif ──────────────────────────────────
+  window.gateSetTab = function(tab){
+    _gateTab = tab;
+    var isSiswa = tab === 'siswa';
+    // Tab buttons
+    document.getElementById('gate-tab-siswa').style.background   = isSiswa ? '#7F77DD' : 'transparent';
+    document.getElementById('gate-tab-siswa').style.color        = isSiswa ? '#fff' : '#9e9b95';
+    document.getElementById('gate-tab-siswa').style.borderColor  = isSiswa ? '#7F77DD' : '#2e2c29';
+    document.getElementById('gate-tab-pembina').style.background  = !isSiswa ? 'linear-gradient(135deg,#f5c842,#e8774a)' : 'transparent';
+    document.getElementById('gate-tab-pembina').style.color       = !isSiswa ? '#0f0e14' : '#9e9b95';
+    document.getElementById('gate-tab-pembina').style.borderColor = !isSiswa ? 'transparent' : '#2e2c29';
+    // Forms
+    document.getElementById('gate-form-siswa').style.display    = isSiswa ? 'block' : 'none';
+    document.getElementById('gate-form-pembina').style.display  = !isSiswa ? 'block' : 'none';
+    // Refresh view sesuai state
+    if(isSiswa){
+      _updateGateSiswaView(window.loggedInStudentId || sessionStorage.getItem('dkv_student_sess'));
+    } else {
+      _updateGatePembinaView();
+    }
+    // Fokus field yang relevan
+    setTimeout(function(){
+      if(isSiswa && !window.loggedInStudentId){
+        var u = document.getElementById('gate-sl-username');
+        if(u) u.focus();
+      } else if(!isSiswa && !window.pembina){
+        var p = document.getElementById('gate-pw-input');
+        if(p) p.focus();
+      }
+    }, 150);
+  };
+
+  function _updateGateSiswaView(sid){
+    var loggedDiv = document.getElementById('gate-siswa-logged');
+    var formDiv   = document.getElementById('gate-siswa-form');
+    var nameEl    = document.getElementById('gate-siswa-logged-name');
+    var regBtn    = document.getElementById('gate-open-reg');
+    if(sid && window.siswaList){
+      var s = window.siswaList.find(function(x){ return x.id === sid; });
+      if(s){
+        loggedDiv.style.display = 'block';
+        formDiv.style.display   = 'none';
+        nameEl.textContent = s.name + ' · ' + (s.kelas || '');
+        if(regBtn) regBtn.style.display = 'none';
+        return;
+      }
+    }
+    loggedDiv.style.display = 'none';
+    formDiv.style.display   = 'block';
+    if(regBtn) regBtn.style.display = 'block';
+  }
+
+  function _updateGatePembinaView(){
+    var loggedDiv = document.getElementById('gate-pembina-logged');
+    var formDiv   = document.getElementById('gate-pembina-form');
+    if(window.pembina){
+      loggedDiv.style.display = 'block';
+      formDiv.style.display   = 'none';
+    } else {
+      loggedDiv.style.display = 'none';
+      formDiv.style.display   = 'block';
+    }
+  }
+
+  // ── Helper: masuk ruang ekskul (sembunyikan lobby) ──
+  function enterEkskul(){
+    document.getElementById('lobby-screen').style.display = 'none';
+  }
+
+  // ── Login siswa dari gate ──────────────────────────
+  window.gateEnterAsSiswa = function(){
+    closeEkskulGate();
+    enterEkskul();
+  };
+
+  window.gateDoLogoutSiswa = function(){
+    if(typeof logoutStudent === 'function') logoutStudent();
+    sessionStorage.removeItem('dkv_student_sess');
+    _updateGateSiswaView(null);
+    document.getElementById('gate-sl-username').value = '';
+    document.getElementById('gate-sl-password').value = '';
+    document.getElementById('gate-sl-err').textContent = '';
+    showToast('Akun siswa telah dikeluarkan.');
+  };
+
+  function gateDoSiswaLogin(){
+    var uname = document.getElementById('gate-sl-username').value.trim().toLowerCase();
+    var pass  = document.getElementById('gate-sl-password').value;
+    var err   = document.getElementById('gate-sl-err');
+    if(!uname || !pass){ err.textContent = 'Username dan password tidak boleh kosong.'; return; }
+    if(uname.length > 40 || pass.length > 128){ err.textContent = 'Input tidak valid.'; return; }
+    // Cek rate limit
+    if(typeof _isLoginLocked === 'function' && _isLoginLocked(uname)){
+      var sisa = typeof _loginRemainingTime === 'function' ? _loginRemainingTime(uname) : 0;
+      err.textContent = 'Terlalu banyak percobaan. Coba lagi dalam ' + sisa + ' detik.';
+      return;
+    }
+    var foundSid = null;
+    var accounts = window.siswaAccounts;
+    for(var sid in accounts){
+      if(accounts[sid] && accounts[sid].username && accounts[sid].username.toLowerCase() === uname){
+        foundSid = sid; break;
+      }
+    }
+    var dummyHash = '0000000000000000000000000000000000000000000000000000000000000000';
+    var accHash   = foundSid ? (accounts[foundSid].passwordHash || dummyHash) : dummyHash;
+    sha256(pass).then(function(hash){
+      if(!foundSid || hash !== accHash){
+        if(typeof _recordLoginFail === 'function') _recordLoginFail(uname);
+        err.textContent = 'Username atau password salah.';
+        return;
+      }
+      var s = window.siswaList.find(function(x){ return x.id === foundSid; });
+      if(!s){ err.textContent = 'Data siswa tidak ditemukan.'; return; }
+      if(typeof _recordLoginSuccess === 'function') _recordLoginSuccess(uname);
+      // Login berhasil — set state
+      window.loggedInStudentId = foundSid;
+      sessionStorage.setItem('dkv_student_sess', foundSid);
+      if(typeof updateStudentUI === 'function') updateStudentUI();
+      if(typeof updateMateriEditorTabVisibility === 'function') updateMateriEditorTabVisibility();
+      closeEkskulGate();
+      enterEkskul();
+      if(typeof showToast === 'function') showToast('Selamat datang, ' + s.name + '! 🎮✨');
+    });
+  }
+
+  // ── Login pembina dari gate ──────────────────────
+  window.gateEnterAsPembina = function(){
+    closeEkskulGate();
+    enterEkskul();
+  };
+
+  window.gateDoLogoutPembina = function(){
+    window.pembina = false;
+    window.editMode = false;
+    var editPanel = document.getElementById('edit-panel');
+    if(editPanel) editPanel.classList.remove('open');
+    var editBtn = document.getElementById('edit-btn');
+    if(editBtn){ editBtn.innerHTML = '🔒 Edit Mode'; editBtn.classList.remove('active-mode'); }
+    var addSiswa = document.getElementById('btn-add-siswa');
+    if(addSiswa) addSiswa.style.display = 'none';
+    var absenTab = document.getElementById('tab-btn-absensi');
+    if(absenTab) absenTab.style.display = 'none';
+    _updateGatePembinaView();
+    if(typeof showToast === 'function') showToast('Pembina telah logout.');
+  };
+
+  function gateDoAdminLogin(){
+    // Cek lockout
+    if(Date.now() < _gateAdminLockedUntil){
+      var sisa = Math.ceil((_gateAdminLockedUntil - Date.now()) / 1000);
+      document.getElementById('gate-pw-err').textContent = 'Terlalu banyak percobaan. Coba lagi dalam ' + sisa + ' detik.';
+      return;
+    }
+    var val = document.getElementById('gate-pw-input').value;
+    if(!val || val.length > 256){ document.getElementById('gate-pw-err').textContent = 'Input tidak valid.'; return; }
+    var latestHash = window.CORRECT_PW_HASH;
+    sha256(val).then(function(hash){
+      if(hash === latestHash){
+        _gateAdminAttempts = 0;
+        window.pembina = true;
+        // Aktifkan UI pembina
+        var editBtn = document.getElementById('edit-btn');
+        if(editBtn) editBtn.innerHTML = '⚙ Edit Mode <span class="badge-pembina">Pembina</span>';
+        var addSiswa = document.getElementById('btn-add-siswa');
+        if(addSiswa) addSiswa.style.display = 'block';
+        var regBtnGate = document.getElementById('reg-open-btn');
+        if(regBtnGate) regBtnGate.style.display = 'none';
+        var absenTab = document.getElementById('tab-btn-absensi');
+        if(absenTab) absenTab.style.display = '';
+        if(typeof renderSiswa === 'function') renderSiswa();
+        if(typeof updateMateriEditorTabVisibility === 'function') updateMateriEditorTabVisibility();
+        if(typeof updateAdminBell === 'function') updateAdminBell();
+        // Aktifkan edit mode langsung
+        window.editMode = false; // reset agar toggle menyalakan
+        if(typeof toggleEditMode === 'function') toggleEditMode();
+        closeEkskulGate();
+        enterEkskul();
+        if(typeof showToast === 'function') showToast('Selamat datang, Pembina! 🎉');
+      } else {
+        _gateAdminAttempts++;
+        if(_gateAdminAttempts >= 5){
+          _gateAdminLockedUntil = Date.now() + 10 * 60 * 1000;
+          _gateAdminAttempts = 0;
+          document.getElementById('gate-pw-err').textContent = 'Terlalu banyak percobaan. Akun dikunci 10 menit.';
+        } else {
+          document.getElementById('gate-pw-err').textContent = 'Password salah. Coba lagi.';
+        }
+        document.getElementById('gate-pw-input').value = '';
+        document.getElementById('gate-pw-input').focus();
+      }
+    });
+  }
+
+  // ── Toggle password visibility ─────────────────
+  window.gateToggleEye = function(inputId, btnId){
+    var inp = document.getElementById(inputId);
+    var btn = document.getElementById(btnId);
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+    btn.textContent = inp.type === 'text' ? '🙈' : '👁';
+  };
+
+  // ── Redirect daftar ke reg modal ──────────────
+  window.gateOpenReg = function(){
+    closeEkskulGate();
+    var regModal = document.getElementById('reg-modal');
+    if(regModal) regModal.classList.add('show');
+  };
+
+  // ── Event listeners ────────────────────────────
+  document.addEventListener('DOMContentLoaded', function(){}, false);
+  // Submit buttons
+  document.getElementById('gate-sl-submit').addEventListener('click', gateDoSiswaLogin);
+  document.getElementById('gate-pw-submit').addEventListener('click', gateDoAdminLogin);
+  // Enter key
+  document.getElementById('gate-sl-password').addEventListener('keydown', function(e){ if(e.key==='Enter') gateDoSiswaLogin(); });
+  document.getElementById('gate-sl-username').addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('gate-sl-password').focus(); });
+  document.getElementById('gate-pw-input').addEventListener('keydown', function(e){ if(e.key==='Enter') gateDoAdminLogin(); });
+  // Klik di luar modal menutup
+  document.getElementById('ekskul-gate-overlay').addEventListener('click', function(e){
+    if(e.target === this) closeEkskulGate();
+  });
+
+  // ── Auto-masuk jika sesi siswa sudah valid ─────
+  // Ini dipanggil setelah Firebase restore selesai (dari updateStudentUI)
+  var _origUpdateStudentUI = window.updateStudentUI;
+  if(typeof _origUpdateStudentUI === 'function'){
+    window.updateStudentUI = function(){
+      _origUpdateStudentUI.apply(this, arguments);
+      // Jika gate sedang terbuka dan siswa baru saja ter-restore
+      var overlay = document.getElementById('ekskul-gate-overlay');
+      if(overlay && overlay.style.display !== 'none' && window.loggedInStudentId){
+        // Update tampilan gate agar tombol "Masuk Sekarang" muncul
+        if(_gateTab === 'siswa') _updateGateSiswaView(window.loggedInStudentId);
+      }
+    };
+  }
+})();
 </script>
 </body>
 </html>
