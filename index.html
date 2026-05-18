@@ -22,6 +22,13 @@
         <input type="text" id="reg-kelas" placeholder="Contoh: 7.1 / 2025" autocomplete="off">
       </div>
       <div class="reg-field">
+        <label>Status Keanggotaan</label>
+        <select id="reg-status" style="font-family:'Space Grotesk',sans-serif;padding:10px 12px;border-radius:9px;border:1.5px solid #ddd;background:#f8f7f4;color:#1a1a18;width:100%;outline:none;-webkit-appearance:none;appearance:none;font-size:14px">
+          <option value="aktif">🟢 Aktif</option>
+          <option value="alumni">🎓 Alumni</option>
+        </select>
+      </div>
+      <div class="reg-field">
         <label>Username Login</label>
         <input type="text" id="reg-username" placeholder="Huruf kecil, tanpa spasi" autocomplete="off" autocapitalize="none">
       </div>
@@ -8618,6 +8625,7 @@ function openRegModal(){
   document.getElementById('reg-step-2').classList.remove('active');
   document.getElementById('reg-name').value = '';
   document.getElementById('reg-kelas').value = '';
+  document.getElementById('reg-status').value = 'aktif';
   document.getElementById('reg-username').value = '';
   document.getElementById('reg-password').value = '';
   document.getElementById('reg-err').textContent = '';
@@ -8640,6 +8648,7 @@ document.getElementById('reg-modal').addEventListener('click', function(e){
 document.getElementById('reg-submit-btn').addEventListener('click', function(){
   var name     = document.getElementById('reg-name').value.trim();
   var kelas    = document.getElementById('reg-kelas').value.trim();
+  var status   = document.getElementById('reg-status').value || 'aktif';
   var username = document.getElementById('reg-username').value.trim().toLowerCase().replace(/\s+/g,'');
   var password = document.getElementById('reg-password').value;
   var err      = document.getElementById('reg-err');
@@ -8682,6 +8691,7 @@ document.getElementById('reg-submit-btn').addEventListener('click', function(){
       id:        'reg_' + Date.now() + Math.floor(Math.random()*9999),
       name:      safeName,
       kelas:     safeKelas,
+      status:    status,
       username:  username,
       passwordHash: hash,
       color:     regSelectedColor,
@@ -8762,7 +8772,8 @@ function renderPendingList(){
         '<div style="width:36px;height:36px;border-radius:50%;background:'+r.color+';display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0">'+r.initials+'</div>'+
         '<div>'+
           '<div class="pending-card-name">'+esc(r.name)+'</div>'+
-          '<div class="pending-card-meta">'+esc(r.kelas)+' · @'+esc(r.username)+'<br>📅 '+dateStr+'</div>'+
+          '<div class="pending-card-meta">'+esc(r.kelas)+' · @'+esc(r.username)+'<br>'+
+            (r.status==='alumni'?'🎓 Alumni':'🟢 Aktif')+' · 📅 '+dateStr+'</div>'+
         '</div>'+
       '</div>'+
       '<div class="pending-card-actions">'+
@@ -8798,7 +8809,7 @@ document.addEventListener('click', function(e){
       color: reg.color,
       initials: reg.initials,
       createdAt: Date.now(),
-      status: 'aktif'
+      status: reg.status || 'aktif'
     };
     window.siswaList.push(newSiswa);
     if(!window.siswaDone[newId]) window.siswaDone[newId] = {};
