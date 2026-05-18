@@ -746,7 +746,7 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
 .pubprof-inner{padding:0 14px 28px}
 
 /* ══ MODAL PENDAFTARAN SISWA ══ */
-.reg-modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:7000;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;touch-action:none}
+.reg-modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:11000;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;touch-action:none}
 .reg-modal-overlay.show{display:-webkit-flex;display:flex}
 .reg-modal-box{background:#fff;border-radius:20px;width:90%;max-width:420px;padding:28px 24px;box-shadow:0 8px 40px rgba(0,0,0,.18);position:relative;max-height:90vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .reg-step{display:none}
@@ -879,11 +879,11 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
           background:linear-gradient(135deg,#f5c842,#e8774a);color:#0f0e14;
           font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer
         ">Masuk + Edit Mode →</button>
-        <button type="button" onclick="gateDoLogoutPembina()" style="
+        <button type="button" onclick="document.getElementById('lobby-screen').style.display='flex';if(typeof lobbyUpdateStatus==='function')lobbyUpdateStatus();" style="
           margin-top:8px;width:100%;padding:9px;border-radius:11px;border:none;
           background:transparent;color:#888;font-family:'Space Grotesk',sans-serif;
           font-size:12px;cursor:pointer
-        ">Logout Pembina</button>
+        ">← Kembali ke Lobby</button>
       </div>
       <div id="gate-pembina-form">
         <div style="margin-bottom:16px;position:relative">
@@ -916,76 +916,482 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
 </div>
 
 <!-- ═══════ LOBBY — PILIH RUANGAN ═══════ -->
-<div id="lobby-screen" style="
-  position:fixed;inset:0;z-index:9999;
-  background:#0f0e14;
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  padding:24px;
-  font-family:'Space Grotesk',sans-serif;
-">
-  <!-- bg pattern -->
-  <div style="position:absolute;inset:0;opacity:.04;background-image:radial-gradient(circle,#fff 1px,transparent 1px);background-size:28px 28px;pointer-events:none"></div>
+<style>
+/* ══ LOBBY v2 — LOGIN FIRST, THEN PICK ROOM ══ */
+#lobby-screen { font-family:'Space Grotesk',sans-serif; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+.lobby-bg-layer { position:fixed;inset:0;background-size:cover;background-position:center;z-index:0; }
+.lobby-bg-overlay { position:fixed;inset:0;background:linear-gradient(160deg,rgba(15,14,20,.92) 0%,rgba(15,14,20,.78) 100%);z-index:0; }
+.lobby-dot-pattern { position:fixed;inset:0;z-index:0;opacity:.03;background-image:radial-gradient(circle,#fff 1px,transparent 1px);background-size:28px 28px;pointer-events:none; }
+.lobby-scroll-inner { position:relative;z-index:2;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px 48px; }
 
-  <!-- logo & title -->
-  <div style="text-align:center;margin-bottom:48px;position:relative">
-    <div style="font-size:40px;margin-bottom:12px">🎨</div>
-    <div style="font-size:22px;font-weight:700;color:#f0ede8;letter-spacing:-.02em">Ekskul DKV</div>
-    <div style="font-size:13px;color:#6e6b64;margin-top:4px">SMPN 1 Sumenep</div>
-    <div style="width:40px;height:2px;background:#f5c842;margin:14px auto 0;border-radius:99px"></div>
-  </div>
+/* FASE 1: LOGIN */
+#lobby-phase-login { width:100%;max-width:400px; }
+/* FASE 2: PILIH RUANGAN — display dikontrol JS */
+#lobby-phase-rooms { width:100%;max-width:400px; }
 
-  <!-- dua kotak -->
-  <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;max-width:560px;width:100%">
+/* Animasi fade slide */
+@keyframes lobbyFadeIn { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+.lobby-fadein { animation:lobbyFadeIn .35s ease both; }
 
-    <!-- Kotak 1: Ruang Ekskul -->
-    <button id="lobby-ekskul-btn" type="button" style="
-      flex:1;min-width:220px;max-width:260px;
-      background:#1a1916;border:1.5px solid #2e2c29;
-      border-radius:18px;padding:32px 24px;
-      cursor:pointer;text-align:left;
-      transition:border-color .2s,transform .18s,box-shadow .2s;
-      font-family:'Space Grotesk',sans-serif;
-      position:relative;overflow:hidden;
-    "
-    onmouseover="this.style.borderColor='#f5c842';this.style.transform='translateY(-3px)';this.style.boxShadow='0 12px 32px rgba(245,200,66,.12)'"
-    onmouseout="this.style.borderColor='#2e2c29';this.style.transform='translateY(0)';this.style.boxShadow='none'">
-      <div style="font-size:32px;margin-bottom:14px">🎮</div>
-      <div style="font-size:17px;font-weight:700;color:#f0ede8;margin-bottom:6px">Ruang Ekskul</div>
-      <div style="font-size:12px;color:#6e6b64;line-height:1.6">Quest, profil siswa,<br>absensi & materi</div>
-      <div style="
-        position:absolute;bottom:16px;right:18px;
-        font-size:11px;font-weight:600;color:#f5c842;
-        opacity:.7;letter-spacing:.04em;
-      ">MASUK →</div>
-    </button>
+/* Header */
+.lobby-header { text-align:center;margin-bottom:28px; }
+.lobby-logo-wrap { width:68px;height:68px;border-radius:50%;overflow:hidden;margin:0 auto 12px;border:3px solid rgba(245,200,66,.35);box-shadow:0 0 0 6px rgba(245,200,66,.07) }
+.lobby-logo-wrap img { width:100%;height:100%;object-fit:cover }
+.lobby-logo-emoji { width:68px;height:68px;border-radius:50%;background:rgba(245,200,66,.12);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 12px;border:3px solid rgba(245,200,66,.25) }
+.lobby-app-name { font-size:21px;font-weight:700;color:#f0ede8;letter-spacing:-.02em;line-height:1.2 }
+.lobby-app-sub { font-size:13px;color:#6e6b64;margin-top:3px }
+.lobby-divider { width:36px;height:2px;background:#f5c842;margin:10px auto 0;border-radius:99px }
 
-    <!-- Kotak 2: Ruang Ujian -->
-    <button id="lobby-ujian-btn" type="button" style="
-      flex:1;min-width:220px;max-width:260px;
-      background:#1a1916;border:1.5px solid #2e2c29;
-      border-radius:18px;padding:32px 24px;
-      cursor:pointer;text-align:left;
-      transition:border-color .2s,transform .18s,box-shadow .2s;
-      font-family:'Space Grotesk',sans-serif;
-      position:relative;overflow:hidden;
-    "
-    onmouseover="this.style.borderColor='#e8774a';this.style.transform='translateY(-3px)';this.style.boxShadow='0 12px 32px rgba(232,119,74,.12)'"
-    onmouseout="this.style.borderColor='#2e2c29';this.style.transform='translateY(0)';this.style.boxShadow='none'">
-      <div style="font-size:32px;margin-bottom:14px">📝</div>
-      <div style="font-size:17px;font-weight:700;color:#f0ede8;margin-bottom:6px">Ruang Ujian</div>
-      <div style="font-size:12px;color:#6e6b64;line-height:1.6">Kerjakan soal,<br>lihat nilai & riwayat</div>
-      <div style="
-        position:absolute;bottom:16px;right:18px;
-        font-size:11px;font-weight:600;color:#e8774a;
-        opacity:.7;letter-spacing:.04em;
-      ">MASUK →</div>
-    </button>
+/* Tab login */
+.lobby-login-tabs { display:flex;border-radius:12px;overflow:hidden;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);margin-bottom:14px }
+.lobby-tab-btn { flex:1;padding:10px 0;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;border:none;background:transparent;color:#6e6b64;cursor:pointer;transition:all .2s }
+.lobby-tab-btn.active { background:#f5c842;color:#1a1916 }
 
-  </div>
+/* Form box */
+.lobby-form-wrap { background:rgba(22,21,18,.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:22px 20px 20px }
+.lobby-inp { width:100%;box-sizing:border-box;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);color:#f0ede8;font-family:'Space Grotesk',sans-serif;font-size:14px;padding:11px 14px;border-radius:11px;outline:none;margin-bottom:10px;transition:border .2s;-webkit-appearance:none }
+.lobby-inp:focus { border-color:#f5c842 }
+.lobby-inp::placeholder { color:#4e4c48 }
+.lobby-inp-row { position:relative;margin-bottom:10px }
+.lobby-inp-row .lobby-inp { margin-bottom:0;padding-right:42px }
+.lobby-eye-btn { position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:#6e6b64;padding:4px }
+.lobby-submit-btn { width:100%;padding:13px;background:linear-gradient(135deg,#f5c842,#e8a020);color:#1a1916;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;border:none;border-radius:12px;cursor:pointer;margin-top:6px;transition:opacity .2s,transform .15s;-webkit-appearance:none }
+.lobby-submit-btn:active { opacity:.85;transform:scale(.98) }
+.lobby-err { color:#ff7b7b;font-size:12px;min-height:14px;margin:4px 0 6px;text-align:center }
+.lobby-link-btn { background:none;border:none;color:#aaa;font-family:'Space Grotesk',sans-serif;font-size:12px;cursor:pointer;text-decoration:underline;padding:0;margin-top:12px;display:block;text-align:center;width:100% }
 
-  <div style="margin-top:36px;font-size:11px;color:#3e3c38">Pilih ruangan untuk melanjutkan</div>
+/* Room cards */
+.lobby-rooms-grid { display:flex;gap:12px;flex-wrap:wrap }
+.lobby-room-card { flex:1;min-width:150px;background:rgba(22,21,18,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1.5px solid #2e2c29;border-radius:16px;padding:22px 16px 18px;cursor:pointer;text-align:left;transition:border-color .2s,transform .18s,box-shadow .2s;font-family:'Space Grotesk',sans-serif;position:relative;overflow:hidden;-webkit-appearance:none }
+.lobby-room-card:active { transform:scale(.97) }
+.lobby-room-card:hover { border-color:#f5c842;transform:translateY(-2px);box-shadow:0 10px 28px rgba(245,200,66,.1) }
+.lobby-room-card.ujian:hover { border-color:#e8774a;box-shadow:0 10px 28px rgba(232,119,74,.1) }
+.lobby-room-label { font-size:10px;font-weight:600;color:#f5c842;opacity:.7;letter-spacing:.04em;margin-top:10px }
+.lobby-room-card.ujian .lobby-room-label { color:#e8774a }
+
+/* Logged-in info bar */
+.lobby-user-bar { display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px 14px;margin-bottom:16px;font-size:13px }
+.lobby-user-name { color:#f0ede8;font-weight:600 }
+.lobby-logout-small { background:none;border:none;color:#ff7b7b;font-family:'Space Grotesk',sans-serif;font-size:12px;cursor:pointer;padding:0 }
+
+/* Edit Lobby FAB */
+.lobby-edit-fab { position:fixed;bottom:20px;right:20px;z-index:10010;background:#f5c842;color:#1a1916;border:none;border-radius:50%;width:46px;height:46px;font-size:19px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;-webkit-appearance:none }
+.lobby-edit-panel { position:fixed;bottom:76px;right:16px;z-index:10010;background:#1c1b18;border:1px solid #3a3836;border-radius:16px;padding:18px;width:270px;max-height:80vh;overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.55);display:none;font-family:'Space Grotesk',sans-serif }
+.lobby-edit-panel.open { display:block;animation:lobbyFadeIn .2s ease both }
+.lobby-edit-title { font-size:13px;font-weight:700;color:#f0ede8;margin-bottom:12px }
+.lobby-edit-label { font-size:11px;font-weight:600;color:#6e6b64;letter-spacing:.05em;margin-bottom:4px;display:block }
+.lobby-edit-inp { width:100%;box-sizing:border-box;background:rgba(255,255,255,.05);border:1.5px solid #3a3836;color:#f0ede8;font-family:'Space Grotesk',sans-serif;font-size:13px;padding:8px 10px;border-radius:9px;outline:none;margin-bottom:10px;-webkit-appearance:none }
+.lobby-edit-inp:focus { border-color:#f5c842 }
+.lobby-edit-save { width:100%;padding:9px;background:#f5c842;color:#1a1916;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;border:none;border-radius:9px;cursor:pointer;-webkit-appearance:none }
+.lobby-color-grid { display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:10px }
+.lobby-color-swatch { width:100%;aspect-ratio:1;border-radius:7px;border:2px solid transparent;cursor:pointer;transition:transform .15s,border-color .15s }
+.lobby-color-swatch.sel { border-color:#f5c842;transform:scale(1.1) }
+</style>
+
+<!-- ══ LOBBY SCREEN v2 ══ -->
+<div id="lobby-screen" style="position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;">
+  <div class="lobby-bg-layer" id="lobby-bg-layer" style="background:#0f0e14"></div>
+  <div class="lobby-bg-overlay"></div>
+  <div class="lobby-dot-pattern"></div>
+
+  <div class="lobby-scroll-inner">
+
+    <!-- ══ FASE 1: LOGIN ══ -->
+    <div id="lobby-phase-login">
+      <!-- Header -->
+      <div class="lobby-header">
+        <div id="lobby-logo-display"><div class="lobby-logo-emoji">🎨</div></div>
+        <div class="lobby-app-name" id="lobby-app-name-display">Ekskul DKV</div>
+        <div class="lobby-app-sub" id="lobby-app-sub-display">SMPN 1 Sumenep</div>
+        <div class="lobby-divider"></div>
+      </div>
+
+      <!-- Tab -->
+      <div class="lobby-login-tabs">
+        <button class="lobby-tab-btn active" id="lobby-tab-siswa" type="button" onclick="lobbySetTab('siswa')">🎮 Siswa</button>
+        <button class="lobby-tab-btn" id="lobby-tab-pembina" type="button" onclick="lobbySetTab('pembina')">⚙️ Pembina</button>
+      </div>
+
+      <!-- Form Siswa -->
+      <div class="lobby-form-wrap" id="lobby-form-siswa">
+        <div style="font-size:12px;color:#6e6b64;margin-bottom:12px;text-align:center">Masuk ke akun siswa kamu 🎒</div>
+        <input type="text" id="lobby-sl-username" class="lobby-inp" placeholder="Username" autocomplete="off" autocapitalize="none"
+          onkeydown="if(event.key==='Enter') document.getElementById('lobby-sl-password').focus()">
+        <div class="lobby-inp-row">
+          <input type="password" id="lobby-sl-password" class="lobby-inp" placeholder="Password"
+            onkeydown="if(event.key==='Enter') lobbyDoSiswaLogin()">
+          <button type="button" class="lobby-eye-btn" id="lobby-sl-eye" onclick="lobbyToggleEye('lobby-sl-password','lobby-sl-eye')">👁</button>
+        </div>
+        <div class="lobby-err" id="lobby-sl-err"></div>
+        <button type="button" class="lobby-submit-btn" onclick="lobbyDoSiswaLogin()">Masuk →</button>
+        <button type="button" class="lobby-link-btn" onclick="if(typeof openRegModal==='function')openRegModal()">Belum punya akun? Daftar di sini</button>
+      </div>
+
+      <!-- Form Pembina -->
+      <div class="lobby-form-wrap" id="lobby-form-pembina" style="display:none">
+        <div style="font-size:12px;color:#6e6b64;margin-bottom:12px;text-align:center">Login sebagai pembina / admin ⚙️</div>
+        <div class="lobby-inp-row">
+          <input type="password" id="lobby-pw-input" class="lobby-inp" placeholder="Password pembina..."
+            onkeydown="if(event.key==='Enter') lobbyDoAdminLogin()">
+          <button type="button" class="lobby-eye-btn" id="lobby-pw-eye" onclick="lobbyToggleEye('lobby-pw-input','lobby-pw-eye')">👁</button>
+        </div>
+        <div class="lobby-err" id="lobby-pw-err"></div>
+        <button type="button" class="lobby-submit-btn" onclick="lobbyDoAdminLogin()">Masuk sebagai Pembina →</button>
+      </div>
+    </div>
+
+    <!-- ══ FASE 2: PILIH RUANGAN (muncul setelah login) ══ -->
+    <div id="lobby-phase-rooms" style="display:none">
+      <!-- Header kecil -->
+      <div class="lobby-header" style="margin-bottom:20px">
+        <div id="lobby-logo-display-2"><div class="lobby-logo-emoji" style="width:52px;height:52px;font-size:26px;margin-bottom:8px">🎨</div></div>
+        <div class="lobby-app-name" id="lobby-app-name-display-2" style="font-size:18px">Ekskul DKV</div>
+        <div class="lobby-divider"></div>
+      </div>
+
+      <!-- Info user yang login -->
+      <div class="lobby-user-bar" id="lobby-user-bar">
+        <span class="lobby-user-name" id="lobby-user-bar-name">—</span>
+        <button type="button" class="lobby-logout-small" onclick="lobbyHandleLogout()">🚪 Logout</button>
+      </div>
+
+      <!-- 2 Kartu Ruangan -->
+      <div class="lobby-rooms-grid">
+        <button id="lobby-ekskul-btn" type="button" class="lobby-room-card">
+          <div style="font-size:30px;margin-bottom:10px">🎮</div>
+          <div style="font-size:14px;font-weight:700;color:#f0ede8;margin-bottom:4px">Ruang Ekskul</div>
+          <div style="font-size:11px;color:#6e6b64;line-height:1.5">Quest, profil,<br>absensi & materi</div>
+          <div class="lobby-room-label">MASUK →</div>
+        </button>
+        <button id="lobby-ujian-btn" type="button" class="lobby-room-card ujian">
+          <div style="font-size:30px;margin-bottom:10px">📝</div>
+          <div style="font-size:14px;font-weight:700;color:#f0ede8;margin-bottom:4px">Ruang Ujian</div>
+          <div style="font-size:11px;color:#6e6b64;line-height:1.5">Kerjakan soal,<br>nilai & riwayat</div>
+          <div class="lobby-room-label">MASUK →</div>
+        </button>
+      </div>
+    </div>
+
+  </div><!-- end scroll-inner -->
 </div>
+
+<!-- Edit Lobby FAB -->
+<button type="button" class="lobby-edit-fab" id="lobby-edit-fab" onclick="lobbyToggleEditPanel()" title="Edit tampilan lobby">✏️</button>
+<div class="lobby-edit-panel" id="lobby-edit-panel">
+  <div class="lobby-edit-title">✏️ Edit Tampilan Lobby</div>
+  <label class="lobby-edit-label">Nama Aplikasi</label>
+  <input type="text" class="lobby-edit-inp" id="ledit-appname" placeholder="Nama Aplikasi">
+  <label class="lobby-edit-label">Sub-judul</label>
+  <input type="text" class="lobby-edit-inp" id="ledit-appsub" placeholder="Misal: SMPN 1 Sumenep">
+  <label class="lobby-edit-label">Logo (URL atau upload)</label>
+  <input type="text" class="lobby-edit-inp" id="ledit-logourl" placeholder="https://...">
+  <input type="file" id="ledit-logoupload" accept="image/*" style="display:none" onchange="lobbyHandleLogoUpload(this)">
+  <button type="button" onclick="document.getElementById('ledit-logoupload').click()" style="width:100%;padding:7px;background:transparent;border:1.5px dashed #3a3836;color:#6e6b64;border-radius:8px;font-family:'Space Grotesk',sans-serif;font-size:12px;cursor:pointer;margin-bottom:10px">📁 Upload Logo</button>
+  <label class="lobby-edit-label">Warna Background</label>
+  <div class="lobby-color-grid" id="ledit-color-grid"></div>
+  <label class="lobby-edit-label">Gambar Background (URL atau upload)</label>
+  <input type="text" class="lobby-edit-inp" id="ledit-bgurl" placeholder="https://...">
+  <input type="file" id="ledit-bgupload" accept="image/*" style="display:none" onchange="lobbyHandleBgUpload(this)">
+  <button type="button" onclick="document.getElementById('ledit-bgupload').click()" style="width:100%;padding:7px;background:transparent;border:1.5px dashed #3a3836;color:#6e6b64;border-radius:8px;font-family:'Space Grotesk',sans-serif;font-size:12px;cursor:pointer;margin-bottom:10px">📁 Upload Background</button>
+  <button type="button" class="lobby-edit-save" onclick="lobbySaveEdit()">💾 Simpan</button>
+  <button type="button" onclick="lobbyResetEdit()" style="width:100%;padding:7px;background:transparent;border:none;color:#6e6b64;font-family:'Space Grotesk',sans-serif;font-size:12px;cursor:pointer;margin-top:5px">↩ Reset Default</button>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// LOBBY v2 — LOGIN FIRST, THEN PICK ROOM
+// ══════════════════════════════════════════════════════
+(function(){
+
+  // ── FASE SWITCH ────────────────────────────────────
+  // _lobbyPhase: 'login' | 'rooms' | null — track fase aktif agar tidak re-animate
+  var _lobbyPhase = null;
+
+  function showPhaseLogin(animate){
+    if(_lobbyPhase === 'login') return; // sudah di fase ini, skip
+    _lobbyPhase = 'login';
+    var p1 = document.getElementById('lobby-phase-login');
+    var p2 = document.getElementById('lobby-phase-rooms');
+    if(p2){ p2.style.display='none'; }
+    if(p1){
+      p1.style.display='block';
+      if(animate){ p1.classList.remove('lobby-fadein'); void p1.offsetWidth; p1.classList.add('lobby-fadein'); }
+      else { p1.classList.remove('lobby-fadein'); }
+    }
+    var fab = document.getElementById('lobby-edit-fab');
+    if(fab) fab.style.display='none';
+    var ep = document.getElementById('lobby-edit-panel');
+    if(ep) ep.classList.remove('open');
+  }
+
+  function showPhaseRooms(animate){
+    if(_lobbyPhase === 'rooms') return; // sudah di fase ini, skip
+    _lobbyPhase = 'rooms';
+    var p1 = document.getElementById('lobby-phase-login');
+    var p2 = document.getElementById('lobby-phase-rooms');
+    if(p1){ p1.style.display='none'; }
+    if(p2){
+      p2.style.display='block';
+      if(animate){ p2.classList.remove('lobby-fadein'); void p2.offsetWidth; p2.classList.add('lobby-fadein'); }
+      else { p2.classList.remove('lobby-fadein'); }
+    }
+    // Update nama user di bar
+    var bar = document.getElementById('lobby-user-bar-name');
+    if(bar){
+      if(window.pembina){
+        bar.innerHTML = '<span style="color:#f5c842">⚙️ Pembina</span>';
+      } else if(window.loggedInStudentId){
+        var s = (window.siswaList||[]).find(function(x){return x.id===window.loggedInStudentId;});
+        bar.innerHTML = '<span style="color:#7dd87d">🎮 '+(s?s.name:window.loggedInStudentId)+'</span>';
+      }
+    }
+    // Sync nama di header fase 2
+    var s2 = getLobbySettings();
+    var n2 = document.getElementById('lobby-app-name-display-2');
+    if(n2 && s2.appName) n2.textContent = s2.appName;
+    var l2 = document.getElementById('lobby-logo-display-2');
+    if(l2 && s2.logoUrl){ l2.innerHTML='<div class="lobby-logo-wrap" style="width:52px;height:52px;margin-bottom:8px"><img src="'+s2.logoUrl+'" alt="logo"></div>'; }
+    // Tampilkan FAB edit jika pembina
+    var fab = document.getElementById('lobby-edit-fab');
+    if(fab) fab.style.display = window.pembina ? 'flex' : 'none';
+  }
+
+  // ── Tab switch ──────────────────────────────────────
+  window.lobbySetTab = function(tab){
+    var tS=document.getElementById('lobby-tab-siswa'), tP=document.getElementById('lobby-tab-pembina');
+    var fS=document.getElementById('lobby-form-siswa'), fP=document.getElementById('lobby-form-pembina');
+    document.getElementById('lobby-sl-err').textContent='';
+    document.getElementById('lobby-pw-err').textContent='';
+    if(tab==='siswa'){
+      tS.classList.add('active'); tP.classList.remove('active');
+      fS.style.display='block'; fP.style.display='none';
+    } else {
+      tP.classList.add('active'); tS.classList.remove('active');
+      fP.style.display='block'; fS.style.display='none';
+    }
+  };
+
+  window.lobbyToggleEye = function(inpId,btnId){
+    var inp=document.getElementById(inpId), btn=document.getElementById(btnId);
+    inp.type=inp.type==='password'?'text':'password';
+    btn.textContent=inp.type==='text'?'🙈':'👁';
+  };
+
+  var _lAttemptsSiswa={}, _lLockSiswa={}, _lAttemptsPembina=0, _lLockPembina=0;
+
+  // ── Login Siswa ─────────────────────────────────────
+  window.lobbyDoSiswaLogin = function(){
+    var uname=(document.getElementById('lobby-sl-username').value||'').trim().toLowerCase();
+    var pass=document.getElementById('lobby-sl-password').value||'';
+    var err=document.getElementById('lobby-sl-err');
+    err.textContent='';
+    if(!uname||!pass){ err.textContent='Username & password wajib diisi.'; return; }
+    if(uname.length>40||pass.length>128){ err.textContent='Input tidak valid.'; return; }
+    if(Date.now()<(_lLockSiswa[uname]||0)){ err.textContent='Terlalu banyak percobaan. Tunggu sebentar.'; return; }
+    var accounts=window.siswaAccounts||{}, foundSid=null;
+    for(var sid in accounts){
+      if(accounts[sid]&&accounts[sid].username&&accounts[sid].username.toLowerCase()===uname){ foundSid=sid; break; }
+    }
+    var dummy='0000000000000000000000000000000000000000000000000000000000000000';
+    var accHash=foundSid?(accounts[foundSid].passwordHash||dummy):dummy;
+    sha256(pass).then(function(hash){
+      if(!foundSid||hash!==accHash){
+        _lAttemptsSiswa[uname]=(_lAttemptsSiswa[uname]||0)+1;
+        if(_lAttemptsSiswa[uname]>=5){ _lLockSiswa[uname]=Date.now()+5*60*1000; _lAttemptsSiswa[uname]=0; }
+        err.textContent='Username atau password salah.';
+        document.getElementById('lobby-sl-password').value=''; return;
+      }
+      var s=(window.siswaList||[]).find(function(x){return x.id===foundSid;});
+      if(!s){ err.textContent='Data siswa tidak ditemukan.'; return; }
+      _lAttemptsSiswa[uname]=0;
+      window.loggedInStudentId=foundSid;
+      sessionStorage.setItem('dkv_student_sess',foundSid);
+      if(typeof updateStudentUI==='function') updateStudentUI();
+      if(typeof updateMateriEditorTabVisibility==='function') updateMateriEditorTabVisibility();
+      if(typeof updateToolbarByRole==='function') updateToolbarByRole();
+      document.getElementById('lobby-sl-username').value='';
+      document.getElementById('lobby-sl-password').value='';
+      if(typeof showToast==='function') showToast('Selamat datang, '+s.name+'! 🎮✨');
+      showPhaseRooms(true); // animate saat login
+    });
+  };
+
+  // ── Login Pembina ───────────────────────────────────
+  window.lobbyDoAdminLogin = function(){
+    var val=document.getElementById('lobby-pw-input').value||'';
+    var err=document.getElementById('lobby-pw-err');
+    err.textContent='';
+    if(!val||val.length>256){ err.textContent='Input tidak valid.'; return; }
+    if(Date.now()<_lLockPembina){ err.textContent='Terlalu banyak percobaan. Tunggu 10 menit.'; return; }
+    sha256(val).then(function(hash){
+      if(hash===window.CORRECT_PW_HASH){
+        window.pembina=true; window.editMode=false; _lAttemptsPembina=0;
+        document.getElementById('lobby-pw-input').value=''; err.textContent='';
+        if(typeof updateToolbarByRole==='function') updateToolbarByRole();
+        if(typeof showToast==='function') showToast('Selamat datang, Pembina! 🎉');
+        showPhaseRooms(true); // animate saat login
+      } else {
+        _lAttemptsPembina++;
+        if(_lAttemptsPembina>=5){ _lLockPembina=Date.now()+10*60*1000; _lAttemptsPembina=0; }
+        err.textContent='Password salah. Coba lagi.';
+        document.getElementById('lobby-pw-input').value='';
+      }
+    });
+  };
+
+  // ── Logout dari halaman pilih ruangan ──────────────
+  window.lobbyHandleLogout = function(){
+    if(typeof doGlobalLogout==='function') doGlobalLogout();
+    else { window.pembina=false; window.loggedInStudentId=null; sessionStorage.removeItem('dkv_student_sess'); }
+    _lobbyPhase = null; // reset agar animasi jalan
+    showPhaseLogin(true); // animate saat logout
+  };
+
+  // ── Update status / sinkron fase (debounced, no animate) ──
+  var _lobbyStatusTimer = null;
+  window.lobbyUpdateStatus = function(){
+    clearTimeout(_lobbyStatusTimer);
+    _lobbyStatusTimer = setTimeout(function(){
+      var lobby = document.getElementById('lobby-screen');
+      if(!lobby || lobby.style.display==='none') return;
+      if(window.pembina || window.loggedInStudentId){
+        showPhaseRooms(false); // no animate saat auto-sync
+      } else {
+        showPhaseLogin(false);
+      }
+    }, 80);
+  };
+
+  // Apply lobby settings ke tampilan
+  function getLobbySettings(){
+    try{ return JSON.parse(localStorage.getItem('dkv_lobby_settings')||'{}'); } catch(e){ return {}; }
+  }
+
+  function applyLobbyLogo(url){
+    ['lobby-logo-display','lobby-logo-display-2'].forEach(function(id){
+      var el=document.getElementById(id); if(!el) return;
+      var sz = id==='lobby-logo-display-2'?'52px':'68px';
+      var fsz = id==='lobby-logo-display-2'?'26px':'32px';
+      el.innerHTML='<div class="lobby-logo-wrap" style="width:'+sz+';height:'+sz+';margin-bottom:'+(id==='lobby-logo-display-2'?'8':'12')+'px"><img src="'+url+'" alt="logo" onerror="this.parentNode.innerHTML=\'🎨\'"></div>';
+    });
+  }
+
+  window.lobbyApplySettings = function(){
+    var s=getLobbySettings();
+    if(s.appName){
+      ['lobby-app-name-display','lobby-app-name-display-2'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=s.appName;});
+    }
+    if(s.appSub){ var el=document.getElementById('lobby-app-sub-display'); if(el)el.textContent=s.appSub; }
+    if(s.logoUrl) applyLobbyLogo(s.logoUrl);
+    var bgLayer=document.getElementById('lobby-bg-layer');
+    if(bgLayer){
+      if(s.bgImg){ bgLayer.style.backgroundImage='url('+s.bgImg+')'; bgLayer.style.background='#0f0e14'; }
+      else if(s.bgColor){ bgLayer.style.background=s.bgColor; bgLayer.style.backgroundImage='none'; }
+    }
+    // Populate edit fields if open
+    var pan=document.getElementById('lobby-edit-panel');
+    if(pan&&pan.classList.contains('open')){
+      var ai=document.getElementById('ledit-appname'); if(ai)ai.value=s.appName||'';
+      var si=document.getElementById('ledit-appsub'); if(si)si.value=s.appSub||'';
+      var li=document.getElementById('ledit-logourl'); if(li)li.value=s.logoUrl||'';
+      var bi=document.getElementById('ledit-bgurl'); if(bi)bi.value=s.bgImg||'';
+    }
+  };
+
+  window.lobbyHandleLogoUpload = function(input){
+    var file=input.files[0]; if(!file) return;
+    var r=new FileReader();
+    r.onload=function(e){ document.getElementById('ledit-logourl').value=e.target.result; applyLobbyLogo(e.target.result); };
+    r.readAsDataURL(file);
+  };
+
+  window.lobbyHandleBgUpload = function(input){
+    var file=input.files[0]; if(!file) return;
+    var r=new FileReader();
+    r.onload=function(e){
+      document.getElementById('ledit-bgurl').value=e.target.result;
+      var bg=document.getElementById('lobby-bg-layer');
+      if(bg) bg.style.backgroundImage='url('+e.target.result+')';
+    };
+    r.readAsDataURL(file);
+  };
+
+  var _lobbyBgColors=['#0f0e14','#0e1a0e','#0e1219','#1a0e14','#1a1411','#141d2e','#2a1a0e','#0e1a1a','#1a0e1a','#1d1a0e'];
+
+  function renderLobbyColorGrid(){
+    var grid=document.getElementById('ledit-color-grid'); if(!grid) return;
+    var cur=getLobbySettings().bgColor||'#0f0e14';
+    grid.innerHTML=_lobbyBgColors.map(function(c){
+      return '<div class="lobby-color-swatch'+(c===cur?' sel':'')+'" style="background:'+c+'" onclick="lobbyPickBgColor(\''+c+'\')" title="'+c+'"></div>';
+    }).join('');
+  }
+
+  window.lobbyPickBgColor = function(c){
+    var bg=document.getElementById('lobby-bg-layer');
+    if(bg){ bg.style.background=c; bg.style.backgroundImage='none'; }
+    document.getElementById('ledit-bgurl').value='';
+    window._lobbyTempBgColor=c; window._lobbyTempBgImg='';
+    Array.from(document.querySelectorAll('.lobby-color-swatch')).forEach(function(el){
+      el.classList.toggle('sel', el.getAttribute('title')===c);
+    });
+  };
+
+  window.lobbyToggleEditPanel = function(){
+    var panel=document.getElementById('lobby-edit-panel'); if(!panel) return;
+    if(!panel.classList.contains('open')){
+      var s=getLobbySettings();
+      var ai=document.getElementById('ledit-appname'); if(ai)ai.value=s.appName||'';
+      var si=document.getElementById('ledit-appsub'); if(si)si.value=s.appSub||'';
+      var li=document.getElementById('ledit-logourl'); if(li)li.value=s.logoUrl||'';
+      var bi=document.getElementById('ledit-bgurl'); if(bi)bi.value=s.bgImg||'';
+      renderLobbyColorGrid();
+    }
+    panel.classList.toggle('open');
+  };
+
+  window.lobbySaveEdit = function(){
+    var s=getLobbySettings();
+    var an=document.getElementById('ledit-appname').value.trim();
+    var as_=document.getElementById('ledit-appsub').value.trim();
+    var lu=document.getElementById('ledit-logourl').value.trim();
+    var bu=document.getElementById('ledit-bgurl').value.trim();
+    if(an) s.appName=an;
+    if(as_) s.appSub=as_;
+    if(lu) s.logoUrl=lu;
+    if(bu){ s.bgImg=bu; s.bgColor=''; }
+    else if(window._lobbyTempBgColor){ s.bgColor=window._lobbyTempBgColor; s.bgImg=''; }
+    localStorage.setItem('dkv_lobby_settings',JSON.stringify(s));
+    window.lobbyApplySettings();
+    window._lobbyTempBgColor=null;
+    if(typeof showToast==='function') showToast('Tampilan lobby disimpan! ✨');
+    document.getElementById('lobby-edit-panel').classList.remove('open');
+  };
+
+  window.lobbyResetEdit = function(){
+    localStorage.removeItem('dkv_lobby_settings');
+    window._lobbyTempBgColor=null;
+    document.getElementById('lobby-app-name-display').textContent='Ekskul DKV';
+    document.getElementById('lobby-app-sub-display').textContent='SMPN 1 Sumenep';
+    document.getElementById('lobby-logo-display').innerHTML='<div class="lobby-logo-emoji">🎨</div>';
+    var bgLayer=document.getElementById('lobby-bg-layer');
+    if(bgLayer){ bgLayer.style.background='#0f0e14'; bgLayer.style.backgroundImage='none'; }
+    if(typeof showToast==='function') showToast('Tampilan lobby direset.');
+    document.getElementById('lobby-edit-panel').classList.remove('open');
+  };
+
+  // ── Init saat DOM siap ──────────────────────────────
+  document.addEventListener('DOMContentLoaded', function(){
+    window.lobbyApplySettings();
+    // Init tanpa animasi (false = no animate)
+    if(window.pembina || window.loggedInStudentId){
+      showPhaseRooms(false);
+    } else {
+      showPhaseLogin(false);
+    }
+  });
+
+})();
+</script>
 
 <!-- ═══════ RUANG UJIAN OVERLAY ═══════ -->
 <div id="ujian-screen" style="display:none;position:fixed;inset:0;z-index:9998;background:#0f0e14;overflow-y:auto;font-family:'Space Grotesk',sans-serif">
@@ -1004,15 +1410,60 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
     <!-- STATE: belum login -->
     <div id="ujian-login-state">
       <div style="background:#1a1916;border:1.5px solid #2e2c29;border-radius:16px;padding:28px 24px;max-width:380px;margin:40px auto">
-        <div style="font-size:28px;margin-bottom:12px">🔐</div>
-        <div style="font-size:17px;font-weight:700;color:#f0ede8;margin-bottom:6px">Login Siswa</div>
-        <div style="font-size:12px;color:#6e6b64;margin-bottom:20px">Masuk untuk mengerjakan ujian</div>
-        <label style="font-size:11px;font-weight:600;color:#9e9b95;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px">Username</label>
-        <input id="ujian-username" type="text" placeholder="Username kamu..." autocomplete="username" style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid #2e2c29;background:#242220;color:#f0ede8;font-family:'Space Grotesk',sans-serif;font-size:13px;margin-bottom:12px">
-        <label style="font-size:11px;font-weight:600;color:#9e9b95;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px">Password</label>
-        <input id="ujian-password" type="password" placeholder="Password kamu..." autocomplete="current-password" style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid #2e2c29;background:#242220;color:#f0ede8;font-family:'Space Grotesk',sans-serif;font-size:13px;margin-bottom:6px">
-        <div id="ujian-login-err" style="font-size:12px;color:#e05252;min-height:16px;margin-bottom:10px"></div>
-        <button id="ujian-login-btn" type="button" style="width:100%;padding:11px;border-radius:8px;border:none;background:#e8774a;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Masuk</button>
+        <div style="text-align:center;margin-bottom:20px">
+          <div style="font-size:28px;margin-bottom:8px">📝</div>
+          <div style="font-size:17px;font-weight:700;color:#f0ede8">Masuk ke Ruang Ujian</div>
+          <div style="font-size:12px;color:#6e6b64;margin-top:4px">Pilih jenis akun untuk melanjutkan</div>
+        </div>
+        <!-- Tab Siswa / Pembina -->
+        <div id="ujian-gate-tab-row" style="display:flex;gap:8px;margin-bottom:20px">
+          <button id="ujian-gate-tab-siswa" type="button" onclick="ujianGateSetTab('siswa')" style="flex:1;padding:9px;border-radius:10px;border:1.5px solid #e8774a;background:#e8774a;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s">🎮 Siswa</button>
+          <button id="ujian-gate-tab-pembina" type="button" onclick="ujianGateSetTab('pembina')" style="flex:1;padding:9px;border-radius:10px;border:1.5px solid #2e2c29;background:transparent;color:#9e9b95;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s">⚙️ Pembina</button>
+        </div>
+
+        <!-- Form Siswa -->
+        <div id="ujian-gate-form-siswa">
+          <!-- Sudah login (carry-over dari ekskul) -->
+          <div id="ujian-gate-siswa-logged" style="display:none;text-align:center;padding:8px 0 16px">
+            <div style="font-size:13px;color:#e8774a;font-weight:700;margin-bottom:4px">✅ Sudah login sebagai</div>
+            <div id="ujian-gate-siswa-logged-name" style="font-size:15px;font-weight:700;color:#f0ede8"></div>
+            <button type="button" onclick="ujianGateEnterAsSiswa()" style="margin-top:14px;width:100%;padding:12px;border-radius:11px;border:none;background:#e8774a;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Masuk Sekarang →</button>
+            <button type="button" onclick="ujianGateDoLogoutSiswa()" style="margin-top:8px;width:100%;padding:9px;border-radius:11px;border:none;background:transparent;color:#888;font-family:'Space Grotesk',sans-serif;font-size:12px;cursor:pointer">Ganti Akun</button>
+          </div>
+          <!-- Form login siswa -->
+          <div id="ujian-gate-siswa-form">
+            <label style="font-size:11px;font-weight:600;color:#9e9b95;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px">Username</label>
+            <input id="ujian-username" type="text" placeholder="Username kamu..." autocomplete="off" autocapitalize="none" style="width:100%;padding:10px 12px;border-radius:9px;border:1.5px solid #2e2c29;background:#0f0e14;color:#f0ede8;font-family:'Space Grotesk',sans-serif;font-size:14px;outline:none;box-sizing:border-box;margin-bottom:12px">
+            <label style="font-size:11px;font-weight:600;color:#9e9b95;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px">Password</label>
+            <div style="position:relative;margin-bottom:6px">
+              <input id="ujian-password" type="password" placeholder="Password kamu..." autocomplete="current-password" style="width:100%;padding:10px 36px 10px 12px;border-radius:9px;border:1.5px solid #2e2c29;background:#0f0e14;color:#f0ede8;font-family:'Space Grotesk',sans-serif;font-size:14px;outline:none;box-sizing:border-box">
+              <button type="button" id="ujian-gate-sl-eye" onclick="ujianGateToggleEye('ujian-password','ujian-gate-sl-eye')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:14px">👁</button>
+            </div>
+            <div id="ujian-login-err" style="font-size:12px;color:#e05252;min-height:16px;margin-bottom:10px"></div>
+            <button id="ujian-login-btn" type="button" style="width:100%;padding:12px;border-radius:11px;border:none;background:#e8774a;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Masuk →</button>
+          </div>
+        </div>
+
+        <!-- Form Pembina -->
+        <div id="ujian-gate-form-pembina" style="display:none">
+          <!-- Sudah login sebagai pembina -->
+          <div id="ujian-gate-pembina-logged" style="display:none;text-align:center;padding:8px 0 16px">
+            <div style="font-size:13px;color:#f5c842;font-weight:700;margin-bottom:4px">⚙️ Sudah login sebagai Pembina</div>
+            <button type="button" onclick="ujianGateEnterAsPembina()" style="margin-top:14px;width:100%;padding:12px;border-radius:11px;border:none;background:linear-gradient(135deg,#f5c842,#e8774a);color:#0f0e14;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Masuk → Kelola Ujian</button>
+            <button type="button" onclick="ujianGateDoLogoutPembina()" style="margin-top:8px;width:100%;padding:9px;border-radius:11px;border:none;background:transparent;color:#888;font-family:'Space Grotesk',sans-serif;font-size:12px;cursor:pointer">Logout Pembina</button>
+          </div>
+          <!-- Form password pembina -->
+          <div id="ujian-gate-pembina-form">
+            <label style="font-size:11px;font-weight:600;color:#9e9b95;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px">Password Pembina</label>
+            <div style="position:relative;margin-bottom:6px">
+              <input id="ujian-gate-pw-input" type="password" placeholder="Password pembina..." autocomplete="current-password" style="width:100%;padding:10px 36px 10px 12px;border-radius:9px;border:1.5px solid #2e2c29;background:#0f0e14;color:#f0ede8;font-family:'Space Grotesk',sans-serif;font-size:14px;outline:none;box-sizing:border-box">
+              <button type="button" id="ujian-gate-pw-eye" onclick="ujianGateToggleEye('ujian-gate-pw-input','ujian-gate-pw-eye')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:14px">👁</button>
+            </div>
+            <div id="ujian-gate-pw-err" style="font-size:12px;color:#e05252;min-height:16px;margin-bottom:10px"></div>
+            <button id="ujian-gate-pw-submit" type="button" style="width:100%;padding:12px;border-radius:11px;border:none;background:linear-gradient(135deg,#f5c842,#e8774a);color:#0f0e14;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Masuk →</button>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -1388,6 +1839,7 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
             </div>
           </div>
           <button type="button" class="edit-profile-toggle" onclick="openProfileEdit()">✏️ Edit Profil</button>
+          <button type="button" onclick="document.getElementById('lobby-screen').style.display='flex';document.getElementById('ujian-screen').style.display='none';if(typeof lobbyUpdateStatus==='function')lobbyUpdateStatus();" style="width:100%;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:700;padding:9px;border-radius:10px;border:1.5px solid #c5c0b8;background:#f5f4f2;color:#6e6b64;cursor:pointer;margin-top:8px">← Kembali ke Lobby</button>
         </div>
 
         <!-- Edit mode -->
@@ -1419,10 +1871,9 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
       <div class="char-section-lbl">🎯 Skill Progress</div>
       <div class="char-skill-table" id="char-skill-table-new"><!-- Rendered by JS --></div>
 
-      <!-- Tutup + Logout -->
+      <!-- Tutup -->
       <div style="margin-top:16px">
         <button type="button" onclick="closeCharModal()" style="width:100%;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;padding:13px;border-radius:12px;border:none;background:#f0eeea;color:#444;cursor:pointer">Tutup</button>
-        <button type="button" onclick="logoutStudent()" style="width:100%;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:500;padding:10px;border-radius:10px;border:none;background:transparent;color:#bbb;cursor:pointer;margin-top:4px">Keluar (Logout)</button>
       </div>
     </div>
 
@@ -1503,10 +1954,9 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
         <div id="prf-card-preview" class="profil-card-preview"></div>
       </div>
 
-      <!-- Tutup + Logout -->
+      <!-- Tutup -->
       <div style="margin-top:16px">
         <button type="button" onclick="closeCharModal()" style="width:100%;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;padding:13px;border-radius:12px;border:none;background:#f0eeea;color:#444;cursor:pointer">Tutup</button>
-        <button type="button" onclick="logoutStudent()" style="width:100%;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:500;padding:10px;border-radius:10px;border:none;background:transparent;color:#bbb;cursor:pointer;margin-top:4px">Keluar (Logout)</button>
       </div>
     </div>
   </div><!-- end .char-modal-box -->
@@ -1518,7 +1968,10 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
     <div class="top-title-wrap">
       <img id="app-logo-img" class="app-logo" src="data:image/jpeg;base64,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" alt="Logo SMPN 1 Sumenep" onerror="this.style.display='none';document.getElementById('app-logo-placeholder').style.display='flex'">
       <div id="app-logo-placeholder" class="app-logo-placeholder" style="display:none">🏫</div>
-      <div class="top-title" id="app-title">Ekskul DKV SMPN 1 Sumenep</div>
+      <div>
+        <div class="top-title" id="app-title">Ekskul DKV SMPN 1 Sumenep</div>
+        <div id="app-tagline" style="font-size:10px;color:#888;font-weight:500;margin-top:1px"></div>
+      </div>
     </div>
     <div class="top-actions">
       <span class="sync-badge connecting" id="sync-badge">
@@ -1580,26 +2033,64 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
       <div id="esec-config">
         <div class="app-config-panel" id="app-config-panel" style="display:block">
           <h3 style="font-size:13px;font-weight:700;margin-bottom:10px;color:#1a1a18">⚙️ Konfigurasi Aplikasi</h3>
+
+          <!-- ─── TAMPILAN MENU UTAMA ─── -->
+          <div style="background:linear-gradient(135deg,#f0f7ff,#f5f0ff);border-radius:12px;border:1.5px solid #378ADD33;padding:14px;margin-bottom:14px">
+            <div style="font-size:11px;font-weight:700;color:#378ADD;text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;display:flex;align-items:center;gap:6px">🎨 Tampilan Menu Utama</div>
+
+            <!-- Nama Ekskul -->
+            <div style="margin-bottom:10px">
+              <label style="font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px">Nama Ekskul / Aplikasi</label>
+              <input type="text" id="cfg-app-name" placeholder="Nama ekskul..." style="font-family:'Space Grotesk',sans-serif;padding:8px 11px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#1a1a18;width:100%;font-size:13px;box-sizing:border-box">
+            </div>
+
+            <!-- Tagline / Subtitle -->
+            <div style="margin-bottom:10px">
+              <label style="font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px">Tagline / Subtitle</label>
+              <input type="text" id="cfg-tagline" placeholder="Contoh: Quest Board Ekskul DKV..." style="font-family:'Space Grotesk',sans-serif;padding:8px 11px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#1a1a18;width:100%;font-size:13px;box-sizing:border-box">
+              <div style="font-size:10px;color:#aaa;margin-top:3px">Tampil sebagai sub-judul di halaman utama</div>
+            </div>
+
+            <!-- Logo Ekskul -->
+            <div style="margin-bottom:10px">
+              <label style="font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:6px">Logo Ekskul</label>
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                <div style="width:64px;height:64px;border-radius:12px;border:2px solid #e8e6e0;background:#f8f7f4;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0">
+                  <img id="cfg-logo-preview" style="width:100%;height:100%;object-fit:contain;display:block" alt="Logo">
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                  <input type="file" id="cfg-logo-input" accept="image/*" style="display:none">
+                  <button type="button" onclick="document.getElementById('cfg-logo-input').click()" style="font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;padding:7px 13px;border-radius:8px;border:1.5px solid #378ADD;background:transparent;color:#378ADD;cursor:pointer">📁 Upload Logo</button>
+                  <button type="button" id="cfg-logo-clear-btn" onclick="clearAppLogo()" style="display:none;font-family:'Space Grotesk',sans-serif;font-size:11px;padding:5px 10px;border-radius:8px;border:1px solid #e24b4a;background:transparent;color:#e24b4a;cursor:pointer">✕ Hapus Logo</button>
+                </div>
+              </div>
+              <div style="font-size:10px;color:#aaa;margin-top:4px">Muncul di sudut kiri atas halaman & judul browser</div>
+            </div>
+
+            <!-- Background Halaman Utama -->
+            <div style="margin-bottom:6px">
+              <label style="font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:6px">Background Halaman Utama</label>
+              <div id="cfg-bg-preview-wrap" style="display:none;margin-bottom:8px">
+                <img id="cfg-bg-preview-img" style="width:100%;max-height:100px;object-fit:cover;border-radius:10px;border:1px solid #e8e6e0">
+                <div style="font-size:10px;color:#639922;font-weight:600;margin-top:4px" id="cfg-bg-status"></div>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <input type="file" id="cfg-bg-input" accept="image/*" style="display:none">
+                <button type="button" onclick="document.getElementById('cfg-bg-input').click()" style="font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;padding:7px 13px;border-radius:8px;border:1.5px solid #7F77DD;background:transparent;color:#7F77DD;cursor:pointer">🖼 Upload Background</button>
+                <button type="button" id="cfg-bg-clear-btn" onclick="clearMainBg()" style="display:none;font-family:'Space Grotesk',sans-serif;font-size:11px;padding:7px 13px;border-radius:8px;border:1.5px solid #e24b4a;background:transparent;color:#e24b4a;cursor:pointer">✕ Hapus BG</button>
+              </div>
+              <div style="font-size:10px;color:#aaa;margin-top:4px">Gambar pengganti background abu-abu #f8f7f4 default</div>
+            </div>
+
+            <div style="margin-top:12px">
+              <button class="btn-save" id="save-app-config-btn" type="button" style="font-size:12px;padding:7px 16px">💾 Simpan Tampilan</button>
+            </div>
+          </div>
+          <!-- ─── END TAMPILAN ─── -->
+
+          <!-- Password section remains -->
           <table style="width:100%;border-collapse:collapse;font-size:12px">
             <tbody>
-              <tr style="border-bottom:1px solid #f0eeea">
-                <td style="padding:8px 4px;font-weight:700;color:#888;width:40%;text-transform:uppercase;font-size:10px;letter-spacing:.06em">Nama Aplikasi</td>
-                <td style="padding:8px 4px">
-                  <input type="text" id="cfg-app-name" placeholder="Nama aplikasi..." style="font-family:'Space Grotesk',sans-serif;padding:7px 10px;border-radius:7px;border:1px solid #ddd;background:#f8f7f4;color:#1a1a18;width:100%;font-size:12px">
-                </td>
-              </tr>
-              <tr style="border-bottom:1px solid #f0eeea">
-                <td style="padding:8px 4px;font-weight:700;color:#888;font-size:10px;text-transform:uppercase;letter-spacing:.06em">Logo Sekolah</td>
-                <td style="padding:8px 4px">
-                  <div style="display:flex;align-items:center;gap:8px">
-                    <img id="cfg-logo-preview" style="width:36px;height:36px;border-radius:6px;object-fit:contain;border:1px solid #e8e6e0;background:#f8f7f4" alt="Logo">
-                    <div>
-                      <input type="file" id="cfg-logo-input" accept="image/*" style="display:none">
-                      <button type="button" onclick="document.getElementById('cfg-logo-input').click()" style="font-family:'Space Grotesk',sans-serif;font-size:11px;padding:5px 10px;border-radius:7px;border:1.5px solid #ddd;background:#f8f7f4;color:#666;cursor:pointer">📁 Ganti</button>
-                    </div>
-                  </div>
-                </td>
-              </tr>
               <tr style="border-bottom:1px solid #f0eeea">
                 <td style="padding:8px 4px;font-weight:700;color:#888;font-size:10px;text-transform:uppercase;letter-spacing:.06em">Password Baru</td>
                 <td style="padding:8px 4px">
@@ -1619,8 +2110,7 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
           </table>
           <div id="cfg-pw-err" style="font-size:11px;color:#e24b4a;min-height:14px;margin:4px 0 6px"></div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
-            <button class="btn-save" id="save-app-config-btn" type="button" style="font-size:12px;padding:7px 14px">Simpan Konfigurasi</button>
-            <button class="btn-save" id="save-pw-btn" type="button" style="font-size:12px;padding:7px 14px">Simpan Password</button>
+            <button class="btn-save" id="save-pw-btn" type="button" style="font-size:12px;padding:7px 14px">🔑 Simpan Password</button>
           </div>
 
           <!-- BADGE LEVEL EDITOR -->
@@ -2549,7 +3039,7 @@ function setSyncStatus(state, label){
 // Sync status awal — akan diupdate oleh initFirebase()
 setSyncStatus('connecting', '🔄 Menghubungkan…');
 
-var appConfig = { name: 'Ekskul DKV SMPN 1 Sumenep', logoData: null };
+var appConfig = { name: 'Ekskul DKV SMPN 1 Sumenep', logoData: null, tagline: '', mainBgData: null };
 
 // ─── Load awal dari localStorage (langsung tampil, tidak menunggu Firebase) ───
 window.worlds      = loadJSON('dkv_worlds', JSON.parse(JSON.stringify(DEFAULT_WORLDS)));
@@ -2971,9 +3461,25 @@ function toggleEditMode(){
     document.getElementById('esec-profil-fields').style.display='none';
     var cfgName=document.getElementById('cfg-app-name');
     if(cfgName)cfgName.value=appConfig.name||'Ekskul DKV SMPN 1 Sumenep';
+    var cfgTagline=document.getElementById('cfg-tagline');
+    if(cfgTagline)cfgTagline.value=appConfig.tagline||'';
     var cfgLogoPreview=document.getElementById('cfg-logo-preview');
     if(cfgLogoPreview&&appConfig.logoData)cfgLogoPreview.src=appConfig.logoData;
     else if(cfgLogoPreview){var li=document.getElementById('app-logo-img');if(li)cfgLogoPreview.src=li.src;}
+    var cfgLogoClearBtn=document.getElementById('cfg-logo-clear-btn');
+    if(cfgLogoClearBtn)cfgLogoClearBtn.style.display=appConfig.logoData?'block':'none';
+    // BG preview
+    var bgWrap=document.getElementById('cfg-bg-preview-wrap');
+    var bgImg=document.getElementById('cfg-bg-preview-img');
+    var bgClearBtn=document.getElementById('cfg-bg-clear-btn');
+    if(appConfig.mainBgData){
+      if(bgWrap)bgWrap.style.display='block';
+      if(bgImg)bgImg.src=appConfig.mainBgData;
+      if(bgClearBtn)bgClearBtn.style.display='block';
+    } else {
+      if(bgWrap)bgWrap.style.display='none';
+      if(bgClearBtn)bgClearBtn.style.display='none';
+    }
     renderBadgeLevelEditor();
   }
   else{
@@ -5355,40 +5861,135 @@ function loadAppConfig(){
 }
 
 function applyAppConfig(){
+  // ── Nama / title
   var titleEl = document.getElementById('app-title');
   if(titleEl && appConfig.name) titleEl.textContent = appConfig.name;
+  document.title = (appConfig.name || 'Ekskul DKV') + ' — Quest Board';
+
+  // ── Tagline
+  var taglineEl = document.getElementById('app-tagline');
+  if(taglineEl) taglineEl.textContent = appConfig.tagline || '';
+
+  // ── Logo
   var logoImg = document.getElementById('app-logo-img');
-  if(logoImg && appConfig.logoData){
-    logoImg.src = appConfig.logoData;
-    logoImg.style.display = 'block';
-    document.getElementById('app-logo-placeholder').style.display='none';
+  var logoPlaceholder = document.getElementById('app-logo-placeholder');
+  if(logoImg){
+    if(appConfig.logoData){
+      logoImg.src = appConfig.logoData;
+      logoImg.style.display = 'block';
+      if(logoPlaceholder) logoPlaceholder.style.display='none';
+    } else {
+      logoImg.style.display = 'none';
+      if(logoPlaceholder) logoPlaceholder.style.display='';
+    }
   }
-  // update cfg inputs if open
+
+  // ── Background halaman utama
+  if(appConfig.mainBgData){
+    document.body.style.background = 'url("'+appConfig.mainBgData+'") center/cover fixed';
+    document.body.style.backgroundBlendMode = 'normal';
+  } else {
+    document.body.style.background = '#f8f7f4';
+  }
+
+  // ── Update cfg panel inputs (if open)
   var cfgName = document.getElementById('cfg-app-name');
   if(cfgName) cfgName.value = appConfig.name || '';
+  var cfgTagline = document.getElementById('cfg-tagline');
+  if(cfgTagline) cfgTagline.value = appConfig.tagline || '';
   var cfgLogoPreview = document.getElementById('cfg-logo-preview');
-  if(cfgLogoPreview && appConfig.logoData) cfgLogoPreview.src = appConfig.logoData;
+  if(cfgLogoPreview) cfgLogoPreview.src = appConfig.logoData || '';
+  var cfgLogoClearBtn = document.getElementById('cfg-logo-clear-btn');
+  if(cfgLogoClearBtn) cfgLogoClearBtn.style.display = appConfig.logoData ? 'block' : 'none';
+
+  // ── Update bg preview
+  var bgWrap = document.getElementById('cfg-bg-preview-wrap');
+  var bgImg = document.getElementById('cfg-bg-preview-img');
+  var bgClearBtn = document.getElementById('cfg-bg-clear-btn');
+  var bgStatus = document.getElementById('cfg-bg-status');
+  if(appConfig.mainBgData){
+    if(bgWrap) bgWrap.style.display = 'block';
+    if(bgImg) bgImg.src = appConfig.mainBgData;
+    if(bgClearBtn) bgClearBtn.style.display = 'block';
+    if(bgStatus) bgStatus.textContent = '✅ Background aktif';
+  } else {
+    if(bgWrap) bgWrap.style.display = 'none';
+    if(bgClearBtn) bgClearBtn.style.display = 'none';
+    if(bgStatus) bgStatus.textContent = '';
+  }
 }
 
+// ─── Logo upload handler
 document.getElementById('cfg-logo-input').addEventListener('change', function(e){
   var file = e.target.files[0];
   if(!file) return;
+  if(file.size > 3145728){ showToast('Logo terlalu besar (maks 3MB)'); return; }
   var reader = new FileReader();
   reader.onload = function(ev){
     var preview = document.getElementById('cfg-logo-preview');
     if(preview) preview.src = ev.target.result;
     appConfig.logoData = ev.target.result;
+    var clearBtn = document.getElementById('cfg-logo-clear-btn');
+    if(clearBtn) clearBtn.style.display = 'block';
+    showToast('Logo dipilih! Klik Simpan Tampilan ✅');
   };
   reader.readAsDataURL(file);
 });
 
+// ─── Background upload handler
+document.getElementById('cfg-bg-input').addEventListener('change', function(e){
+  var file = e.target.files[0];
+  if(!file) return;
+  if(file.size > 5242880){ showToast('Gambar terlalu besar (maks 5MB)'); return; }
+  var reader = new FileReader();
+  reader.onload = function(ev){
+    appConfig.mainBgData = ev.target.result;
+    var bgWrap = document.getElementById('cfg-bg-preview-wrap');
+    var bgImg = document.getElementById('cfg-bg-preview-img');
+    var bgClearBtn = document.getElementById('cfg-bg-clear-btn');
+    var bgStatus = document.getElementById('cfg-bg-status');
+    if(bgWrap) bgWrap.style.display = 'block';
+    if(bgImg) bgImg.src = ev.target.result;
+    if(bgClearBtn) bgClearBtn.style.display = 'block';
+    if(bgStatus) bgStatus.textContent = '✅ Background dipilih, klik Simpan!';
+    showToast('Background dipilih! Klik Simpan Tampilan ✅');
+  };
+  reader.readAsDataURL(file);
+});
+
+// ─── Clear logo
+window.clearAppLogo = function(){
+  appConfig.logoData = null;
+  var preview = document.getElementById('cfg-logo-preview');
+  if(preview) preview.src = '';
+  var clearBtn = document.getElementById('cfg-logo-clear-btn');
+  if(clearBtn) clearBtn.style.display = 'none';
+  showToast('Logo dihapus');
+};
+
+// ─── Clear background
+window.clearMainBg = function(){
+  appConfig.mainBgData = null;
+  document.body.style.background = '#f8f7f4';
+  var bgWrap = document.getElementById('cfg-bg-preview-wrap');
+  var bgClearBtn = document.getElementById('cfg-bg-clear-btn');
+  var bgStatus = document.getElementById('cfg-bg-status');
+  if(bgWrap) bgWrap.style.display = 'none';
+  if(bgClearBtn) bgClearBtn.style.display = 'none';
+  if(bgStatus) bgStatus.textContent = '';
+  showToast('Background dihapus');
+};
+
+// ─── Save app config (tampilan)
 document.getElementById('save-app-config-btn').addEventListener('click', function(){
   var nameVal = document.getElementById('cfg-app-name').value.trim();
   if(nameVal) appConfig.name = nameVal;
+  var taglineVal = document.getElementById('cfg-tagline');
+  if(taglineVal) appConfig.tagline = taglineVal.value.trim();
   window._appConfig = appConfig;
   applyAppConfig();
   saveAll();
-  showToast('Konfigurasi aplikasi disimpan! ✅');
+  showToast('Tampilan menu utama disimpan! ✅');
 });
 
 // toggleEditMode config loading integrated below
@@ -6335,8 +6936,11 @@ function logoutStudent(){
   closeCharModal();
   updateStudentUI();
   if(typeof updateToolbarByRole === 'function') updateToolbarByRole();
+  if(typeof lobbyUpdateStatus === 'function') setTimeout(lobbyUpdateStatus, 50);
   // Kembali ke lobby setelah logout siswa
   document.getElementById('lobby-screen').style.display = 'flex';
+  document.getElementById('ujian-screen').style.display = 'none';
+  if(typeof lobbyApplySettings === 'function') lobbyApplySettings();
   showToast('Berhasil logout. Sampai jumpa! 👋');
 }
 // ═══════════════════════════════════════════════════════════════
@@ -6380,12 +6984,20 @@ function updateToolbarByRole(){
 // Fungsi logout global — deteksi role lalu logout yang sesuai
 function doGlobalLogout(){
   if(window.pembina){
+    // Reset state ujian TANPA memanggil gateDoLogoutPembina lagi (sudah ada di bawah)
+    if(window._ujianState){ window._ujianState.loggedIn=false; window._ujianState.isPembina=false; }
+    // Satu kali logout pembina
     if(typeof gateDoLogoutPembina === 'function') gateDoLogoutPembina();
     // Kembali ke lobby
     document.getElementById('lobby-screen').style.display = 'flex';
+    document.getElementById('ujian-screen').style.display = 'none';
   } else if(window.loggedInStudentId){
+    // Reset state ujian siswa juga
+    if(window._ujianState){ window._ujianState.loggedIn=false; window._ujianState.siswaId=null; }
     if(typeof logoutStudent === 'function') logoutStudent();
   }
+  // Sync tampilan lobby
+  if(typeof lobbyUpdateStatus === 'function') setTimeout(lobbyUpdateStatus, 50);
 }
 window.doGlobalLogout = doGlobalLogout;
 window.updateToolbarByRole = updateToolbarByRole;
@@ -6393,6 +7005,8 @@ window.updateToolbarByRole = updateToolbarByRole;
 
 
 function updateStudentUI(){
+  // Sync status lobby setiap kali sesi berubah
+  if(typeof lobbyUpdateStatus === 'function') lobbyUpdateStatus();
   var loginBtn = document.getElementById('student-login-btn');
   var dashBar  = document.getElementById('student-dashboard-bar');
 
@@ -8635,6 +9249,11 @@ function openRegModal(){
 }
 function closeRegModal(){
   document.getElementById('reg-modal').classList.remove('show');
+  // Tampilkan gate kembali hanya jika reg modal dibuka via gateOpenReg (bukan dari dalam app)
+  var gateOverlay = document.getElementById('ekskul-gate-overlay');
+  if(gateOverlay && gateOverlay.style.display === 'none' && !window.loggedInStudentId && !window.pembina){
+    if(typeof openEkskulGate === 'function') openEkskulGate();
+  }
 }
 
 document.getElementById('reg-open-btn').addEventListener('click', openRegModal);
@@ -8961,18 +9580,52 @@ document.addEventListener('click', function(e){
 
   // ── LOBBY ──────────────────────────────────────────────────
   document.getElementById('lobby-ekskul-btn').addEventListener('click',function(){
-    openEkskulGate();
+    // Jika sudah login via lobby form, langsung masuk
+    if(window.pembina || window.loggedInStudentId || sessionStorage.getItem('dkv_student_sess')){
+      if(typeof enterEkskul === 'function'){ enterEkskul(); }
+      else { document.getElementById('lobby-screen').style.display='none'; }
+    } else {
+      // Belum login — highlight form login
+      var tab = (document.getElementById('lobby-form-pembina').style.display==='none') ? 'siswa' : 'pembina';
+      var form = document.getElementById(tab==='siswa'?'lobby-form-siswa':'lobby-form-pembina');
+      if(form){ form.style.boxShadow='0 0 0 2px #f5c842'; setTimeout(function(){ form.style.boxShadow=''; },1200); }
+      var inp = document.getElementById('lobby-sl-username');
+      if(inp) inp.focus();
+      if(typeof showToast==='function') showToast('Login dulu untuk masuk ke ruangan 🔑');
+    }
   });
 
-  // Tombol kembali ke lobby dari Ruang Ekskul
+  // Tombol Kembali ke Lobby dari Ruang Ekskul (TANPA logout)
   document.getElementById('back-to-lobby-btn').addEventListener('click',function(){
     document.getElementById('lobby-screen').style.display='flex';
+    document.getElementById('ujian-screen').style.display='none';
+    if(typeof lobbyUpdateStatus==='function') setTimeout(lobbyUpdateStatus,30);
   });
 
   document.getElementById('lobby-ujian-btn').addEventListener('click',function(){
+    if(!window.pembina && !window.loggedInStudentId && !sessionStorage.getItem('dkv_student_sess')){
+      // Belum login — highlight form login
+      var form = document.getElementById('lobby-form-siswa');
+      if(form){ form.style.boxShadow='0 0 0 2px #e8774a'; setTimeout(function(){ form.style.boxShadow=''; },1200); }
+      var inp = document.getElementById('lobby-sl-username');
+      if(inp) inp.focus();
+      if(typeof showToast==='function') showToast('Login dulu untuk masuk ke ruangan 🔑');
+      return;
+    }
     document.getElementById('lobby-screen').style.display='none';
     document.getElementById('ujian-screen').style.display='block';
     initUjianRef();
+    // Auto-carry sesi yang sudah aktif
+    if(!_ujianState.loggedIn){
+      if(window.pembina){
+        _ujianState.loggedIn=true; _ujianState.isPembina=true;
+      } else if(window.loggedInStudentId){
+        var s=(window.siswaList||[]).find(function(x){return x.id===window.loggedInStudentId;});
+        _ujianState.loggedIn=true; _ujianState.isPembina=false;
+        _ujianState.siswaId=window.loggedInStudentId;
+        _ujianState.siswaName=s?s.name:window.loggedInStudentId;
+      }
+    }
     renderUjianScreen();
   });
 
@@ -8981,7 +9634,104 @@ document.addEventListener('click', function(e){
     document.getElementById('ujian-timer-badge').style.display='none';
     document.getElementById('ujian-screen').style.display='none';
     document.getElementById('lobby-screen').style.display='flex';
+    if(typeof lobbyUpdateStatus==='function') setTimeout(lobbyUpdateStatus,30);
   });
+
+  // ── GATE UJIAN — Tab & Helper ──────────────────────────────
+  var _ujianGateTab = 'siswa';
+
+  window.ujianGateSetTab = function(tab){
+    _ujianGateTab = tab;
+    var fSiswa = document.getElementById('ujian-gate-form-siswa');
+    var fPemb  = document.getElementById('ujian-gate-form-pembina');
+    var tSiswa = document.getElementById('ujian-gate-tab-siswa');
+    var tPemb  = document.getElementById('ujian-gate-tab-pembina');
+    if(tab==='siswa'){
+      fSiswa.style.display=''; fPemb.style.display='none';
+      tSiswa.style.background='#e8774a'; tSiswa.style.borderColor='#e8774a'; tSiswa.style.color='#fff';
+      tPemb.style.background='transparent'; tPemb.style.borderColor='#2e2c29'; tPemb.style.color='#9e9b95';
+      _updateUjianGateSiswaView();
+    } else {
+      fSiswa.style.display='none'; fPemb.style.display='';
+      tPemb.style.background='linear-gradient(135deg,#f5c842,#e8774a)'; tPemb.style.borderColor='#f5c842'; tPemb.style.color='#0f0e14';
+      tSiswa.style.background='transparent'; tSiswa.style.borderColor='#2e2c29'; tSiswa.style.color='#9e9b95';
+      _updateUjianGatePembinaView();
+    }
+  };
+
+  window.ujianGateToggleEye = function(inputId, btnId){
+    var inp = document.getElementById(inputId);
+    var btn = document.getElementById(btnId);
+    inp.type = inp.type==='password'?'text':'password';
+    btn.textContent = inp.type==='text'?'🙈':'👁';
+  };
+
+  function _updateUjianGatePembinaView(){
+    var logged = document.getElementById('ujian-gate-pembina-logged');
+    var form   = document.getElementById('ujian-gate-pembina-form');
+    if(window.pembina){ logged.style.display='block'; form.style.display='none'; }
+    else { logged.style.display='none'; form.style.display='block'; }
+  }
+
+  function _updateUjianGateSiswaView(){
+    var logged     = document.getElementById('ujian-gate-siswa-logged');
+    var loggedName = document.getElementById('ujian-gate-siswa-logged-name');
+    var form       = document.getElementById('ujian-gate-siswa-form');
+    if(window.loggedInStudentId){
+      var s=(window.siswaList||[]).find(function(x){return x.id===window.loggedInStudentId;});
+      loggedName.textContent = s?s.name:window.loggedInStudentId;
+      logged.style.display='block'; form.style.display='none';
+    } else {
+      logged.style.display='none'; form.style.display='block';
+    }
+  }
+
+  window.ujianGateEnterAsSiswa = function(){
+    _ujianState.loggedIn=true; _ujianState.isPembina=false;
+    _ujianState.siswaId=window.loggedInStudentId;
+    var s=(window.siswaList||[]).find(function(x){return x.id===window.loggedInStudentId;});
+    _ujianState.siswaName=s?s.name:window.loggedInStudentId;
+    _ujianState.attempts=0;
+    renderUjianScreen();
+  };
+
+  window.ujianGateEnterAsPembina = function(){
+    _ujianState.loggedIn=true; _ujianState.isPembina=true; _ujianState.attempts=0;
+    renderUjianScreen();
+  };
+
+  window.ujianGateDoLogoutSiswa = function(){
+    if(typeof logoutStudent==='function') logoutStudent();
+    _ujianState.loggedIn=false; _ujianState.siswaId=null; _ujianState.siswaName=null;
+    _updateUjianGateSiswaView();
+  };
+
+  window.ujianGateDoLogoutPembina = function(){
+    if(typeof gateDoLogoutPembina==='function') gateDoLogoutPembina();
+    _ujianState.loggedIn=false; _ujianState.isPembina=false;
+    _updateUjianGatePembinaView();
+    renderUjianScreen();
+  };
+
+  // Submit password pembina di gate ujian
+  document.getElementById('ujian-gate-pw-submit').addEventListener('click', function(){
+    var val = document.getElementById('ujian-gate-pw-input').value;
+    var err = document.getElementById('ujian-gate-pw-err');
+    if(!val||val.length>256){ err.textContent='Input tidak valid.'; return; }
+    sha256(val).then(function(hash){
+      if(hash===window.CORRECT_PW_HASH){
+        window.pembina=true;
+        document.getElementById('ujian-gate-pw-input').value='';
+        err.textContent='';
+        if(typeof updateToolbarByRole==='function') updateToolbarByRole();
+        ujianGateEnterAsPembina();
+      } else {
+        err.textContent='Password salah. Coba lagi.';
+        document.getElementById('ujian-gate-pw-input').value='';
+      }
+    });
+  });
+  document.getElementById('ujian-gate-pw-input').addEventListener('keydown',function(e){ if(e.key==='Enter') document.getElementById('ujian-gate-pw-submit').click(); });
 
   // ── RENDER UJIAN SCREEN ────────────────────────────────────
   function renderUjianScreen(){
@@ -8994,7 +9744,9 @@ document.addEventListener('click', function(e){
       document.getElementById('ujian-welcome-txt').textContent='Halo, '+esc(_ujianState.siswaName)+'! 👋';
       loadSiswaUjianList();
     } else {
+      // Reset gate ke tab siswa & update view carry-over
       document.getElementById('ujian-login-state').style.display='block';
+      ujianGateSetTab('siswa');
     }
   }
 
@@ -9602,6 +10354,12 @@ document.addEventListener('click', function(e){
   // ── Helper: masuk ruang ekskul (sembunyikan lobby) ──
   function enterEkskul(){
     document.getElementById('lobby-screen').style.display = 'none';
+    document.getElementById('ujian-screen').style.display = 'none';
+    // Sembunyikan FAB edit saat masuk ruangan
+    var fab = document.getElementById('lobby-edit-fab');
+    if(fab) fab.style.display = 'none';
+    var editPanel = document.getElementById('lobby-edit-panel');
+    if(editPanel) editPanel.classList.remove('open');
   }
 
   // ── Login siswa dari gate ──────────────────────────
@@ -9681,6 +10439,12 @@ document.addEventListener('click', function(e){
     if(absenTab) absenTab.style.display = 'none';
     _updateGatePembinaView();
     if(typeof updateToolbarByRole === 'function') updateToolbarByRole();
+    if(typeof lobbyUpdateStatus === 'function') lobbyUpdateStatus();
+    // Sembunyikan FAB edit lobby
+    var fab = document.getElementById('lobby-edit-fab');
+    if(fab) fab.style.display = 'none';
+    var editPanel = document.getElementById('lobby-edit-panel');
+    if(editPanel) editPanel.classList.remove('open');
     if(typeof showToast === 'function') showToast('Pembina telah logout.');
   };
 
@@ -9740,9 +10504,14 @@ document.addEventListener('click', function(e){
 
   // ── Redirect daftar ke reg modal ──────────────
   window.gateOpenReg = function(){
-    closeEkskulGate();
-    var regModal = document.getElementById('reg-modal');
-    if(regModal) regModal.classList.add('show');
+    // Buka reg modal di atas gate (z-index reg modal sudah lebih tinggi dari gate)
+    // Tidak perlu tutup gate dulu — modal akan menutupinya
+    if(typeof openRegModal === 'function'){
+      openRegModal();
+    } else {
+      var regModal = document.getElementById('reg-modal');
+      if(regModal) regModal.classList.add('show');
+    }
   };
 
   // ── Event listeners ────────────────────────────
