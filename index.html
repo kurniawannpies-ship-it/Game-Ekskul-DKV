@@ -148,8 +148,9 @@ body{font-family:'Space Grotesk',sans-serif;background:#f8f7f4;color:#1a1a18;min
 .top-actions{display:-webkit-flex;display:flex;gap:8px;-webkit-align-items:center;align-items:center;-webkit-flex-wrap:wrap;flex-wrap:wrap}
 
 /* Edit panel */
-.edit-panel{background:#fff;border-radius:16px;border:1.5px solid #ddd;padding:18px;margin-bottom:18px;display:none}
+.edit-panel{background:#f5faff;border-radius:16px;border:2px solid #378ADD44;padding:18px;margin-bottom:18px;display:none;position:relative}
 .edit-panel.open{display:block}
+.edit-panel::before{content:'⚙️ Panel Konfigurasi Pembina';position:absolute;top:-11px;left:16px;background:#378ADD;color:#fff;font-size:10px;font-weight:700;padding:2px 10px;border-radius:20px;letter-spacing:.05em;font-family:'Space Grotesk',sans-serif}
 .edit-panel h3{font-size:14px;font-weight:700;margin-bottom:12px;color:#1a1a18}
 .edit-row{display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;gap:5px;margin-bottom:12px}
 .edit-row label{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em}
@@ -1517,7 +1518,8 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
         <span class="sync-dot pulse" id="sync-dot"></span>
         <span id="sync-label">Menghubungkan…</span>
       </span>
-      <button class="edit-btn" id="edit-btn" type="button">🔒 Edit Mode</button>
+      <!-- Tombol Konfigurasi — hanya muncul saat pembina login -->
+      <button class="edit-btn" id="edit-btn" type="button" style="display:none">⚙️ Konfigurasi</button>
       <div class="notif-bell-wrap" id="notif-bell-wrap" style="display:none">
         <button class="notif-bell-btn" id="notif-bell-btn" type="button" title="Notifikasi">🔔</button>
         <span class="notif-badge" id="notif-badge">0</span>
@@ -1526,8 +1528,9 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
         <button class="admin-bell-btn" id="admin-bell-btn" type="button" title="Permintaan bergabung">📬</button>
         <span class="admin-bell-badge" id="admin-bell-badge">0</span>
       </div>
-      <button class="btn-student-login" id="student-login-btn" type="button">🎮 Login Siswa</button>
-      <button class="btn-student-login" id="reg-open-btn" type="button" style="border-color:#639922;color:#639922">✏️ Daftar</button>
+      <!-- Hidden: student-login-btn & reg-open-btn tetap ada di DOM untuk kompatibilitas JS lama -->
+      <button class="btn-student-login" id="student-login-btn" type="button" style="display:none">🎮 Login Siswa</button>
+      <button class="btn-student-login" id="reg-open-btn" type="button" style="display:none">✏️ Daftar</button>
       <button type="button" id="back-to-lobby-btn" style="font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;padding:6px 13px;border-radius:99px;border:1px solid #c5c0b8;background:transparent;color:#888;cursor:pointer">← Lobby</button>
   </div>
 
@@ -1557,7 +1560,8 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
   <!-- QUEST BOARD TAB -->
   <div class="tab-content active" id="tab-quest">
 
-    <div class="edit-panel" id="edit-panel">
+    <!-- PANEL KONFIGURASI PEMBINA — Terpisah dari quest board -->
+    <div class="edit-panel" id="edit-panel" style="border:2px solid #378ADD22;background:#f0f7ff">
       <!-- Edit Section Tabs -->
       <div class="edit-section-tabs">
         <button class="edit-section-tab active" data-esec="config" type="button">⚙️ Konfigurasi</button>
@@ -2816,13 +2820,8 @@ function sha256(message){
 })();
 
 document.getElementById('edit-btn').addEventListener('click',function(){
-  if(pembina){toggleEditMode();}
-  else{
-    document.getElementById('pw-modal').classList.add('show');
-    document.getElementById('pw-input').value='';
-    document.getElementById('pw-err').textContent='';
-    setTimeout(function(){document.getElementById('pw-input').focus();},200);
-  }
+  // Tombol ini hanya muncul saat pembina login, langsung toggle panel
+  if(pembina){ toggleEditMode(); }
 });
 document.getElementById('pw-submit-btn').addEventListener('click',checkPassword);
 document.getElementById('pw-input').addEventListener('keydown',function(e){if(e.key==='Enter')checkPassword();});
@@ -2858,10 +2857,10 @@ function checkPassword(){
       _adminLoginAttempts = 0; // reset on success
       pembina=true;
       closeModal('pw-modal');
-      document.getElementById('edit-btn').innerHTML='⚙ Edit Mode <span class="badge-pembina">Pembina</span>';
+      // Tampilkan tombol Konfigurasi untuk pembina
+      var editBtnEl = document.getElementById('edit-btn');
+      if(editBtnEl){ editBtnEl.style.display=''; editBtnEl.innerHTML='⚙️ Konfigurasi <span class="badge-pembina">Pembina</span>'; editBtnEl.classList.remove('active-mode'); }
       document.getElementById('btn-add-siswa').style.display='block';
-      var regBtnPw = document.getElementById('reg-open-btn');
-      if(regBtnPw) regBtnPw.style.display='none';
       // Tampilkan tab Absensi untuk admin
       var absenTab = document.getElementById('tab-btn-absensi');
       if(absenTab) absenTab.style.display='';
@@ -2955,7 +2954,7 @@ function toggleEditMode(){
   document.getElementById('edit-panel').classList.toggle('open',editMode);
   var btn=document.getElementById('edit-btn');
   if(editMode){
-    btn.innerHTML='✕ Tutup Edit <span class="badge-pembina">Pembina</span>';
+    btn.innerHTML='✕ Tutup Konfigurasi <span class="badge-pembina">Pembina</span>';
     btn.classList.add('active-mode');
     populateWorldSel();
     activeEditSec='config';
@@ -2971,26 +2970,12 @@ function toggleEditMode(){
     renderBadgeLevelEditor();
   }
   else{
-    pembina=false;
     editMode=false;
     document.getElementById('edit-panel').classList.remove('open');
-    btn.innerHTML='🔒 Edit Mode';
+    // Pembina tetap login — hanya panel konfigurasi yang ditutup
+    btn.innerHTML='⚙️ Konfigurasi <span class="badge-pembina">Pembina</span>';
     btn.classList.remove('active-mode');
-    document.getElementById('btn-add-siswa').style.display='none';
-    var regBtnToggle = document.getElementById('reg-open-btn');
-    if(regBtnToggle && !window.loggedInStudentId) regBtnToggle.style.display='';
-    // Sembunyikan tab Absensi dan pindah ke tab Quest
-    var absenTabBtn = document.getElementById('tab-btn-absensi');
-    if(absenTabBtn){
-      absenTabBtn.style.display='none';
-      // Jika user sedang di tab absensi, switch ke quest
-      if(absenTabBtn.classList.contains('active')){
-        absenTabBtn.classList.remove('active');
-        document.querySelectorAll('.tab-content').forEach(function(c){c.classList.remove('active');});
-        document.querySelector('.tab-btn[data-tab="quest"]').classList.add('active');
-        document.getElementById('tab-quest').classList.add('active');
-      }
-    }
+    // Tab Absensi tetap tampil (pembina masih aktif)
     render();renderSiswa();
     updateMateriEditorTabVisibility();
     if(typeof updateAdminBell === 'function') updateAdminBell();
@@ -6148,6 +6133,7 @@ document.getElementById('notif-mark-all').addEventListener('click', function(){
       loggedInStudentId = sid;
       updateStudentUI();
       updateMateriEditorTabVisibility();
+      if(typeof updateToolbarByRole === 'function') updateToolbarByRole();
     } else if(attempt < 20){
       setTimeout(function(){ tryRestore(attempt+1); }, 200);
     }
@@ -6341,26 +6327,59 @@ function logoutStudent(){
   sessionStorage.removeItem('dkv_student_sess');
   closeCharModal();
   updateStudentUI();
+  if(typeof updateToolbarByRole === 'function') updateToolbarByRole();
+  // Kembali ke lobby setelah logout siswa
+  document.getElementById('lobby-screen').style.display = 'flex';
   showToast('Berhasil logout. Sampai jumpa! 👋');
 }
+// ═══════════════════════════════════════════════════════════════
+// UPDATE TOOLBAR BERDASARKAN ROLE (pembina / siswa / tamu)
+// Dipanggil setelah setiap perubahan state login
+// ═══════════════════════════════════════════════════════════════
+function updateToolbarByRole(){
+  var editBtn   = document.getElementById('edit-btn');
+  var addSiswa  = document.getElementById('btn-add-siswa');
+  var absenTab  = document.getElementById('tab-btn-absensi');
+  var adminBell = document.getElementById('admin-bell-wrap');
+  var notifBell = document.getElementById('notif-bell-wrap');
+
+  if(window.pembina){
+    // ── MODE PEMBINA ──
+    if(editBtn){ editBtn.style.display = ''; }
+    if(addSiswa) addSiswa.style.display = 'block';
+    if(absenTab) absenTab.style.display = '';
+    if(adminBell) adminBell.style.display = '';
+  } else if(window.loggedInStudentId){
+    // ── MODE SISWA ──
+    if(editBtn) editBtn.style.display = 'none';
+    if(addSiswa) addSiswa.style.display = 'none';
+    if(absenTab) absenTab.style.display = 'none';
+    if(adminBell) adminBell.style.display = 'none';
+    if(notifBell) notifBell.style.display = '';
+  } else {
+    // ── TAMU (belum login) ──
+    if(editBtn) editBtn.style.display = 'none';
+    if(addSiswa) addSiswa.style.display = 'none';
+    if(absenTab) absenTab.style.display = 'none';
+    if(adminBell) adminBell.style.display = 'none';
+    if(notifBell) notifBell.style.display = 'none';
+  }
+}
+window.updateToolbarByRole = updateToolbarByRole;
+
+
 
 function updateStudentUI(){
   var loginBtn = document.getElementById('student-login-btn');
   var dashBar  = document.getElementById('student-dashboard-bar');
 
   if(!loggedInStudentId){
-    if(loginBtn){ loginBtn.textContent = '🎮 Login Siswa'; loginBtn.classList.remove('logged-in'); }
     if(dashBar) dashBar.classList.remove('show');
     var bellWrap = document.getElementById('notif-bell-wrap');
     if(bellWrap) bellWrap.style.display = 'none';
-    var regBtnOut = document.getElementById('reg-open-btn');
-    if(regBtnOut && !window.pembina) regBtnOut.style.display = '';
     updateMateriEditorTabVisibility();
     return;
   }
-  // Sembunyikan tombol daftar saat siswa sudah login
-  var regBtnIn = document.getElementById('reg-open-btn');
-  if(regBtnIn) regBtnIn.style.display = 'none';
 
   var s = window.siswaList.find(function(x){return x.id===loggedInStudentId;});
   if(!s){
@@ -9455,33 +9474,30 @@ document.addEventListener('click', function(e){
 
   // ── Buka / tutup gate ──────────────────────────────
   window.openEkskulGate = function(){
-    var overlay = document.getElementById('ekskul-gate-overlay');
-    overlay.style.display = 'flex';
     // Reset errors
     document.getElementById('gate-sl-err').textContent = '';
     document.getElementById('gate-pw-err').textContent = '';
-    // Jika siswa sudah login lewat sessionStorage, langsung masuk
+    // Jika siswa sudah login (sessionStorage), langsung masuk
     var sess = sessionStorage.getItem('dkv_student_sess');
     if(sess && window.loggedInStudentId){
-      // Sudah login siswa — langsung masuk tanpa perlu isi lagi
-      overlay.style.display = 'none';
       enterEkskul();
       return;
     }
-    // Jika pembina sudah login di session ini
+    // Jika pembina sudah login di sesi ini, langsung masuk
     if(window.pembina){
-      overlay.style.display = 'none';
       enterEkskul();
       return;
     }
-    // Deteksi sesi siswa yang masih valid dari sessionStorage (restore belum selesai)
+    // Jika sesi siswa ada tapi belum di-restore Firebase, langsung masuk
+    // (tryRestore akan memulihkan session di background)
     if(sess){
-      // Tampilkan gate tab siswa, tampilkan status "sudah login"
-      gateSetTab('siswa');
-      _updateGateSiswaView(sess);
-    } else {
-      gateSetTab('siswa');
+      enterEkskul();
+      return;
     }
+    // Belum login sama sekali — tampilkan gate
+    var overlay = document.getElementById('ekskul-gate-overlay');
+    overlay.style.display = 'flex';
+    gateSetTab('siswa');
   };
 
   window.closeEkskulGate = function(){
@@ -9612,6 +9628,7 @@ document.addEventListener('click', function(e){
       sessionStorage.setItem('dkv_student_sess', foundSid);
       if(typeof updateStudentUI === 'function') updateStudentUI();
       if(typeof updateMateriEditorTabVisibility === 'function') updateMateriEditorTabVisibility();
+      if(typeof updateToolbarByRole === 'function') updateToolbarByRole();
       closeEkskulGate();
       enterEkskul();
       if(typeof showToast === 'function') showToast('Selamat datang, ' + s.name + '! 🎮✨');
@@ -9630,12 +9647,13 @@ document.addEventListener('click', function(e){
     var editPanel = document.getElementById('edit-panel');
     if(editPanel) editPanel.classList.remove('open');
     var editBtn = document.getElementById('edit-btn');
-    if(editBtn){ editBtn.innerHTML = '🔒 Edit Mode'; editBtn.classList.remove('active-mode'); }
+    if(editBtn){ editBtn.style.display = 'none'; editBtn.innerHTML = '⚙️ Konfigurasi'; editBtn.classList.remove('active-mode'); }
     var addSiswa = document.getElementById('btn-add-siswa');
     if(addSiswa) addSiswa.style.display = 'none';
     var absenTab = document.getElementById('tab-btn-absensi');
     if(absenTab) absenTab.style.display = 'none';
     _updateGatePembinaView();
+    if(typeof updateToolbarByRole === 'function') updateToolbarByRole();
     if(typeof showToast === 'function') showToast('Pembina telah logout.');
   };
 
@@ -9655,18 +9673,17 @@ document.addEventListener('click', function(e){
         window.pembina = true;
         // Aktifkan UI pembina
         var editBtn = document.getElementById('edit-btn');
-        if(editBtn) editBtn.innerHTML = '⚙ Edit Mode <span class="badge-pembina">Pembina</span>';
+        if(editBtn){ editBtn.style.display = ''; editBtn.innerHTML = '⚙️ Konfigurasi <span class="badge-pembina">Pembina</span>'; editBtn.classList.remove('active-mode'); }
         var addSiswa = document.getElementById('btn-add-siswa');
         if(addSiswa) addSiswa.style.display = 'block';
-        var regBtnGate = document.getElementById('reg-open-btn');
-        if(regBtnGate) regBtnGate.style.display = 'none';
         var absenTab = document.getElementById('tab-btn-absensi');
         if(absenTab) absenTab.style.display = '';
         if(typeof renderSiswa === 'function') renderSiswa();
         if(typeof updateMateriEditorTabVisibility === 'function') updateMateriEditorTabVisibility();
         if(typeof updateAdminBell === 'function') updateAdminBell();
-        // Aktifkan edit mode langsung
-        window.editMode = false; // reset agar toggle menyalakan
+        if(typeof updateToolbarByRole === 'function') updateToolbarByRole();
+        // Buka panel konfigurasi langsung
+        window.editMode = false;
         if(typeof toggleEditMode === 'function') toggleEditMode();
         closeEkskulGate();
         enterEkskul();
