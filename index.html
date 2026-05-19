@@ -363,16 +363,22 @@ body{font-family:'Space Grotesk',sans-serif;background:#f8f7f4;color:#1a1a18;min
 /* Avatar tab: char stage mini - REMOVED v34 */
 
 /* Student Dashboard (when logged in) */
-.student-dashboard-bar{display:none;background:#fff;border-radius:16px;padding:14px 16px;margin-bottom:16px;color:#1a1a18;cursor:pointer;position:relative;overflow:hidden;transition:all .3s;border:1.5px solid #e8e6e0;box-shadow:0 2px 10px rgba(0,0,0,.06)}
-.student-dashboard-bar.show{display:-webkit-flex;display:flex}
+.student-dashboard-bar{display:none;background:#fff;border-radius:16px;padding:13px 14px;margin-bottom:16px;color:#1a1a18;cursor:pointer;position:relative;overflow:hidden;transition:all .3s;border:1.5px solid #e8e6e0;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+.student-dashboard-bar.show{display:block}
 .student-dashboard-bar::before{content:'';position:absolute;top:-50%;right:-20px;width:120px;height:200%;background:radial-gradient(ellipse,rgba(127,119,221,.08) 0%,transparent 70%);pointer-events:none}
-.sdb-char{width:52px;height:52px;flex-shrink:0;position:relative}
-.sdb-info{flex:1;min-width:0;padding-left:4px}
-.sdb-name{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#1a1a18}
-.sdb-badge{font-size:10px;color:#888;margin-top:2px}
-.sdb-xp-bar-bg{height:6px;background:#f0eeea;border-radius:3px;margin-top:6px;overflow:hidden}
+.sdb-top-row{display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;gap:10px;margin-bottom:9px}
+.sdb-char{width:48px;height:48px;flex-shrink:0;border-radius:50%;overflow:hidden;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;border:2px solid #e8e6e0}
+.sdb-info{flex:1;min-width:0}
+.sdb-name{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#1a1a18;line-height:1.2}
+.sdb-meta{display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;gap:5px;margin-top:3px;-webkit-flex-wrap:wrap;flex-wrap:wrap}
+.sdb-badge-icon{font-size:11px}
+.sdb-badge-name{font-size:10px;font-weight:700}
+.sdb-kelas{font-size:10px;color:#aaa}
+.sdb-badge-pill{font-size:9px;font-weight:700;padding:2px 9px;border-radius:20px;white-space:nowrap;flex-shrink:0;align-self:flex-start;margin-top:2px}
+.sdb-bar-row{display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;gap:8px}
+.sdb-xp-bar-bg{flex:1;height:6px;background:#f0eeea;border-radius:3px;overflow:hidden}
 .sdb-xp-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#7F77DD,#a78bfa);transition:width .5s}
-.sdb-xp-text{font-size:9px;color:#aaa;margin-top:3px}
+.sdb-xp-text{font-size:9px;color:#aaa;white-space:nowrap;flex-shrink:0}
 .sdb-arrow{color:#bbb;font-size:14px;align-self:center;flex-shrink:0}
 
 /* Sync */
@@ -1839,7 +1845,6 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
             </div>
           </div>
           <button type="button" class="edit-profile-toggle" onclick="openProfileEdit()">✏️ Edit Profil</button>
-          <button type="button" onclick="document.getElementById('lobby-screen').style.display='flex';document.getElementById('ujian-screen').style.display='none';if(typeof lobbyUpdateStatus==='function')lobbyUpdateStatus();" style="width:100%;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:700;padding:9px;border-radius:10px;border:1.5px solid #c5c0b8;background:#f5f4f2;color:#6e6b64;cursor:pointer;margin-top:8px">← Kembali ke Lobby</button>
         </div>
 
         <!-- Edit mode -->
@@ -2005,16 +2010,25 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
 
   <!-- STUDENT DASHBOARD BAR (visible when student logged in) -->
   <div class="student-dashboard-bar" id="student-dashboard-bar" onclick="openCharModal()">
-    <div class="sdb-char" id="sdb-char-wrap">
-      <!-- Character SVG rendered by JS -->
+    <div class="sdb-top-row">
+      <div class="sdb-char" id="sdb-char-wrap"></div>
+      <div class="sdb-info">
+        <div class="sdb-name" id="sdb-name">—</div>
+        <div class="sdb-meta">
+          <span class="sdb-badge-icon" id="sdb-badge-icon">⭐</span>
+          <span class="sdb-badge-name" id="sdb-badge-name">—</span>
+          <span class="sdb-kelas" id="sdb-kelas-txt"></span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
+        <span class="sdb-badge-pill" id="sdb-badge-pill">—</span>
+        <span class="sdb-arrow">›</span>
+      </div>
     </div>
-    <div class="sdb-info">
-      <div class="sdb-name" id="sdb-name">—</div>
-      <div class="sdb-badge" id="sdb-badge">⭐ —</div>
+    <div class="sdb-bar-row">
       <div class="sdb-xp-bar-bg"><div class="sdb-xp-bar-fill" id="sdb-xp-bar" style="width:0%"></div></div>
-      <div class="sdb-xp-text" id="sdb-xp-text">0 XP</div>
+      <span class="sdb-xp-text" id="sdb-xp-text">0 XP</span>
     </div>
-    <div class="sdb-arrow">›</div>
   </div>
 
   <!-- QUEST BOARD TAB -->
@@ -7030,14 +7044,14 @@ function updateStudentUI(){
   var prof  = getStudentProfile(loggedInStudentId);
   var themeColor = prof.color || s.color || '#7F77DD';
 
-  // Update sdb avatar circle
+  // Update sdb avatar circle (first pass)
   var sdbChar = document.getElementById('sdb-char-wrap');
   if(sdbChar){
     sdbChar.style.background = themeColor;
     if(s.photoData){
-      sdbChar.innerHTML = '<img src="'+s.photoData+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+      sdbChar.innerHTML = '<img src="'+s.photoData+'" style="width:100%;height:100%;object-fit:cover">';
     } else {
-      sdbChar.innerHTML = '<span style="font-size:13px;font-weight:700;color:#fff;pointer-events:none">'+(s.initials||s.name[0])+'</span>';
+      sdbChar.innerHTML = '<span style="font-size:14px;font-weight:700;color:#fff;pointer-events:none">'+(s.initials||s.name[0])+'</span>';
     }
   }
 
@@ -7051,7 +7065,30 @@ function updateStudentUI(){
   if(dashBar){
     dashBar.classList.add('show');
     document.getElementById('sdb-name').textContent = s.name;
-    document.getElementById('sdb-badge').textContent = (badge.icon||'⭐') + ' ' + badge.name;
+
+    // Badge icon + name
+    var badgeIconEl  = document.getElementById('sdb-badge-icon');
+    var badgeNameEl  = document.getElementById('sdb-badge-name');
+    var badgePillEl  = document.getElementById('sdb-badge-pill');
+    var kelasEl      = document.getElementById('sdb-kelas-txt');
+    var badgeColor   = badge.color || themeColor;
+
+    if(badgeIconEl) badgeIconEl.textContent = badge.icon || '⭐';
+    if(badgeNameEl){ badgeNameEl.textContent = badge.name || '—'; badgeNameEl.style.color = badgeColor; }
+    if(kelasEl)     kelasEl.textContent = s.kelas ? '· ' + s.kelas : '';
+    if(badgePillEl){
+      badgePillEl.textContent = (badge.icon||'⭐') + ' ' + (badge.name||'—');
+      badgePillEl.style.background = badgeColor + '22';
+      badgePillEl.style.color      = badgeColor;
+      badgePillEl.style.border     = '1px solid ' + badgeColor + '44';
+    }
+
+    // Border accent warna badge
+    dashBar.style.borderColor = badgeColor + '55';
+
+    // Avatar border warna badge
+    var charWrap2 = document.getElementById('sdb-char-wrap');
+    if(charWrap2) charWrap2.style.borderColor = badgeColor;
 
     var levels = (window.badgeLevels||[]).slice().sort(function(a,b){return (a.minXP||0)-(b.minXP||0);});
     var nextBadge = levels.find(function(b){return (b.minXP||0) > xp;});
@@ -7062,16 +7099,17 @@ function updateStudentUI(){
       pct = range > 0 ? Math.min(100, Math.round(prog/range*100)) : 100;
     } else { pct = 100; }
 
-    document.getElementById('sdb-xp-bar').style.width = pct + '%';
+    document.getElementById('sdb-xp-bar').style.width  = pct + '%';
+    document.getElementById('sdb-xp-bar').style.background = 'linear-gradient(90deg,' + badgeColor + ',' + badgeColor + 'aa)';
     document.getElementById('sdb-xp-text').textContent = xp + ' XP' + (nextBadge ? ' · '+((nextBadge.minXP||0)-xp)+' XP ke '+nextBadge.name : ' · MAX!');
 
     var charWrap = document.getElementById('sdb-char-wrap');
     if(charWrap){
       charWrap.style.background = themeColor;
       if(s.photoData){
-        charWrap.innerHTML = '<img src="'+s.photoData+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+        charWrap.innerHTML = '<img src="'+s.photoData+'" style="width:100%;height:100%;object-fit:cover">';
       } else {
-        charWrap.innerHTML = '<span style="font-size:13px;font-weight:700;color:#fff">'+(s.initials||s.name[0])+'</span>';
+        charWrap.innerHTML = '<span style="font-size:14px;font-weight:700;color:#fff">'+(s.initials||s.name[0])+'</span>';
       }
     }
   }
@@ -9616,14 +9654,23 @@ document.addEventListener('click', function(e){
     document.getElementById('ujian-screen').style.display='block';
     initUjianRef();
     // Auto-carry sesi yang sudah aktif
+    // PRIORITAS: siswa login > pembina — siswa tidak boleh masuk sebagai pembina
+    // Juga reset jika state lama adalah pembina tapi sekarang siswa yang login
+    if(_ujianState.loggedIn && _ujianState.isPembina && window.loggedInStudentId && !window.pembina){
+      // State lama adalah pembina, tapi sekarang yang aktif adalah siswa → reset
+      _ujianState.loggedIn=false; _ujianState.isPembina=false;
+      _ujianState.siswaId=null; _ujianState.siswaName=null; _ujianState.aktif=null;
+    }
     if(!_ujianState.loggedIn){
-      if(window.pembina){
-        _ujianState.loggedIn=true; _ujianState.isPembina=true;
-      } else if(window.loggedInStudentId){
+      if(window.loggedInStudentId){
+        // Siswa aktif → selalu masuk sebagai siswa, bukan pembina
         var s=(window.siswaList||[]).find(function(x){return x.id===window.loggedInStudentId;});
         _ujianState.loggedIn=true; _ujianState.isPembina=false;
         _ujianState.siswaId=window.loggedInStudentId;
         _ujianState.siswaName=s?s.name:window.loggedInStudentId;
+      } else if(window.pembina){
+        // Hanya pembina murni (tidak ada sesi siswa aktif)
+        _ujianState.loggedIn=true; _ujianState.isPembina=true;
       }
     }
     renderUjianScreen();
@@ -9736,6 +9783,14 @@ document.addEventListener('click', function(e){
   // ── RENDER UJIAN SCREEN ────────────────────────────────────
   function renderUjianScreen(){
     hideAllUjianStates();
+    // Keamanan: jika siswa login tapi state masih menunjuk pembina, koreksi
+    if(_ujianState.isPembina && window.loggedInStudentId && !window.pembina){
+      _ujianState.isPembina=false;
+      _ujianState.loggedIn=true;
+      var _s=(window.siswaList||[]).find(function(x){return x.id===window.loggedInStudentId;});
+      _ujianState.siswaId=window.loggedInStudentId;
+      _ujianState.siswaName=_s?_s.name:window.loggedInStudentId;
+    }
     if(_ujianState.isPembina){
       document.getElementById('ujian-admin-state').style.display='block';
       loadAdminUjianList();
