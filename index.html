@@ -2068,7 +2068,7 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
 
             <!-- Logo Ekskul -->
             <div style="margin-bottom:10px">
-              <label style="font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:6px">Logo Ekskul (PNG)</label>
+              <label style="font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:6px">Logo Ekskul</label>
               <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
                 <div style="width:192px;height:192px;border:2px solid #e8e6e0;background:#f8f7f4;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0">
                   <img id="cfg-logo-preview" style="width:100%;height:100%;object-fit:contain;display:block" alt="Logo">
@@ -2079,7 +2079,7 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
                   <button type="button" id="cfg-logo-clear-btn" onclick="clearAppLogo()" style="display:none;font-family:'Space Grotesk',sans-serif;font-size:11px;padding:5px 10px;border-radius:8px;border:1px solid #e24b4a;background:transparent;color:#e24b4a;cursor:pointer">✕ Hapus Logo</button>
                 </div>
               </div>
-              <div style="font-size:10px;color:#aaa;margin-top:4px">Format PNG saja. Muncul di sudut kiri atas & judul browser</div>
+              <div style="font-size:10px;color:#aaa;margin-top:4px">Format PNG saja. Muncul di sudut kiri atas halaman & judul browser</div>
             </div>
 
             <!-- Background Halaman Utama -->
@@ -2624,7 +2624,7 @@ function _applyFirebaseData(data){
     var cfg = typeof data.dkv_cfg === 'string' ? JSON.parse(data.dkv_cfg) : data.dkv_cfg;
     window._appConfig = cfg;
     appConfig = cfg;
-    // Logo disimpan di localStorage terpisah — restore agar tidak ditimpa Firebase
+    // Logo disimpan di localStorage terpisah — pulihkan agar tidak ditimpa Firebase
     try{
       var savedLogo = localStorage.getItem('dkv_logo_data');
       if(savedLogo){ appConfig.logoData = savedLogo; window._appConfig.logoData = savedLogo; }
@@ -3072,7 +3072,7 @@ window.badgeLevels.sort(function(a,b){return (a.minXP||0)-(b.minXP||0);});
 window.kelompokList = loadJSON('dkv_kelompok', []);
 var cfg = loadJSON('dkv_cfg', null);
 if(cfg){ window._appConfig = cfg; appConfig = cfg; }
-// Restore logo dari localStorage terpisah (tidak ikut Firebase, agar tidak hilang saat sync cloud)
+// Restore logo dari localStorage terpisah agar tidak hilang saat Firebase sync
 (function(){
   try{
     var savedLogo = localStorage.getItem('dkv_logo_data');
@@ -5957,7 +5957,6 @@ document.getElementById('cfg-logo-input').addEventListener('change', function(e)
     var preview = document.getElementById('cfg-logo-preview');
     if(preview) preview.src = ev.target.result;
     appConfig.logoData = ev.target.result;
-    // Simpan logo ke localStorage terpisah agar tidak hilang saat Firebase restore
     try{ localStorage.setItem('dkv_logo_data', ev.target.result); } catch(ex){}
     var clearBtn = document.getElementById('cfg-logo-clear-btn');
     if(clearBtn) clearBtn.style.display = 'block';
@@ -6018,7 +6017,6 @@ document.getElementById('save-app-config-btn').addEventListener('click', functio
   var taglineVal = document.getElementById('cfg-tagline');
   if(taglineVal) appConfig.tagline = taglineVal.value.trim();
   window._appConfig = appConfig;
-  // Simpan logo ke localStorage terpisah (tidak ikut Firebase, agar tidak terhapus saat sync)
   if(appConfig.logoData){ try{ localStorage.setItem('dkv_logo_data', appConfig.logoData); } catch(ex){} }
   applyAppConfig();
   saveAll();
