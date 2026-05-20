@@ -1481,7 +1481,7 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
       </div>
       <div id="ujian-cards-wrap" style="display:flex;flex-direction:column;gap:12px"></div>
       <div id="ujian-empty" style="display:none;text-align:center;padding:60px 0;color:#3e3c38;font-size:14px">Belum ada ujian tersedia 📭</div>
-      <button id="ujian-logout-btn" type="button" style="margin-top:28px;font-size:12px;font-weight:500;padding:8px 16px;border-radius:99px;border:1px solid #2e2c29;background:transparent;color:#6e6b64;cursor:pointer;font-family:'Space Grotesk',sans-serif">Keluar akun</button>
+
     </div>
 
     <!-- STATE: sedang mengerjakan ujian -->
@@ -1559,7 +1559,7 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
         <div id="nilai-panel-table"></div>
       </div>
 
-      <button id="ujian-admin-logout-btn" type="button" style="margin-top:28px;font-size:12px;font-weight:500;padding:8px 16px;border-radius:99px;border:1px solid #2e2c29;background:transparent;color:#6e6b64;cursor:pointer;font-family:'Space Grotesk',sans-serif">Keluar akun pembina</button>
+
     </div>
 
   </div><!-- end padding wrap -->
@@ -1997,6 +1997,7 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
       <button class="btn-student-login" id="student-login-btn" type="button" style="display:none">🎮 Login Siswa</button>
       <button class="btn-student-login" id="reg-open-btn" type="button" style="display:none">✏️ Daftar</button>
       <button type="button" id="back-to-lobby-btn" style="font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;padding:6px 13px;border-radius:99px;border:1px solid #c5c0b8;background:transparent;color:#888;cursor:pointer">← Lobby</button>
+    </div>
   </div>
 
   <div class="tab-bar">
@@ -9880,8 +9881,7 @@ document.addEventListener('click', function(e){
   }
 
   // ── LOGOUT ─────────────────────────────────────────────────
-  document.getElementById('ujian-logout-btn').addEventListener('click', doUjianLogout);
-  document.getElementById('ujian-admin-logout-btn').addEventListener('click', doUjianLogout);
+
   function doUjianLogout(){
     if(_ujianState.timer){clearInterval(_ujianState.timer);_ujianState.timer=null;}
     _ujianState={loggedIn:false,isPembina:false,siswaId:null,siswaName:null,aktif:null,jawaban:{},soalIdx:0,timer:null,sisaDetik:0,attempts:_ujianState.attempts,lockUntil:_ujianState.lockUntil};
