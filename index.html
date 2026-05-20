@@ -422,8 +422,8 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
 .notif-empty-txt{font-size:13px;font-weight:500;color:#bbb}
 /* Logo & App Name */
 .top-title-wrap{display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;gap:9px}
-.app-logo{width:36px;height:36px;border-radius:8px;object-fit:contain;-webkit-flex-shrink:0;flex-shrink:0}
-.app-logo-placeholder{width:36px;height:36px;border-radius:8px;background:#378ADD22;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;font-size:18px;-webkit-flex-shrink:0;flex-shrink:0}
+.app-logo{width:36px;height:36px;border-radius:0;object-fit:contain;-webkit-flex-shrink:0;flex-shrink:0}
+.app-logo-placeholder{width:36px;height:36px;border-radius:0;background:#378ADD22;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;font-size:18px;-webkit-flex-shrink:0;flex-shrink:0}
 /* Status Badge Siswa */
 .siswa-status-badge{display:-webkit-inline-flex;display:inline-flex;-webkit-align-items:center;align-items:center;gap:3px;font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;white-space:nowrap;letter-spacing:.03em;text-transform:uppercase;margin-top:2px}
 .siswa-status-badge.aktif{background:#63992215;color:#639922;border:1px solid #63992233}
@@ -2068,18 +2068,18 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
 
             <!-- Logo Ekskul -->
             <div style="margin-bottom:10px">
-              <label style="font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:6px">Logo Ekskul</label>
+              <label style="font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:6px">Logo Ekskul (PNG)</label>
               <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-                <div style="width:64px;height:64px;border-radius:12px;border:2px solid #e8e6e0;background:#f8f7f4;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0">
+                <div style="width:192px;height:192px;border:2px solid #e8e6e0;background:#f8f7f4;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0">
                   <img id="cfg-logo-preview" style="width:100%;height:100%;object-fit:contain;display:block" alt="Logo">
                 </div>
                 <div style="display:flex;flex-direction:column;gap:6px">
-                  <input type="file" id="cfg-logo-input" accept="image/*" style="display:none">
-                  <button type="button" onclick="document.getElementById('cfg-logo-input').click()" style="font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;padding:7px 13px;border-radius:8px;border:1.5px solid #378ADD;background:transparent;color:#378ADD;cursor:pointer">📁 Upload Logo</button>
+                  <input type="file" id="cfg-logo-input" accept="image/png" style="display:none">
+                  <button type="button" onclick="document.getElementById('cfg-logo-input').click()" style="font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;padding:7px 13px;border-radius:8px;border:1.5px solid #378ADD;background:transparent;color:#378ADD;cursor:pointer">📁 Upload Logo PNG</button>
                   <button type="button" id="cfg-logo-clear-btn" onclick="clearAppLogo()" style="display:none;font-family:'Space Grotesk',sans-serif;font-size:11px;padding:5px 10px;border-radius:8px;border:1px solid #e24b4a;background:transparent;color:#e24b4a;cursor:pointer">✕ Hapus Logo</button>
                 </div>
               </div>
-              <div style="font-size:10px;color:#aaa;margin-top:4px">Muncul di sudut kiri atas halaman & judul browser</div>
+              <div style="font-size:10px;color:#aaa;margin-top:4px">Format PNG saja. Muncul di sudut kiri atas & judul browser</div>
             </div>
 
             <!-- Background Halaman Utama -->
@@ -2624,6 +2624,11 @@ function _applyFirebaseData(data){
     var cfg = typeof data.dkv_cfg === 'string' ? JSON.parse(data.dkv_cfg) : data.dkv_cfg;
     window._appConfig = cfg;
     appConfig = cfg;
+    // Logo disimpan di localStorage terpisah — restore agar tidak ditimpa Firebase
+    try{
+      var savedLogo = localStorage.getItem('dkv_logo_data');
+      if(savedLogo){ appConfig.logoData = savedLogo; window._appConfig.logoData = savedLogo; }
+    } catch(ex){}
   }
   if(data.dkv_pw_hash){
     CORRECT_PW_HASH = data.dkv_pw_hash;
@@ -3067,6 +3072,13 @@ window.badgeLevels.sort(function(a,b){return (a.minXP||0)-(b.minXP||0);});
 window.kelompokList = loadJSON('dkv_kelompok', []);
 var cfg = loadJSON('dkv_cfg', null);
 if(cfg){ window._appConfig = cfg; appConfig = cfg; }
+// Restore logo dari localStorage terpisah (tidak ikut Firebase, agar tidak hilang saat sync cloud)
+(function(){
+  try{
+    var savedLogo = localStorage.getItem('dkv_logo_data');
+    if(savedLogo){ appConfig.logoData = savedLogo; if(window._appConfig) window._appConfig.logoData = savedLogo; }
+  } catch(ex){}
+})();
 // Firebase akan meng-override data ini ketika koneksi berhasil
 
 
@@ -5938,15 +5950,18 @@ function applyAppConfig(){
 document.getElementById('cfg-logo-input').addEventListener('change', function(e){
   var file = e.target.files[0];
   if(!file) return;
+  if(file.type !== 'image/png'){ showToast('Hanya file PNG yang diizinkan! ❌'); this.value=''; return; }
   if(file.size > 3145728){ showToast('Logo terlalu besar (maks 3MB)'); return; }
   var reader = new FileReader();
   reader.onload = function(ev){
     var preview = document.getElementById('cfg-logo-preview');
     if(preview) preview.src = ev.target.result;
     appConfig.logoData = ev.target.result;
+    // Simpan logo ke localStorage terpisah agar tidak hilang saat Firebase restore
+    try{ localStorage.setItem('dkv_logo_data', ev.target.result); } catch(ex){}
     var clearBtn = document.getElementById('cfg-logo-clear-btn');
     if(clearBtn) clearBtn.style.display = 'block';
-    showToast('Logo dipilih! Klik Simpan Tampilan ✅');
+    showToast('Logo PNG dipilih! Klik Simpan Tampilan ✅');
   };
   reader.readAsDataURL(file);
 });
@@ -5975,6 +5990,7 @@ document.getElementById('cfg-bg-input').addEventListener('change', function(e){
 // ─── Clear logo
 window.clearAppLogo = function(){
   appConfig.logoData = null;
+  try{ localStorage.removeItem('dkv_logo_data'); } catch(ex){}
   var preview = document.getElementById('cfg-logo-preview');
   if(preview) preview.src = '';
   var clearBtn = document.getElementById('cfg-logo-clear-btn');
@@ -6002,6 +6018,8 @@ document.getElementById('save-app-config-btn').addEventListener('click', functio
   var taglineVal = document.getElementById('cfg-tagline');
   if(taglineVal) appConfig.tagline = taglineVal.value.trim();
   window._appConfig = appConfig;
+  // Simpan logo ke localStorage terpisah (tidak ikut Firebase, agar tidak terhapus saat sync)
+  if(appConfig.logoData){ try{ localStorage.setItem('dkv_logo_data', appConfig.logoData); } catch(ex){} }
   applyAppConfig();
   saveAll();
   showToast('Tampilan menu utama disimpan! ✅');
