@@ -796,9 +796,9 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
 
 <!-- ═══════ EKSKUL LOGIN GATE MODAL ═══════ -->
 <div id="ekskul-gate-overlay" style="
-  display:none;position:fixed;inset:0;z-index:10500;
-  background:rgba(0,0,0,.72);backdrop-filter:blur(6px);
-  align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;
+  display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:10500;
+  background:rgba(0,0,0,.72);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  -webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;font-family:'Space Grotesk',sans-serif;
 ">
   <div style="
     background:#1a1916;border:1.5px solid #2e2c29;border-radius:22px;
@@ -813,7 +813,7 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
     </div>
 
     <!-- Tab pilihan -->
-    <div id="gate-tab-row" style="display:flex;gap:8px;margin-bottom:22px">
+    <div id="gate-tab-row" style="display:-webkit-flex;display:flex;gap:8px;margin-bottom:22px">
       <button id="gate-tab-siswa" type="button" onclick="gateSetTab('siswa')" style="
         flex:1;padding:9px;border-radius:10px;border:1.5px solid #7F77DD;
         background:#7F77DD;color:#fff;font-family:'Space Grotesk',sans-serif;
@@ -845,15 +845,15 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
       <div id="gate-siswa-form">
         <div style="margin-bottom:12px">
           <label style="font-size:11px;color:#9e9b95;font-weight:600;letter-spacing:.04em;text-transform:uppercase">Username</label>
-          <input id="gate-sl-username" type="text" placeholder="username kamu..." autocomplete="off" autocapitalize="none" style="
+          <input id="gate-sl-username" type="text" placeholder="username kamu..." autocomplete="username" autocapitalize="none" style="
             margin-top:5px;width:100%;padding:10px 12px;border-radius:9px;
             border:1.5px solid #2e2c29;background:#0f0e14;color:#f0ede8;
             font-family:'Space Grotesk',sans-serif;font-size:14px;outline:none;box-sizing:border-box
           ">
         </div>
-        <div style="margin-bottom:16px;position:relative">
+        <div style="margin-bottom:10px;position:relative">
           <label style="font-size:11px;color:#9e9b95;font-weight:600;letter-spacing:.04em;text-transform:uppercase">Password</label>
-          <input id="gate-sl-password" type="password" placeholder="password..." style="
+          <input id="gate-sl-password" type="password" placeholder="password..." autocomplete="current-password" style="
             margin-top:5px;width:100%;padding:10px 36px 10px 12px;border-radius:9px;
             border:1.5px solid #2e2c29;background:#0f0e14;color:#f0ede8;
             font-family:'Space Grotesk',sans-serif;font-size:14px;outline:none;box-sizing:border-box
@@ -861,6 +861,20 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
           <button id="gate-sl-eye" type="button" onclick="gateToggleEye('gate-sl-password','gate-sl-eye')" style="
             position:absolute;right:10px;bottom:10px;background:none;border:none;cursor:pointer;font-size:14px
           ">👁</button>
+        </div>
+        <!-- Remember Me -->
+        <div style="display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;gap:8px;margin-bottom:12px">
+          <div id="gate-remember-toggle" onclick="gateToggleRemember()" style="
+            width:38px;height:22px;border-radius:11px;background:#2e2c29;
+            position:relative;cursor:pointer;-webkit-transition:background .2s;transition:background .2s;-webkit-flex-shrink:0;flex-shrink:0
+          ">
+            <div id="gate-remember-knob" style="
+              position:absolute;top:3px;left:3px;width:16px;height:16px;
+              border-radius:50%;background:#6e6b64;
+              -webkit-transition:left .2s,background .2s;transition:left .2s,background .2s
+            "></div>
+          </div>
+          <span style="font-size:12px;color:#9e9b95;cursor:pointer" onclick="gateToggleRemember()">Ingat username &amp; password</span>
         </div>
         <div id="gate-sl-err" style="font-size:12px;color:#e05252;min-height:16px;margin-bottom:10px"></div>
         <button type="button" id="gate-sl-submit" style="
@@ -925,10 +939,10 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
 <style>
 /* ══ LOBBY v2 — LOGIN FIRST, THEN PICK ROOM ══ */
 #lobby-screen { font-family:'Space Grotesk',sans-serif; overflow-y:auto; -webkit-overflow-scrolling:touch; }
-.lobby-bg-layer { position:fixed;inset:0;background-size:cover;background-position:center;z-index:0; }
-.lobby-bg-overlay { position:fixed;inset:0;background:linear-gradient(160deg,rgba(15,14,20,.92) 0%,rgba(15,14,20,.78) 100%);z-index:0; }
-.lobby-dot-pattern { position:fixed;inset:0;z-index:0;opacity:.03;background-image:radial-gradient(circle,#fff 1px,transparent 1px);background-size:28px 28px;pointer-events:none; }
-.lobby-scroll-inner { position:relative;z-index:2;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px 48px; }
+.lobby-bg-layer { position:fixed;top:0;left:0;right:0;bottom:0;background-size:cover;background-position:center;z-index:0; }
+.lobby-bg-overlay { position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(160deg,rgba(15,14,20,.92) 0%,rgba(15,14,20,.78) 100%);z-index:0; }
+.lobby-dot-pattern { position:fixed;top:0;left:0;right:0;bottom:0;z-index:0;opacity:.03;background-image:radial-gradient(circle,#fff 1px,transparent 1px);background-size:28px 28px;pointer-events:none; }
+.lobby-scroll-inner { position:relative;z-index:2;min-height:100vh;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;padding:32px 20px 48px; }
 
 /* FASE 1: LOGIN */
 #lobby-phase-login { width:100%;max-width:400px; }
@@ -949,12 +963,12 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
 .lobby-divider { width:36px;height:2px;background:#f5c842;margin:10px auto 0;border-radius:99px }
 
 /* Tab login */
-.lobby-login-tabs { display:flex;border-radius:12px;overflow:hidden;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);margin-bottom:14px }
+.lobby-login-tabs { display:-webkit-flex;display:flex;border-radius:12px;overflow:hidden;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);margin-bottom:14px }
 .lobby-tab-btn { flex:1;padding:10px 0;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;border:none;background:transparent;color:#6e6b64;cursor:pointer;transition:all .2s }
 .lobby-tab-btn.active { background:#f5c842;color:#1a1916 }
 
 /* Form box */
-.lobby-form-wrap { background:rgba(22,21,18,.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:22px 20px 20px }
+.lobby-form-wrap { background:rgba(22,21,18,.9);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:22px 20px 20px }
 .lobby-inp { width:100%;box-sizing:border-box;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);color:#f0ede8;font-family:'Space Grotesk',sans-serif;font-size:14px;padding:11px 14px;border-radius:11px;outline:none;margin-bottom:10px;transition:border .2s;-webkit-appearance:none }
 .lobby-inp:focus { border-color:#f5c842 }
 .lobby-inp::placeholder { color:#4e4c48 }
@@ -967,8 +981,8 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
 .lobby-link-btn { background:none;border:none;color:#aaa;font-family:'Space Grotesk',sans-serif;font-size:12px;cursor:pointer;text-decoration:underline;padding:0;margin-top:12px;display:block;text-align:center;width:100% }
 
 /* Room cards */
-.lobby-rooms-grid { display:flex;gap:12px;flex-wrap:wrap }
-.lobby-room-card { flex:1;min-width:150px;background:rgba(22,21,18,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1.5px solid #2e2c29;border-radius:16px;padding:22px 16px 18px;cursor:pointer;text-align:left;transition:border-color .2s,transform .18s,box-shadow .2s;font-family:'Space Grotesk',sans-serif;position:relative;overflow:hidden;-webkit-appearance:none }
+.lobby-rooms-grid { display:-webkit-flex;display:flex;gap:12px;-webkit-flex-wrap:wrap;flex-wrap:wrap }
+.lobby-room-card { flex:1;min-width:150px;background:rgba(22,21,18,.85);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1.5px solid #2e2c29;border-radius:16px;padding:22px 16px 18px;cursor:pointer;text-align:left;transition:border-color .2s,transform .18s,box-shadow .2s;font-family:'Space Grotesk',sans-serif;position:relative;overflow:hidden;-webkit-appearance:none }
 .lobby-room-card:active { transform:scale(.97) }
 .lobby-room-card:hover { border-color:#f5c842;transform:translateY(-2px);box-shadow:0 10px 28px rgba(245,200,66,.1) }
 .lobby-room-card.ujian:hover { border-color:#e8774a;box-shadow:0 10px 28px rgba(232,119,74,.1) }
@@ -976,7 +990,7 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
 .lobby-room-card.ujian .lobby-room-label { color:#e8774a }
 
 /* Logged-in info bar */
-.lobby-user-bar { display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px 14px;margin-bottom:16px;font-size:13px }
+.lobby-user-bar { display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:space-between;justify-content:space-between;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px 14px;margin-bottom:16px;font-size:13px }
 .lobby-user-name { color:#f0ede8;font-weight:600 }
 .lobby-logout-small { background:none;border:none;color:#ff7b7b;font-family:'Space Grotesk',sans-serif;font-size:12px;cursor:pointer;padding:0 }
 
@@ -1081,27 +1095,7 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
   </div><!-- end scroll-inner -->
 </div>
 
-<!-- Edit Lobby FAB -->
-<button type="button" class="lobby-edit-fab" id="lobby-edit-fab" onclick="lobbyToggleEditPanel()" title="Edit tampilan lobby">✏️</button>
-<div class="lobby-edit-panel" id="lobby-edit-panel">
-  <div class="lobby-edit-title">✏️ Edit Tampilan Lobby</div>
-  <label class="lobby-edit-label">Nama Aplikasi</label>
-  <input type="text" class="lobby-edit-inp" id="ledit-appname" placeholder="Nama Aplikasi">
-  <label class="lobby-edit-label">Sub-judul</label>
-  <input type="text" class="lobby-edit-inp" id="ledit-appsub" placeholder="Misal: SMPN 1 Sumenep">
-  <label class="lobby-edit-label">Logo (URL atau upload)</label>
-  <input type="text" class="lobby-edit-inp" id="ledit-logourl" placeholder="https://...">
-  <input type="file" id="ledit-logoupload" accept="image/*" style="display:none" onchange="lobbyHandleLogoUpload(this)">
-  <button type="button" onclick="document.getElementById('ledit-logoupload').click()" style="width:100%;padding:7px;background:transparent;border:1.5px dashed #3a3836;color:#6e6b64;border-radius:8px;font-family:'Space Grotesk',sans-serif;font-size:12px;cursor:pointer;margin-bottom:10px">📁 Upload Logo</button>
-  <label class="lobby-edit-label">Warna Background</label>
-  <div class="lobby-color-grid" id="ledit-color-grid"></div>
-  <label class="lobby-edit-label">Gambar Background (URL atau upload)</label>
-  <input type="text" class="lobby-edit-inp" id="ledit-bgurl" placeholder="https://...">
-  <input type="file" id="ledit-bgupload" accept="image/*" style="display:none" onchange="lobbyHandleBgUpload(this)">
-  <button type="button" onclick="document.getElementById('ledit-bgupload').click()" style="width:100%;padding:7px;background:transparent;border:1.5px dashed #3a3836;color:#6e6b64;border-radius:8px;font-family:'Space Grotesk',sans-serif;font-size:12px;cursor:pointer;margin-bottom:10px">📁 Upload Background</button>
-  <button type="button" class="lobby-edit-save" onclick="lobbySaveEdit()">💾 Simpan</button>
-  <button type="button" onclick="lobbyResetEdit()" style="width:100%;padding:7px;background:transparent;border:none;color:#6e6b64;font-family:'Space Grotesk',sans-serif;font-size:12px;cursor:pointer;margin-top:5px">↩ Reset Default</button>
-</div>
+<!-- Edit Lobby FAB (dihapus - tidak tampil di ruang ekskul) -->
 
 <script>
 // ══════════════════════════════════════════════════════
@@ -10322,6 +10316,57 @@ document.addEventListener('click', function(e){
   var _gateAdminAttempts = 0;
   var _gateAdminLockedUntil = 0;
 
+  // ── Remember Me state ──────────────────────────────
+  var _gateRemember = false;
+  var _REMEMBER_KEY = 'dkv_remember_login';
+
+  window.gateToggleRemember = function(){
+    _gateRemember = !_gateRemember;
+    var toggle = document.getElementById('gate-remember-toggle');
+    var knob   = document.getElementById('gate-remember-knob');
+    if(_gateRemember){
+      toggle.style.background = '#7F77DD';
+      knob.style.left = '19px';
+      knob.style.background = '#fff';
+    } else {
+      toggle.style.background = '#2e2c29';
+      knob.style.left = '3px';
+      knob.style.background = '#6e6b64';
+    }
+  };
+
+  function gateSaveCredentials(uname, pass){
+    try {
+      var data = btoa(unescape(encodeURIComponent(JSON.stringify({u:uname,p:pass}))));
+      localStorage.setItem(_REMEMBER_KEY, data);
+    } catch(e){}
+  }
+
+  function gateClearCredentials(){
+    try { localStorage.removeItem(_REMEMBER_KEY); } catch(e){}
+  }
+
+  function gateLoadSavedCredentials(){
+    try {
+      var raw = localStorage.getItem(_REMEMBER_KEY);
+      if(!raw) return null;
+      return JSON.parse(decodeURIComponent(escape(atob(raw))));
+    } catch(e){ return null; }
+  }
+
+  function gateInitRememberUI(){
+    var saved = gateLoadSavedCredentials();
+    if(saved && saved.u && saved.p){
+      var uInp = document.getElementById('gate-sl-username');
+      var pInp = document.getElementById('gate-sl-password');
+      if(uInp) uInp.value = saved.u;
+      if(pInp) pInp.value = saved.p;
+      // Aktifkan toggle
+      _gateRemember = false;
+      gateToggleRemember(); // set ke true + update UI
+    }
+  }
+
   // ── Buka / tutup gate ──────────────────────────────
   window.openEkskulGate = function(){
     // Reset errors
@@ -10348,13 +10393,17 @@ document.addEventListener('click', function(e){
     var overlay = document.getElementById('ekskul-gate-overlay');
     overlay.style.display = 'flex';
     gateSetTab('siswa');
+    // Muat credentials tersimpan (jika ada)
+    setTimeout(gateInitRememberUI, 50);
   };
 
   window.closeEkskulGate = function(){
     document.getElementById('ekskul-gate-overlay').style.display = 'none';
-    // Bersihkan field
-    document.getElementById('gate-sl-username').value = '';
-    document.getElementById('gate-sl-password').value = '';
+    // Bersihkan field (kecuali jika remember aktif)
+    if(!_gateRemember){
+      document.getElementById('gate-sl-username').value = '';
+      document.getElementById('gate-sl-password').value = '';
+    }
     document.getElementById('gate-pw-input').value = '';
   };
 
@@ -10443,10 +10492,13 @@ document.addEventListener('click', function(e){
     if(typeof logoutStudent === 'function') logoutStudent();
     sessionStorage.removeItem('dkv_student_sess');
     _updateGateSiswaView(null);
+    // Reset remember me dan hapus credentials tersimpan
+    gateClearCredentials();
+    if(_gateRemember){ gateToggleRemember(); } // set toggle ke off
     document.getElementById('gate-sl-username').value = '';
     document.getElementById('gate-sl-password').value = '';
     document.getElementById('gate-sl-err').textContent = '';
-    showToast('Akun siswa telah dikeluarkan.');
+    if(typeof showToast === 'function') showToast('Akun siswa telah dikeluarkan.');
   };
 
   function gateDoSiswaLogin(){
@@ -10479,6 +10531,12 @@ document.addEventListener('click', function(e){
       var s = window.siswaList.find(function(x){ return x.id === foundSid; });
       if(!s){ err.textContent = 'Data siswa tidak ditemukan.'; return; }
       if(typeof _recordLoginSuccess === 'function') _recordLoginSuccess(uname);
+      // Simpan atau hapus credentials berdasarkan remember me
+      if(_gateRemember){
+        gateSaveCredentials(uname, pass);
+      } else {
+        gateClearCredentials();
+      }
       // Login berhasil — set state
       window.loggedInStudentId = foundSid;
       sessionStorage.setItem('dkv_student_sess', foundSid);
