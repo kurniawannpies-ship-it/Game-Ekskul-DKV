@@ -981,15 +981,7 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
 .lobby-logout-small { background:none;border:none;color:#ff7b7b;font-family:'Space Grotesk',sans-serif;font-size:12px;cursor:pointer;padding:0 }
 
 /* Edit Lobby FAB */
-.lobby-edit-fab { position:fixed;bottom:20px;right:20px;z-index:10010;background:#f5c842;color:#1a1916;border:none;border-radius:50%;width:46px;height:46px;font-size:19px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;-webkit-appearance:none }
-.lobby-edit-panel { position:fixed;bottom:76px;right:16px;z-index:10010;background:#1c1b18;border:1px solid #3a3836;border-radius:16px;padding:18px;width:270px;max-height:80vh;overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.55);display:none;font-family:'Space Grotesk',sans-serif }
-.lobby-edit-panel.open { display:block;animation:lobbyFadeIn .2s ease both }
-.lobby-edit-title { font-size:13px;font-weight:700;color:#f0ede8;margin-bottom:12px }
-.lobby-edit-label { font-size:11px;font-weight:600;color:#6e6b64;letter-spacing:.05em;margin-bottom:4px;display:block }
-.lobby-edit-inp { width:100%;box-sizing:border-box;background:rgba(255,255,255,.05);border:1.5px solid #3a3836;color:#f0ede8;font-family:'Space Grotesk',sans-serif;font-size:13px;padding:8px 10px;border-radius:9px;outline:none;margin-bottom:10px;-webkit-appearance:none }
-.lobby-edit-inp:focus { border-color:#f5c842 }
-.lobby-edit-save { width:100%;padding:9px;background:#f5c842;color:#1a1916;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;border:none;border-radius:9px;cursor:pointer;-webkit-appearance:none }
-.lobby-color-grid { display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:10px }
+
 .lobby-color-swatch { width:100%;aspect-ratio:1;border-radius:7px;border:2px solid transparent;cursor:pointer;transition:transform .15s,border-color .15s }
 .lobby-color-swatch.sel { border-color:#f5c842;transform:scale(1.1) }
 </style>
@@ -1082,26 +1074,6 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
 </div>
 
 <!-- Edit Lobby FAB -->
-<button type="button" class="lobby-edit-fab" id="lobby-edit-fab" onclick="lobbyToggleEditPanel()" title="Edit tampilan lobby">✏️</button>
-<div class="lobby-edit-panel" id="lobby-edit-panel">
-  <div class="lobby-edit-title">✏️ Edit Tampilan Lobby</div>
-  <label class="lobby-edit-label">Nama Aplikasi</label>
-  <input type="text" class="lobby-edit-inp" id="ledit-appname" placeholder="Nama Aplikasi">
-  <label class="lobby-edit-label">Sub-judul</label>
-  <input type="text" class="lobby-edit-inp" id="ledit-appsub" placeholder="Misal: SMPN 1 Sumenep">
-  <label class="lobby-edit-label">Logo (URL atau upload)</label>
-  <input type="text" class="lobby-edit-inp" id="ledit-logourl" placeholder="https://...">
-  <input type="file" id="ledit-logoupload" accept="image/*" style="display:none" onchange="lobbyHandleLogoUpload(this)">
-  <button type="button" onclick="document.getElementById('ledit-logoupload').click()" style="width:100%;padding:7px;background:transparent;border:1.5px dashed #3a3836;color:#6e6b64;border-radius:8px;font-family:'Space Grotesk',sans-serif;font-size:12px;cursor:pointer;margin-bottom:10px">📁 Upload Logo</button>
-  <label class="lobby-edit-label">Warna Background</label>
-  <div class="lobby-color-grid" id="ledit-color-grid"></div>
-  <label class="lobby-edit-label">Gambar Background (URL atau upload)</label>
-  <input type="text" class="lobby-edit-inp" id="ledit-bgurl" placeholder="https://...">
-  <input type="file" id="ledit-bgupload" accept="image/*" style="display:none" onchange="lobbyHandleBgUpload(this)">
-  <button type="button" onclick="document.getElementById('ledit-bgupload').click()" style="width:100%;padding:7px;background:transparent;border:1.5px dashed #3a3836;color:#6e6b64;border-radius:8px;font-family:'Space Grotesk',sans-serif;font-size:12px;cursor:pointer;margin-bottom:10px">📁 Upload Background</button>
-  <button type="button" class="lobby-edit-save" onclick="lobbySaveEdit()">💾 Simpan</button>
-  <button type="button" onclick="lobbyResetEdit()" style="width:100%;padding:7px;background:transparent;border:none;color:#6e6b64;font-family:'Space Grotesk',sans-serif;font-size:12px;cursor:pointer;margin-top:5px">↩ Reset Default</button>
-</div>
 
 <script>
 // ══════════════════════════════════════════════════════
@@ -1124,10 +1096,6 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
       if(animate){ p1.classList.remove('lobby-fadein'); void p1.offsetWidth; p1.classList.add('lobby-fadein'); }
       else { p1.classList.remove('lobby-fadein'); }
     }
-    var fab = document.getElementById('lobby-edit-fab');
-    if(fab) fab.style.display='none';
-    var ep = document.getElementById('lobby-edit-panel');
-    if(ep) ep.classList.remove('open');
   }
 
   function showPhaseRooms(animate){
@@ -1157,9 +1125,6 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
     if(n2 && s2.appName) n2.textContent = s2.appName;
     var l2 = document.getElementById('lobby-logo-display-2');
     if(l2 && s2.logoUrl){ l2.innerHTML='<div class="lobby-logo-wrap" style="width:52px;height:52px;margin-bottom:8px"><img src="'+s2.logoUrl+'" alt="logo"></div>'; }
-    // Tampilkan FAB edit jika pembina
-    var fab = document.getElementById('lobby-edit-fab');
-    if(fab) fab.style.display = window.pembina ? 'flex' : 'none';
   }
 
   // ── Tab switch ──────────────────────────────────────
@@ -1294,96 +1259,8 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
       if(s.bgImg){ bgLayer.style.backgroundImage='url('+s.bgImg+')'; bgLayer.style.background='#0f0e14'; }
       else if(s.bgColor){ bgLayer.style.background=s.bgColor; bgLayer.style.backgroundImage='none'; }
     }
-    // Populate edit fields if open
-    var pan=document.getElementById('lobby-edit-panel');
-    if(pan&&pan.classList.contains('open')){
-      var ai=document.getElementById('ledit-appname'); if(ai)ai.value=s.appName||'';
-      var si=document.getElementById('ledit-appsub'); if(si)si.value=s.appSub||'';
-      var li=document.getElementById('ledit-logourl'); if(li)li.value=s.logoUrl||'';
-      var bi=document.getElementById('ledit-bgurl'); if(bi)bi.value=s.bgImg||'';
-    }
   };
 
-  window.lobbyHandleLogoUpload = function(input){
-    var file=input.files[0]; if(!file) return;
-    var r=new FileReader();
-    r.onload=function(e){ document.getElementById('ledit-logourl').value=e.target.result; applyLobbyLogo(e.target.result); };
-    r.readAsDataURL(file);
-  };
-
-  window.lobbyHandleBgUpload = function(input){
-    var file=input.files[0]; if(!file) return;
-    var r=new FileReader();
-    r.onload=function(e){
-      document.getElementById('ledit-bgurl').value=e.target.result;
-      var bg=document.getElementById('lobby-bg-layer');
-      if(bg) bg.style.backgroundImage='url('+e.target.result+')';
-    };
-    r.readAsDataURL(file);
-  };
-
-  var _lobbyBgColors=['#0f0e14','#0e1a0e','#0e1219','#1a0e14','#1a1411','#141d2e','#2a1a0e','#0e1a1a','#1a0e1a','#1d1a0e'];
-
-  function renderLobbyColorGrid(){
-    var grid=document.getElementById('ledit-color-grid'); if(!grid) return;
-    var cur=getLobbySettings().bgColor||'#0f0e14';
-    grid.innerHTML=_lobbyBgColors.map(function(c){
-      return '<div class="lobby-color-swatch'+(c===cur?' sel':'')+'" style="background:'+c+'" onclick="lobbyPickBgColor(\''+c+'\')" title="'+c+'"></div>';
-    }).join('');
-  }
-
-  window.lobbyPickBgColor = function(c){
-    var bg=document.getElementById('lobby-bg-layer');
-    if(bg){ bg.style.background=c; bg.style.backgroundImage='none'; }
-    document.getElementById('ledit-bgurl').value='';
-    window._lobbyTempBgColor=c; window._lobbyTempBgImg='';
-    Array.from(document.querySelectorAll('.lobby-color-swatch')).forEach(function(el){
-      el.classList.toggle('sel', el.getAttribute('title')===c);
-    });
-  };
-
-  window.lobbyToggleEditPanel = function(){
-    var panel=document.getElementById('lobby-edit-panel'); if(!panel) return;
-    if(!panel.classList.contains('open')){
-      var s=getLobbySettings();
-      var ai=document.getElementById('ledit-appname'); if(ai)ai.value=s.appName||'';
-      var si=document.getElementById('ledit-appsub'); if(si)si.value=s.appSub||'';
-      var li=document.getElementById('ledit-logourl'); if(li)li.value=s.logoUrl||'';
-      var bi=document.getElementById('ledit-bgurl'); if(bi)bi.value=s.bgImg||'';
-      renderLobbyColorGrid();
-    }
-    panel.classList.toggle('open');
-  };
-
-  window.lobbySaveEdit = function(){
-    var s=getLobbySettings();
-    var an=document.getElementById('ledit-appname').value.trim();
-    var as_=document.getElementById('ledit-appsub').value.trim();
-    var lu=document.getElementById('ledit-logourl').value.trim();
-    var bu=document.getElementById('ledit-bgurl').value.trim();
-    if(an) s.appName=an;
-    if(as_) s.appSub=as_;
-    if(lu) s.logoUrl=lu;
-    if(bu){ s.bgImg=bu; s.bgColor=''; }
-    else if(window._lobbyTempBgColor){ s.bgColor=window._lobbyTempBgColor; s.bgImg=''; }
-    localStorage.setItem('dkv_lobby_settings',JSON.stringify(s));
-    window.lobbyApplySettings();
-    window._lobbyTempBgColor=null;
-    if(typeof showToast==='function') showToast('Tampilan lobby disimpan! ✨');
-    document.getElementById('lobby-edit-panel').classList.remove('open');
-  };
-
-  window.lobbyResetEdit = function(){
-    localStorage.removeItem('dkv_lobby_settings');
-    window._lobbyTempBgColor=null;
-    document.getElementById('lobby-app-name-display').textContent='Ekskul DKV';
-    document.getElementById('lobby-app-sub-display').textContent='SMPN 1 Sumenep';
-    document.getElementById('lobby-logo-display').innerHTML='<div class="lobby-logo-emoji">🎨</div>';
-    var bgLayer=document.getElementById('lobby-bg-layer');
-    if(bgLayer){ bgLayer.style.background='#0f0e14'; bgLayer.style.backgroundImage='none'; }
-    if(typeof showToast==='function') showToast('Tampilan lobby direset.');
-    document.getElementById('lobby-edit-panel').classList.remove('open');
-  };
 
   // ── Init saat DOM siap ──────────────────────────────
   document.addEventListener('DOMContentLoaded', function(){
@@ -9981,6 +9858,49 @@ document.addEventListener('click', function(e){
     badge.textContent='⏱ '+fmtTimer(_ujianState.sisaDetik);
   }
 
+  // ── ANTI-CHEAT: Logout otomatis jika siswa buka tab/window baru ────────────
+  function _isUjianKerjaAktif(){
+    var el=document.getElementById('ujian-kerja-state');
+    return el && el.style.display!=='none' && _ujianState.loggedIn && !_ujianState.isPembina;
+  }
+
+  function _antiCheatLogout(){
+    if(!_isUjianKerjaAktif()) return;
+    // Hentikan timer
+    if(_ujianState.timer){clearInterval(_ujianState.timer);_ujianState.timer=null;}
+    document.getElementById('ujian-timer-badge').style.display='none';
+    // Reset state ujian
+    var _attempts=_ujianState.attempts, _lock=_ujianState.lockUntil;
+    _ujianState={loggedIn:false,isPembina:false,siswaId:null,siswaName:null,aktif:null,
+      jawaban:{},soalIdx:0,timer:null,sisaDetik:0,attempts:_attempts,lockUntil:_lock};
+    // Tampilkan peringatan lalu arahkan ke gate login
+    hideAllUjianStates();
+    var loginState=document.getElementById('ujian-login-state');
+    loginState.style.display='block';
+    // Tampilkan notifikasi peringatan di atas form
+    var existingWarn=document.getElementById('ujian-anticheat-warn');
+    if(!existingWarn){
+      existingWarn=document.createElement('div');
+      existingWarn.id='ujian-anticheat-warn';
+      existingWarn.style.cssText='background:#e05252;color:#fff;font-family:\'Space Grotesk\',sans-serif;font-size:13px;font-weight:700;padding:12px 16px;border-radius:10px;margin-bottom:16px;text-align:center;line-height:1.5;';
+      loginState.insertBefore(existingWarn, loginState.firstChild);
+    }
+    existingWarn.textContent='⚠️ Kamu keluar dari halaman ujian! Sesi otomatis diakhiri. Login ulang untuk melanjutkan.';
+    existingWarn.style.display='block';
+    ujianGateSetTab('siswa');
+  }
+
+  // Deteksi pindah tab atau minimize browser
+  document.addEventListener('visibilitychange', function(){
+    if(document.hidden) _antiCheatLogout();
+  });
+
+  // Deteksi window kehilangan fokus (buka window/browser baru)
+  window.addEventListener('blur', function(){
+    if(_isUjianKerjaAktif()) _antiCheatLogout();
+  });
+  // ── END ANTI-CHEAT ──────────────────────────────────────────────────────────
+
   function renderSoal(){
     var soal=(_ujianState.aktif.data.soal||[]);
     var idx=_ujianState.soalIdx;
@@ -10426,11 +10346,6 @@ document.addEventListener('click', function(e){
   function enterEkskul(){
     document.getElementById('lobby-screen').style.display = 'none';
     document.getElementById('ujian-screen').style.display = 'none';
-    // Sembunyikan FAB edit saat masuk ruangan
-    var fab = document.getElementById('lobby-edit-fab');
-    if(fab) fab.style.display = 'none';
-    var editPanel = document.getElementById('lobby-edit-panel');
-    if(editPanel) editPanel.classList.remove('open');
   }
 
   // ── Login siswa dari gate ──────────────────────────
@@ -10511,11 +10426,6 @@ document.addEventListener('click', function(e){
     _updateGatePembinaView();
     if(typeof updateToolbarByRole === 'function') updateToolbarByRole();
     if(typeof lobbyUpdateStatus === 'function') lobbyUpdateStatus();
-    // Sembunyikan FAB edit lobby
-    var fab = document.getElementById('lobby-edit-fab');
-    if(fab) fab.style.display = 'none';
-    var editPanel = document.getElementById('lobby-edit-panel');
-    if(editPanel) editPanel.classList.remove('open');
     if(typeof showToast === 'function') showToast('Pembina telah logout.');
   };
 
