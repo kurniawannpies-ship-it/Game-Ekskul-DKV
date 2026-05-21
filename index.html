@@ -981,7 +981,15 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
 .lobby-logout-small { background:none;border:none;color:#ff7b7b;font-family:'Space Grotesk',sans-serif;font-size:12px;cursor:pointer;padding:0 }
 
 /* Edit Lobby FAB */
-
+.lobby-edit-fab { position:fixed;bottom:20px;right:20px;z-index:10010;background:#f5c842;color:#1a1916;border:none;border-radius:50%;width:46px;height:46px;font-size:19px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;-webkit-appearance:none }
+.lobby-edit-panel { position:fixed;bottom:76px;right:16px;z-index:10010;background:#1c1b18;border:1px solid #3a3836;border-radius:16px;padding:18px;width:270px;max-height:80vh;overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.55);display:none;font-family:'Space Grotesk',sans-serif }
+.lobby-edit-panel.open { display:block;animation:lobbyFadeIn .2s ease both }
+.lobby-edit-title { font-size:13px;font-weight:700;color:#f0ede8;margin-bottom:12px }
+.lobby-edit-label { font-size:11px;font-weight:600;color:#6e6b64;letter-spacing:.05em;margin-bottom:4px;display:block }
+.lobby-edit-inp { width:100%;box-sizing:border-box;background:rgba(255,255,255,.05);border:1.5px solid #3a3836;color:#f0ede8;font-family:'Space Grotesk',sans-serif;font-size:13px;padding:8px 10px;border-radius:9px;outline:none;margin-bottom:10px;-webkit-appearance:none }
+.lobby-edit-inp:focus { border-color:#f5c842 }
+.lobby-edit-save { width:100%;padding:9px;background:#f5c842;color:#1a1916;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;border:none;border-radius:9px;cursor:pointer;-webkit-appearance:none }
+.lobby-color-grid { display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:10px }
 .lobby-color-swatch { width:100%;aspect-ratio:1;border-radius:7px;border:2px solid transparent;cursor:pointer;transition:transform .15s,border-color .15s }
 .lobby-color-swatch.sel { border-color:#f5c842;transform:scale(1.1) }
 </style>
@@ -1074,6 +1082,26 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
 </div>
 
 <!-- Edit Lobby FAB -->
+<button type="button" class="lobby-edit-fab" id="lobby-edit-fab" onclick="lobbyToggleEditPanel()" title="Edit tampilan lobby">✏️</button>
+<div class="lobby-edit-panel" id="lobby-edit-panel">
+  <div class="lobby-edit-title">✏️ Edit Tampilan Lobby</div>
+  <label class="lobby-edit-label">Nama Aplikasi</label>
+  <input type="text" class="lobby-edit-inp" id="ledit-appname" placeholder="Nama Aplikasi">
+  <label class="lobby-edit-label">Sub-judul</label>
+  <input type="text" class="lobby-edit-inp" id="ledit-appsub" placeholder="Misal: SMPN 1 Sumenep">
+  <label class="lobby-edit-label">Logo (URL atau upload)</label>
+  <input type="text" class="lobby-edit-inp" id="ledit-logourl" placeholder="https://...">
+  <input type="file" id="ledit-logoupload" accept="image/*" style="display:none" onchange="lobbyHandleLogoUpload(this)">
+  <button type="button" onclick="document.getElementById('ledit-logoupload').click()" style="width:100%;padding:7px;background:transparent;border:1.5px dashed #3a3836;color:#6e6b64;border-radius:8px;font-family:'Space Grotesk',sans-serif;font-size:12px;cursor:pointer;margin-bottom:10px">📁 Upload Logo</button>
+  <label class="lobby-edit-label">Warna Background</label>
+  <div class="lobby-color-grid" id="ledit-color-grid"></div>
+  <label class="lobby-edit-label">Gambar Background (URL atau upload)</label>
+  <input type="text" class="lobby-edit-inp" id="ledit-bgurl" placeholder="https://...">
+  <input type="file" id="ledit-bgupload" accept="image/*" style="display:none" onchange="lobbyHandleBgUpload(this)">
+  <button type="button" onclick="document.getElementById('ledit-bgupload').click()" style="width:100%;padding:7px;background:transparent;border:1.5px dashed #3a3836;color:#6e6b64;border-radius:8px;font-family:'Space Grotesk',sans-serif;font-size:12px;cursor:pointer;margin-bottom:10px">📁 Upload Background</button>
+  <button type="button" class="lobby-edit-save" onclick="lobbySaveEdit()">💾 Simpan</button>
+  <button type="button" onclick="lobbyResetEdit()" style="width:100%;padding:7px;background:transparent;border:none;color:#6e6b64;font-family:'Space Grotesk',sans-serif;font-size:12px;cursor:pointer;margin-top:5px">↩ Reset Default</button>
+</div>
 
 <script>
 // ══════════════════════════════════════════════════════
@@ -1096,6 +1124,10 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
       if(animate){ p1.classList.remove('lobby-fadein'); void p1.offsetWidth; p1.classList.add('lobby-fadein'); }
       else { p1.classList.remove('lobby-fadein'); }
     }
+    var fab = document.getElementById('lobby-edit-fab');
+    if(fab) fab.style.display='none';
+    var ep = document.getElementById('lobby-edit-panel');
+    if(ep) ep.classList.remove('open');
   }
 
   function showPhaseRooms(animate){
@@ -1125,6 +1157,9 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
     if(n2 && s2.appName) n2.textContent = s2.appName;
     var l2 = document.getElementById('lobby-logo-display-2');
     if(l2 && s2.logoUrl){ l2.innerHTML='<div class="lobby-logo-wrap" style="width:52px;height:52px;margin-bottom:8px"><img src="'+s2.logoUrl+'" alt="logo"></div>'; }
+    // Tampilkan FAB edit jika pembina
+    var fab = document.getElementById('lobby-edit-fab');
+    if(fab) fab.style.display = window.pembina ? 'flex' : 'none';
   }
 
   // ── Tab switch ──────────────────────────────────────
@@ -1259,8 +1294,96 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
       if(s.bgImg){ bgLayer.style.backgroundImage='url('+s.bgImg+')'; bgLayer.style.background='#0f0e14'; }
       else if(s.bgColor){ bgLayer.style.background=s.bgColor; bgLayer.style.backgroundImage='none'; }
     }
+    // Populate edit fields if open
+    var pan=document.getElementById('lobby-edit-panel');
+    if(pan&&pan.classList.contains('open')){
+      var ai=document.getElementById('ledit-appname'); if(ai)ai.value=s.appName||'';
+      var si=document.getElementById('ledit-appsub'); if(si)si.value=s.appSub||'';
+      var li=document.getElementById('ledit-logourl'); if(li)li.value=s.logoUrl||'';
+      var bi=document.getElementById('ledit-bgurl'); if(bi)bi.value=s.bgImg||'';
+    }
   };
 
+  window.lobbyHandleLogoUpload = function(input){
+    var file=input.files[0]; if(!file) return;
+    var r=new FileReader();
+    r.onload=function(e){ document.getElementById('ledit-logourl').value=e.target.result; applyLobbyLogo(e.target.result); };
+    r.readAsDataURL(file);
+  };
+
+  window.lobbyHandleBgUpload = function(input){
+    var file=input.files[0]; if(!file) return;
+    var r=new FileReader();
+    r.onload=function(e){
+      document.getElementById('ledit-bgurl').value=e.target.result;
+      var bg=document.getElementById('lobby-bg-layer');
+      if(bg) bg.style.backgroundImage='url('+e.target.result+')';
+    };
+    r.readAsDataURL(file);
+  };
+
+  var _lobbyBgColors=['#0f0e14','#0e1a0e','#0e1219','#1a0e14','#1a1411','#141d2e','#2a1a0e','#0e1a1a','#1a0e1a','#1d1a0e'];
+
+  function renderLobbyColorGrid(){
+    var grid=document.getElementById('ledit-color-grid'); if(!grid) return;
+    var cur=getLobbySettings().bgColor||'#0f0e14';
+    grid.innerHTML=_lobbyBgColors.map(function(c){
+      return '<div class="lobby-color-swatch'+(c===cur?' sel':'')+'" style="background:'+c+'" onclick="lobbyPickBgColor(\''+c+'\')" title="'+c+'"></div>';
+    }).join('');
+  }
+
+  window.lobbyPickBgColor = function(c){
+    var bg=document.getElementById('lobby-bg-layer');
+    if(bg){ bg.style.background=c; bg.style.backgroundImage='none'; }
+    document.getElementById('ledit-bgurl').value='';
+    window._lobbyTempBgColor=c; window._lobbyTempBgImg='';
+    Array.from(document.querySelectorAll('.lobby-color-swatch')).forEach(function(el){
+      el.classList.toggle('sel', el.getAttribute('title')===c);
+    });
+  };
+
+  window.lobbyToggleEditPanel = function(){
+    var panel=document.getElementById('lobby-edit-panel'); if(!panel) return;
+    if(!panel.classList.contains('open')){
+      var s=getLobbySettings();
+      var ai=document.getElementById('ledit-appname'); if(ai)ai.value=s.appName||'';
+      var si=document.getElementById('ledit-appsub'); if(si)si.value=s.appSub||'';
+      var li=document.getElementById('ledit-logourl'); if(li)li.value=s.logoUrl||'';
+      var bi=document.getElementById('ledit-bgurl'); if(bi)bi.value=s.bgImg||'';
+      renderLobbyColorGrid();
+    }
+    panel.classList.toggle('open');
+  };
+
+  window.lobbySaveEdit = function(){
+    var s=getLobbySettings();
+    var an=document.getElementById('ledit-appname').value.trim();
+    var as_=document.getElementById('ledit-appsub').value.trim();
+    var lu=document.getElementById('ledit-logourl').value.trim();
+    var bu=document.getElementById('ledit-bgurl').value.trim();
+    if(an) s.appName=an;
+    if(as_) s.appSub=as_;
+    if(lu) s.logoUrl=lu;
+    if(bu){ s.bgImg=bu; s.bgColor=''; }
+    else if(window._lobbyTempBgColor){ s.bgColor=window._lobbyTempBgColor; s.bgImg=''; }
+    localStorage.setItem('dkv_lobby_settings',JSON.stringify(s));
+    window.lobbyApplySettings();
+    window._lobbyTempBgColor=null;
+    if(typeof showToast==='function') showToast('Tampilan lobby disimpan! ✨');
+    document.getElementById('lobby-edit-panel').classList.remove('open');
+  };
+
+  window.lobbyResetEdit = function(){
+    localStorage.removeItem('dkv_lobby_settings');
+    window._lobbyTempBgColor=null;
+    document.getElementById('lobby-app-name-display').textContent='Ekskul DKV';
+    document.getElementById('lobby-app-sub-display').textContent='SMPN 1 Sumenep';
+    document.getElementById('lobby-logo-display').innerHTML='<div class="lobby-logo-emoji">🎨</div>';
+    var bgLayer=document.getElementById('lobby-bg-layer');
+    if(bgLayer){ bgLayer.style.background='#0f0e14'; bgLayer.style.backgroundImage='none'; }
+    if(typeof showToast==='function') showToast('Tampilan lobby direset.');
+    document.getElementById('lobby-edit-panel').classList.remove('open');
+  };
 
   // ── Init saat DOM siap ──────────────────────────────
   document.addEventListener('DOMContentLoaded', function(){
@@ -1363,7 +1486,7 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
 
     <!-- STATE: sedang mengerjakan ujian -->
     <div id="ujian-kerja-state" style="display:none">
-      <div style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
         <div>
           <div style="font-size:18px;font-weight:700;color:#f0ede8" id="ujian-kerja-title"></div>
           <div style="font-size:12px;color:#6e6b64;margin-top:3px" id="ujian-kerja-meta"></div>
@@ -1371,11 +1494,9 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
         <div id="ujian-progress-txt" style="font-size:12px;color:#9e9b95"></div>
       </div>
       <!-- Progress bar -->
-      <div style="height:4px;background:#2e2c29;border-radius:99px;margin-bottom:14px;overflow:hidden">
+      <div style="height:4px;background:#2e2c29;border-radius:99px;margin-bottom:28px;overflow:hidden">
         <div id="ujian-progress-bar" style="height:100%;background:#e8774a;border-radius:99px;transition:width .3s;width:0%"></div>
       </div>
-      <!-- Bar nomor soal -->
-      <div id="ujian-soal-bar" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px;padding:12px;background:#1a1916;border:1px solid #2e2c29;border-radius:12px"></div>
       <div id="ujian-soal-wrap"></div>
       <div style="margin-top:28px;display:flex;gap:10px;flex-wrap:wrap">
         <button id="ujian-prev-btn" type="button" style="padding:10px 20px;border-radius:8px;border:1.5px solid #2e2c29;background:transparent;color:#9e9b95;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;cursor:pointer">← Sebelumnya</button>
@@ -1436,26 +1557,6 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
           <button id="nilai-panel-close" type="button" style="font-size:12px;color:#6e6b64;background:none;border:none;cursor:pointer">✕ Tutup</button>
         </div>
         <div id="nilai-panel-table"></div>
-      </div>
-
-      <!-- Panel Monitor Real-time -->
-      <div id="ujian-monitor-panel" style="display:none;margin-top:20px">
-        <div style="background:#1a1916;border:1.5px solid #4caf7d;border-radius:14px;padding:20px;margin-bottom:16px">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
-            <div>
-              <div style="font-size:14px;font-weight:700;color:#f0ede8" id="monitor-panel-title">📡 Monitor Live</div>
-              <div style="font-size:11px;color:#4caf7d;margin-top:2px" id="monitor-panel-sub">● Memantau progres siswa secara real-time</div>
-            </div>
-            <button id="monitor-panel-close" type="button" style="font-size:12px;color:#6e6b64;background:none;border:none;cursor:pointer;font-family:'Space Grotesk',sans-serif">✕ Tutup</button>
-          </div>
-          <div id="monitor-progress-table"></div>
-        </div>
-        <!-- Tabel pelanggaran -->
-        <div style="background:#1a1916;border:1.5px solid #e05252;border-radius:14px;padding:20px">
-          <div style="font-size:14px;font-weight:700;color:#f0ede8;margin-bottom:4px">⚠️ Log Pelanggaran</div>
-          <div style="font-size:11px;color:#e05252;margin-bottom:14px">Siswa yang keluar/pindah tab saat ujian</div>
-          <div id="monitor-pelanggaran-table"></div>
-        </div>
       </div>
 
 
@@ -9510,14 +9611,8 @@ document.addEventListener('click', function(e){
     attempts : 0,
     lockUntil: 0
   };
-  var _soalFormItems  = []; // [{type,pertanyaan,opsi:[],kunci}]
-  var _editUjianId    = null;
-  // Timer persisten — tidak ikut reset saat logout anti-cheat
-  var _persistTimer   = { interval: null, sisaDetik: 0, ujianUid: null };
-  // Log pelanggaran per siswaId: { siswaId: { name, count, waktu:[] } }
-  var _pelanggaranLog = {};
-  // Listener real-time pembina (on/off)
-  var _realtimeRef    = null;
+  var _soalFormItems = []; // [{type,pertanyaan,opsi:[],kunci}]
+  var _editUjianId   = null;
 
   // ── Inisialisasi Firebase ref untuk ujian ─────────────────
   function initUjianRef(){
@@ -9661,18 +9756,7 @@ document.addEventListener('click', function(e){
     var s=(window.siswaList||[]).find(function(x){return x.id===window.loggedInStudentId;});
     _ujianState.siswaName=s?s.name:window.loggedInStudentId;
     _ujianState.attempts=0;
-    // Jika ujian masih berjalan (timer aktif), langsung ke kerja state
-    if(_persistTimer.interval && _ujianState.aktif){
-      hideAllUjianStates();
-      document.getElementById('ujian-kerja-state').style.display='block';
-      document.getElementById('ujian-kerja-title').textContent=_ujianState.aktif.data.judul||'Ujian';
-      var soal=_ujianState.aktif.data.soal||[];
-      document.getElementById('ujian-kerja-meta').textContent=soal.length+' soal &bull; '+_ujianState.aktif.data.durasi+' menit';
-      renderSoalBar();
-      renderSoal();
-    } else {
-      renderUjianScreen();
-    }
+    renderUjianScreen();
   };
 
   window.ujianGateEnterAsPembina = function(){
@@ -9815,11 +9899,9 @@ document.addEventListener('click', function(e){
   // ── LOGOUT ─────────────────────────────────────────────────
 
   function doUjianLogout(){
-    // Hanya reset state login; timer persist tetap jalan
-    _ujianState={loggedIn:false,isPembina:false,siswaId:null,siswaName:null,
-      aktif:_ujianState.aktif,jawaban:_ujianState.jawaban,soalIdx:_ujianState.soalIdx,
-      timer:_persistTimer.interval,sisaDetik:_persistTimer.sisaDetik,
-      attempts:_ujianState.attempts,lockUntil:_ujianState.lockUntil};
+    if(_ujianState.timer){clearInterval(_ujianState.timer);_ujianState.timer=null;}
+    _ujianState={loggedIn:false,isPembina:false,siswaId:null,siswaName:null,aktif:null,jawaban:{},soalIdx:0,timer:null,sisaDetik:0,attempts:_ujianState.attempts,lockUntil:_ujianState.lockUntil};
+    document.getElementById('ujian-timer-badge').style.display='none';
     renderUjianScreen();
   }
 
@@ -9878,16 +9960,9 @@ document.addEventListener('click', function(e){
     document.getElementById('ujian-kerja-title').textContent=ujian.judul||'Ujian';
     var soal=ujian.soal||[];
     document.getElementById('ujian-kerja-meta').textContent=soal.length+' soal &bull; '+ujian.durasi+' menit';
-    // Timer persisten: lanjutkan jika ujian yang sama, atau mulai baru
-    if(_persistTimer.ujianUid === uid && _persistTimer.sisaDetik > 0){
-      _ujianState.sisaDetik = _persistTimer.sisaDetik;
-    } else {
-      _persistTimer.ujianUid = uid;
-      _persistTimer.sisaDetik = (ujian.durasi||60)*60;
-      _ujianState.sisaDetik = _persistTimer.sisaDetik;
-    }
+    // Timer
+    _ujianState.sisaDetik=(ujian.durasi||60)*60;
     startTimer();
-    renderSoalBar();
     renderSoal();
   }
 
@@ -9896,88 +9971,15 @@ document.addEventListener('click', function(e){
     badge.style.display='block';
     badge.style.border='1px solid #2e2c29';
     badge.style.color='#f0ede8';
-    if(_persistTimer.interval)clearInterval(_persistTimer.interval);
     if(_ujianState.timer)clearInterval(_ujianState.timer);
-    _persistTimer.interval = setInterval(function(){
-      _persistTimer.sisaDetik--;
-      _ujianState.sisaDetik = _persistTimer.sisaDetik;
-      badge.textContent='⏱ '+fmtTimer(_persistTimer.sisaDetik);
-      if(_persistTimer.sisaDetik<=300){badge.style.color='#e05252';badge.style.border='1px solid #e05252';}
-      if(_persistTimer.sisaDetik<=0){
-        clearInterval(_persistTimer.interval);_persistTimer.interval=null;
-        _ujianState.timer=null;
-        kumpulkanUjian(true);
-      }
+    _ujianState.timer=setInterval(function(){
+      _ujianState.sisaDetik--;
+      badge.textContent='⏱ '+fmtTimer(_ujianState.sisaDetik);
+      if(_ujianState.sisaDetik<=300){badge.style.color='#e05252';badge.style.border='1px solid #e05252';}
+      if(_ujianState.sisaDetik<=0){clearInterval(_ujianState.timer);_ujianState.timer=null;kumpulkanUjian(true);}
     },1000);
-    _ujianState.timer = _persistTimer.interval;
-    badge.textContent='⏱ '+fmtTimer(_persistTimer.sisaDetik);
+    badge.textContent='⏱ '+fmtTimer(_ujianState.sisaDetik);
   }
-
-  // ── ANTI-CHEAT: Logout otomatis jika siswa buka tab/window baru ────────────
-  function _isUjianKerjaAktif(){
-    var el=document.getElementById('ujian-kerja-state');
-    return el && el.style.display!=='none' && _ujianState.loggedIn && !_ujianState.isPembina;
-  }
-
-  function _antiCheatLogout(){
-    if(!_isUjianKerjaAktif()) return;
-    // JANGAN hentikan timer — simpan sisaDetik agar lanjut saat re-login
-    // (timer tetap jalan di _persistTimer.interval)
-    // Catat pelanggaran
-    var sid  = _ujianState.siswaId;
-    var sname= _ujianState.siswaName || sid;
-    var uid  = _ujianState.aktif ? _ujianState.aktif.uid : null;
-    if(sid){
-      if(!_pelanggaranLog[sid]) _pelanggaranLog[sid]={name:sname, count:0, waktu:[]};
-      _pelanggaranLog[sid].count++;
-      _pelanggaranLog[sid].waktu.push(new Date().toLocaleTimeString('id-ID'));
-      // Simpan ke Firebase
-      if(_ujianRef && uid){
-        var waktuSekarang = Date.now();
-        _ujianRef.child('pelanggaran/'+sid).transaction(function(cur){
-          var d = cur||{name:sname,count:0,waktu:[]};
-          d.name  = sname;
-          d.count = (d.count||0)+1;
-          d.waktu = (d.waktu||[]).concat([waktuSekarang]);
-          d.ujian_uid = uid;
-          return d;
-        });
-      }
-    }
-    // Reset state login SAJA, bukan timer
-    var _attempts=_ujianState.attempts, _lock=_ujianState.lockUntil;
-    var _jawabanTersimpan = _ujianState.jawaban; // simpan jawaban yg sudah diisi
-    var _aktifTersimpan   = _ujianState.aktif;
-    _ujianState={loggedIn:false,isPembina:false,siswaId:null,siswaName:null,aktif:_aktifTersimpan,
-      jawaban:_jawabanTersimpan,soalIdx:0,timer:_persistTimer.interval,
-      sisaDetik:_persistTimer.sisaDetik,attempts:_attempts,lockUntil:_lock};
-    // Tampilkan peringatan lalu arahkan ke gate login
-    hideAllUjianStates();
-    var loginState=document.getElementById('ujian-login-state');
-    loginState.style.display='block';
-    // Tampilkan notifikasi peringatan di atas form
-    var existingWarn=document.getElementById('ujian-anticheat-warn');
-    if(!existingWarn){
-      existingWarn=document.createElement('div');
-      existingWarn.id='ujian-anticheat-warn';
-      existingWarn.style.cssText='background:#e05252;color:#fff;font-family:\'Space Grotesk\',sans-serif;font-size:13px;font-weight:700;padding:12px 16px;border-radius:10px;margin-bottom:16px;text-align:center;line-height:1.5;';
-      loginState.insertBefore(existingWarn, loginState.firstChild);
-    }
-    existingWarn.textContent='⚠️ Kamu keluar dari halaman ujian! Sesi otomatis diakhiri. Login ulang untuk melanjutkan.';
-    existingWarn.style.display='block';
-    ujianGateSetTab('siswa');
-  }
-
-  // Deteksi pindah tab atau minimize browser
-  document.addEventListener('visibilitychange', function(){
-    if(document.hidden) _antiCheatLogout();
-  });
-
-  // Deteksi window kehilangan fokus (buka window/browser baru)
-  window.addEventListener('blur', function(){
-    if(_isUjianKerjaAktif()) _antiCheatLogout();
-  });
-  // ── END ANTI-CHEAT ──────────────────────────────────────────────────────────
 
   function renderSoal(){
     var soal=(_ujianState.aktif.data.soal||[]);
@@ -10022,7 +10024,6 @@ document.addEventListener('click', function(e){
       wrap.querySelectorAll('input[name="pg-soal"]').forEach(function(radio){
         radio.addEventListener('change',function(){
           _ujianState.jawaban[idx]=this.value;
-          renderSoalBar();
           renderSoal(); // re-render for highlight
         });
       });
@@ -10032,38 +10033,12 @@ document.addEventListener('click', function(e){
     }
   }
 
-  // ── BAR NOMOR SOAL ──────────────────────────────────────
-  function renderSoalBar(){
-    var bar=document.getElementById('ujian-soal-bar');
-    if(!bar||!_ujianState.aktif) return;
-    var soal=(_ujianState.aktif.data.soal||[]);
-    bar.innerHTML='';
-    soal.forEach(function(s,i){
-      var sudahDijawab=_ujianState.jawaban[i]!==undefined && _ujianState.jawaban[i]!=='';
-      var isAktif=i===_ujianState.soalIdx;
-      var bg=isAktif?'#e8774a':sudahDijawab?'#4caf7d':'#2e2c29';
-      var color=isAktif||sudahDijawab?'#fff':'#9e9b95';
-      var border=isAktif?'#e8774a':sudahDijawab?'#4caf7d':'#3a3836';
-      var btn=document.createElement('button');
-      btn.type='button';
-      btn.textContent=i+1;
-      btn.style.cssText='width:32px;height:32px;border-radius:8px;border:1.5px solid '+border+';background:'+bg+';color:'+color+';font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;flex-shrink:0;';
-      btn.title=(s.type==='pg'?'PG':'Essay')+' — '+(sudahDijawab?'Sudah dijawab':'Belum dijawab');
-      btn.addEventListener('click',function(){
-        _ujianState.soalIdx=i;
-        renderSoalBar();
-        renderSoal();
-      });
-      bar.appendChild(btn);
-    });
-  }
-
   document.getElementById('ujian-next-btn').addEventListener('click',function(){
     var soal=(_ujianState.aktif.data.soal||[]);
-    if(_ujianState.soalIdx<soal.length-1){ _ujianState.soalIdx++; renderSoalBar(); renderSoal(); }
+    if(_ujianState.soalIdx<soal.length-1){ _ujianState.soalIdx++; renderSoal(); }
   });
   document.getElementById('ujian-prev-btn').addEventListener('click',function(){
-    if(_ujianState.soalIdx>0){ _ujianState.soalIdx--; renderSoalBar(); renderSoal(); }
+    if(_ujianState.soalIdx>0){ _ujianState.soalIdx--; renderSoal(); }
   });
   document.getElementById('ujian-submit-btn').addEventListener('click',function(){
     kumpulkanUjian(false);
@@ -10071,9 +10046,7 @@ document.addEventListener('click', function(e){
 
   // ── KUMPULKAN UJIAN ────────────────────────────────────────
   function kumpulkanUjian(habisWaktu){
-    if(_persistTimer.interval){clearInterval(_persistTimer.interval);_persistTimer.interval=null;}
     if(_ujianState.timer){clearInterval(_ujianState.timer);_ujianState.timer=null;}
-    _persistTimer={interval:null,sisaDetik:0,ujianUid:null};
     document.getElementById('ujian-timer-badge').style.display='none';
     var soal=(_ujianState.aktif.data.soal||[]);
     // Hitung nilai PG
@@ -10151,7 +10124,6 @@ document.addEventListener('click', function(e){
             '<div style="font-size:12px;color:#6e6b64">'+(u.soal||[]).length+' soal &bull; '+esc(u.durasi||60)+' menit</div>'+
           '</div>'+
           '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
-            '<button data-uid="'+uid+'" class="admin-monitor-live" type="button" style="padding:7px 13px;border-radius:7px;border:1.5px solid #4caf7d;background:transparent;color:#4caf7d;font-family:\'Space Grotesk\',sans-serif;font-size:12px;font-weight:600;cursor:pointer">📡 Live</button>'+
             '<button data-uid="'+uid+'" class="admin-lihat-nilai" type="button" style="padding:7px 13px;border-radius:7px;border:1.5px solid #2e2c29;background:transparent;color:#9e9b95;font-family:\'Space Grotesk\',sans-serif;font-size:12px;font-weight:600;cursor:pointer">📊 Nilai</button>'+
             '<button data-uid="'+uid+'" data-judul="'+esc(u.judul)+'" class="admin-edit-ujian" type="button" style="padding:7px 13px;border-radius:7px;border:1.5px solid #2e2c29;background:transparent;color:#9e9b95;font-family:\'Space Grotesk\',sans-serif;font-size:12px;font-weight:600;cursor:pointer">✏️ Edit</button>'+
             '<button data-uid="'+uid+'" class="admin-hapus-ujian" type="button" style="padding:7px 13px;border-radius:7px;border:1.5px solid #3e2020;background:transparent;color:#e05252;font-family:\'Space Grotesk\',sans-serif;font-size:12px;font-weight:600;cursor:pointer">🗑 Hapus</button>'+
@@ -10160,9 +10132,6 @@ document.addEventListener('click', function(e){
         list.appendChild(card);
       });
       // Event listeners
-      list.querySelectorAll('.admin-monitor-live').forEach(function(btn){
-        btn.addEventListener('click',function(){ bukaMonitorLive(btn.dataset.uid, data[btn.dataset.uid]); });
-      });
       list.querySelectorAll('.admin-lihat-nilai').forEach(function(btn){
         btn.addEventListener('click',function(){ lihatNilai(btn.dataset.uid, data[btn.dataset.uid]); });
       });
@@ -10232,128 +10201,6 @@ document.addEventListener('click', function(e){
   document.getElementById('nilai-panel-close').addEventListener('click',function(){
     document.getElementById('ujian-nilai-panel').style.display='none';
   });
-
-  document.getElementById('monitor-panel-close').addEventListener('click',function(){
-    tutupMonitorLive();
-  });
-
-  function tutupMonitorLive(){
-    if(_realtimeRef){ _realtimeRef.off(); _realtimeRef=null; }
-    document.getElementById('ujian-monitor-panel').style.display='none';
-  }
-
-  function bukaMonitorLive(uid, ujian){
-    // Tutup panel nilai jika terbuka
-    document.getElementById('ujian-nilai-panel').style.display='none';
-    var panel = document.getElementById('ujian-monitor-panel');
-    document.getElementById('monitor-panel-title').textContent='📡 Monitor Live: '+esc(ujian.judul||'Ujian');
-    panel.style.display='block';
-    // Scroll ke panel
-    panel.scrollIntoView({behavior:'smooth',block:'start'});
-    // Render pelanggaran dari log lokal + Firebase
-    renderMonitorPelanggaran(uid);
-    // Real-time listener jawaban
-    if(_realtimeRef){ _realtimeRef.off(); }
-    if(!_ujianRef) return;
-    var totalSoal=(ujian.soal||[]).length;
-    var totalPG=(ujian.soal||[]).filter(function(s){return s.type==='pg';}).length;
-    _realtimeRef = _ujianRef.child('jawaban');
-    _realtimeRef.on('value', function(snap){
-      var allJ = snap.val()||{};
-      var siswaList = window.siswaList||[];
-      var rows='';
-      var ada=false;
-      siswaList.forEach(function(s){
-        var sData=allJ[s.id]&&allJ[s.id][uid];
-        if(!sData) return; // belum submit, tapi cek progress live
-        ada=true;
-        var tgl=sData.submitted_at?new Date(sData.submitted_at).toLocaleTimeString('id-ID',''):'—';
-        var npg=sData.nilai_pg!==null&&sData.nilai_pg!==undefined?sData.nilai_pg+'%':'—';
-        rows+=_buildMonitorRow(s.name, tgl, npg, 'submitted');
-      });
-      // Siswa yang belum submit: tampilkan jika ada di sesi (dari _pelanggaranLog sebagai proxy)
-      // Juga tampilkan semua siswa aktif yang pernah login ke ujian ini
-      siswaList.forEach(function(s){
-        if(allJ[s.id]&&allJ[s.id][uid]) return; // sudah ditampilkan
-        // Tampilkan dengan status —
-        rows+=_buildMonitorRow(s.name, 'Belum kumpul', '—', 'waiting');
-      });
-      var tDiv=document.getElementById('monitor-progress-table');
-      if(!tDiv) return;
-      if(!rows){
-        tDiv.innerHTML='<div style="color:#6e6b64;font-size:13px">Belum ada siswa yang mengumpulkan jawaban.</div>';
-      } else {
-        tDiv.innerHTML='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-family:'Space Grotesk',sans-serif">'+
-          '<thead><tr>'+
-            '<th style="text-align:left;font-size:10px;font-weight:700;color:#6e6b64;text-transform:uppercase;letter-spacing:.06em;padding:6px 8px;border-bottom:1px solid #2e2c29">Nama</th>'+
-            '<th style="text-align:center;font-size:10px;font-weight:700;color:#6e6b64;text-transform:uppercase;letter-spacing:.06em;padding:6px 8px;border-bottom:1px solid #2e2c29">Waktu Kumpul</th>'+
-            '<th style="text-align:center;font-size:10px;font-weight:700;color:#6e6b64;text-transform:uppercase;letter-spacing:.06em;padding:6px 8px;border-bottom:1px solid #2e2c29">Nilai PG</th>'+
-            '<th style="text-align:center;font-size:10px;font-weight:700;color:#6e6b64;text-transform:uppercase;letter-spacing:.06em;padding:6px 8px;border-bottom:1px solid #2e2c29">Status</th>'+
-          '</tr></thead><tbody>'+rows+'</tbody></table></div>';
-      }
-      renderMonitorPelanggaran(uid);
-    });
-  }
-
-  function _buildMonitorRow(name, waktu, nilai, status){
-    var statusColor=status==='submitted'?'#4caf7d':'#6e6b64';
-    var statusTxt=status==='submitted'?'✓ Selesai':'⏳ Belum';
-    return '<tr>'+
-      '<td style="padding:8px 8px;border-bottom:1px solid #1e1e1c;font-size:13px;color:#f0ede8;font-weight:600">'+esc(name)+'</td>'+
-      '<td style="padding:8px 8px;border-bottom:1px solid #1e1e1c;font-size:12px;color:#9e9b95;text-align:center">'+esc(String(waktu))+'</td>'+
-      '<td style="padding:8px 8px;border-bottom:1px solid #1e1e1c;font-size:13px;font-weight:700;color:#f5c842;text-align:center">'+esc(String(nilai))+'</td>'+
-      '<td style="padding:8px 8px;border-bottom:1px solid #1e1e1c;text-align:center"><span style="font-size:11px;font-weight:700;color:'+statusColor+'">'+statusTxt+'</span></td>'+
-      '</tr>';
-  }
-
-  function renderMonitorPelanggaran(ujianUid){
-    var div=document.getElementById('monitor-pelanggaran-table');
-    if(!div) return;
-    // Ambil dari Firebase
-    if(!_ujianRef){ renderPelanggaranLokal(); return; }
-    _ujianRef.child('pelanggaran').once('value').then(function(snap){
-      var data=snap.val()||{};
-      // Merge dengan log lokal
-      Object.keys(_pelanggaranLog).forEach(function(sid){
-        if(!data[sid]) data[sid]=_pelanggaranLog[sid];
-        else data[sid].count=Math.max(data[sid].count||0, _pelanggaranLog[sid].count||0);
-      });
-      _renderPelanggaranTable(div, data);
-    }).catch(function(){
-      _renderPelanggaranTable(div, _pelanggaranLog);
-    });
-  }
-
-  function _renderPelanggaranTable(div, data){
-    var keys=Object.keys(data);
-    if(!keys.length){
-      div.innerHTML='<div style="color:#6e6b64;font-size:13px">Tidak ada pelanggaran tercatat 👍</div>';
-      return;
-    }
-    // Sort by count desc
-    keys.sort(function(a,b){ return (data[b].count||0)-(data[a].count||0); });
-    var rows=keys.map(function(sid){
-      var d=data[sid];
-      var count=d.count||0;
-      var badge=count>=5?'#e05252':count>=3?'#e8774a':'#f5c842';
-      var waktuArr=(d.waktu||[]).slice(-3).map(function(w){
-        return typeof w==='number'?new Date(w).toLocaleTimeString('id-ID'):w;
-      }).join(', ');
-      return '<tr>'+
-        '<td style="padding:8px;border-bottom:1px solid #1e1e1c;font-size:13px;color:#f0ede8;font-weight:600">'+esc(d.name||sid)+'</td>'+
-        '<td style="padding:8px;border-bottom:1px solid #1e1e1c;text-align:center">'+
-          '<span style="font-size:13px;font-weight:800;color:'+badge+'">'+count+'×</span>'+
-        '</td>'+
-        '<td style="padding:8px;border-bottom:1px solid #1e1e1c;font-size:11px;color:#6e6b64">'+esc(waktuArr||'—')+'</td>'+
-        '</tr>';
-    }).join('');
-    div.innerHTML='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-family:'Space Grotesk',sans-serif">'+
-      '<thead><tr>'+
-        '<th style="text-align:left;font-size:10px;font-weight:700;color:#6e6b64;text-transform:uppercase;letter-spacing:.06em;padding:6px 8px;border-bottom:1px solid #2e2c29">Nama</th>'+
-        '<th style="text-align:center;font-size:10px;font-weight:700;color:#6e6b64;text-transform:uppercase;letter-spacing:.06em;padding:6px 8px;border-bottom:1px solid #2e2c29">Pelanggaran</th>'+
-        '<th style="text-align:left;font-size:10px;font-weight:700;color:#6e6b64;text-transform:uppercase;letter-spacing:.06em;padding:6px 8px;border-bottom:1px solid #2e2c29">Waktu Terakhir</th>'+
-      '</tr></thead><tbody>'+rows+'</tbody></table></div>';
-  }
 
   // ── ADMIN: FORM BUAT / EDIT UJIAN ─────────────────────────
   document.getElementById('ujian-buat-btn').addEventListener('click',function(){ bukaFormUjian(null,null); });
@@ -10579,6 +10426,11 @@ document.addEventListener('click', function(e){
   function enterEkskul(){
     document.getElementById('lobby-screen').style.display = 'none';
     document.getElementById('ujian-screen').style.display = 'none';
+    // Sembunyikan FAB edit saat masuk ruangan
+    var fab = document.getElementById('lobby-edit-fab');
+    if(fab) fab.style.display = 'none';
+    var editPanel = document.getElementById('lobby-edit-panel');
+    if(editPanel) editPanel.classList.remove('open');
   }
 
   // ── Login siswa dari gate ──────────────────────────
@@ -10659,6 +10511,11 @@ document.addEventListener('click', function(e){
     _updateGatePembinaView();
     if(typeof updateToolbarByRole === 'function') updateToolbarByRole();
     if(typeof lobbyUpdateStatus === 'function') lobbyUpdateStatus();
+    // Sembunyikan FAB edit lobby
+    var fab = document.getElementById('lobby-edit-fab');
+    if(fab) fab.style.display = 'none';
+    var editPanel = document.getElementById('lobby-edit-panel');
+    if(editPanel) editPanel.classList.remove('open');
     if(typeof showToast === 'function') showToast('Pembina telah logout.');
   };
 
