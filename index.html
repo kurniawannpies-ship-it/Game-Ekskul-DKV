@@ -2515,7 +2515,8 @@ function initFirebase(){
       if(window._isSaving){ return; }
       var data = snapshot.val();
       if(data){
-        _applyFirebaseData(data);
+        // Gunakan window._applyFirebaseData agar patch dari modul lain (absensi, dll) aktif
+        (window._applyFirebaseData || _applyFirebaseData)(data);
         // Simpan ke localStorage sebagai cache offline
         Object.keys(data).forEach(function(k){ saveJSON(k, JSON.parse(JSON.stringify(data[k]))); });
       } else {
@@ -2672,6 +2673,16 @@ function _applyFirebaseData(data){
       window.dkvPendingReg = Array.isArray(data.dkv_pending_reg) ? data.dkv_pending_reg : [];
     }
   }
+  // Absensi — wajib di sini agar Firebase listener (line 2518) bisa membaca data ini
+  if(data.dkv_absensi){
+    var incomingAbsen = typeof data.dkv_absensi==='string'?JSON.parse(data.dkv_absensi):data.dkv_absensi;
+    if(Array.isArray(incomingAbsen)){
+      // Gunakan data terbanyak: hindari overwrite data HP (11 sesi) dengan data lama (3 sesi)
+      if(incomingAbsen.length >= (window.absenSesi||[]).length){
+        window.absenSesi = incomingAbsen;
+      }
+    }
+  }
   // Re-render semua tampilan
   if(typeof applyAppConfig === 'function') applyAppConfig();
   if(typeof render === 'function') render();
@@ -2772,6 +2783,51 @@ function saveAll(){
         console.error('[DKV Firebase] Save error:', e);
       });
   }, 800);
+}
+
+// ─── saveFast: simpan hanya key tertentu ke Firebase (untuk toggle quest) ───
+// Menggunakan _fbRef.update() bukan .set() — hanya mengirim data yang berubah,
+// jauh lebih cepat dari saveAll() yang mengirim seluruh database.
+var _saveFastTimer = null;
+function saveFast(keys){
+  // Selalu simpan ke localStorage dulu (instan)
+  var keyMap = {
+    dkv_done:    function(){ saveJSON('dkv_done', window.done); },
+    dkv_sdone:   function(){ saveJSON('dkv_sdone', window.siswaDone); },
+    dkv_siswa:   function(){ saveJSON('dkv_siswa', window.siswaList); },
+    dkv_worlds:  function(){ saveJSON('dkv_worlds', window.worlds); },
+    dkv_absensi:  function(){ saveJSON('dkv_absensi', window.absenSesi); },
+    dkv_kelompok: function(){ saveJSON('dkv_kelompok', window.kelompokList); }
+  };
+  (keys||[]).forEach(function(k){ if(keyMap[k]) keyMap[k](); });
+
+  if(!isFirebaseConfigured() || !_fbRef) return;
+
+  clearTimeout(_saveFastTimer);
+  _saveFastTimer = setTimeout(function(){
+    var patch = {};
+    (keys||[]).forEach(function(k){
+      if(k==='dkv_done')    patch[k] = window.done;
+      if(k==='dkv_sdone')   patch[k] = window.siswaDone;
+      if(k==='dkv_siswa')   patch[k] = window.siswaList;
+      if(k==='dkv_worlds')  patch[k] = window.worlds;
+      if(k==='dkv_absensi')  patch[k] = window.absenSesi;
+      if(k==='dkv_kelompok') patch[k] = window.kelompokList;
+    });
+    window._isSaving = true;
+    setSyncStatus('connecting', '🔄 Menyimpan…');
+    _fbRef.update(patch)
+      .then(function(){
+        window._isSaving = false;
+        setSyncStatus('online', '☁️ Tersimpan ✓');
+        setTimeout(function(){ setSyncStatus('online','☁️ Firebase Aktif'); }, 1500);
+      })
+      .catch(function(e){
+        window._isSaving = false;
+        setSyncStatus('error', '❌ Gagal Simpan');
+        console.error('[DKV Firebase] saveFast error:', e);
+      });
+  }, 400); // debounce 400ms (lebih cepat dari saveAll 800ms)
 }
 
 // ─────────────────────────────────────────────
@@ -4279,7 +4335,7 @@ function toggleWorld(wid){
 function toggleQuestGlobal(qid){
   var prevLvl=computeLevel(totalXP());
   window.done[qid]=!window.done[qid];
-  saveAll();
+  saveFast(['dkv_done']);
   if(window.done[qid]){
     for(var i=0;i<window.worlds.length;i++){
       for(var j=0;j<window.worlds[i].quests.length;j++){
@@ -4289,6 +4345,7 @@ function toggleQuestGlobal(qid){
   }
   var newLvl=computeLevel(totalXP());
   render();
+  renderRanking();
   if(newLvl>prevLvl&&window.done[qid]){setTimeout(function(){showToast('LEVEL UP! Level '+newLvl+'! 🎉');},500);}
 }
 
@@ -4727,7 +4784,7 @@ document.getElementById('siswa-grid').addEventListener('click',function(e){
 function toggleSiswaQuest(sid,qid){
   if(!window.siswaDone[sid])window.siswaDone[sid]={};
   window.siswaDone[sid][qid]=!window.siswaDone[sid][qid];
-  saveAll();renderSiswa();
+  saveFast(['dkv_sdone']);renderSiswa();renderRanking();
   // Final quest check
   if(qid.indexOf('fq_')===0){
     var wid=qid.replace('fq_','');
@@ -6289,7 +6346,7 @@ document.getElementById('kelompok-grid').addEventListener('click', function(e){
       if(status === 'inprogress'){ t.inprogressBy = actorId; t.doneBy = null; }
       if(status === 'done'){ t.doneBy = actorId; t.inprogressBy = null; }
     }
-    saveAll();
+    saveFast(['dkv_kelompok']);
     renderKelompok();
     if(t.status === 'done') showToast('Quest Selesai! 🎉');
     if(t.status === 'inprogress') showToast('Status: On-Progress 🔵');
@@ -8490,18 +8547,22 @@ function loadAbsensi(){
 function saveAbsensi(){
   saveJSON('dkv_absensi', window.absenSesi);
   if(window._fbRef){
-    window._fbRef.child('dkv_absensi').set(window.absenSesi).catch(function(){});
+    // Set _isSaving sementara agar listener tidak menimpa data baru dengan snapshot lama
+    window._isSaving = true;
+    window._fbRef.child('dkv_absensi').set(window.absenSesi).then(function(){
+      window._isSaving = false;
+    }).catch(function(){
+      window._isSaving = false;
+    });
   }
 }
 
-// Patch Firebase apply agar data absensi juga dimuat saat sync
+// Absensi sudah dihandle di _applyFirebaseData utama.
+// Patch ini hanya memastikan renderAbsensi dipanggil setelah apply.
 var _origApply = window._applyFirebaseData;
 window._applyFirebaseData = function(data){
   _origApply(data);
-  if(data.dkv_absensi){
-    window.absenSesi = typeof data.dkv_absensi==='string'?JSON.parse(data.dkv_absensi):data.dkv_absensi;
-    if(!Array.isArray(window.absenSesi)) window.absenSesi=[];
-  }
+  // renderAbsensi dipanggil setelah semua data diapply
   if(typeof renderAbsensi==='function') renderAbsensi();
 };
 
