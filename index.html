@@ -3252,19 +3252,7 @@ document.addEventListener('click', function(e){
 
 // Cek apakah world terkunci untuk siswa (level sebelumnya di kategori yang sama belum selesai)
 function isWorldLockedForSiswa(sid, w){
-  var sdone=window.siswaDone[sid]||{};
-  // Dapatkan semua world dalam kategori yang sama, urutkan berdasarkan num
-  var catWorlds=window.worlds.filter(function(x){return x.cat===w.cat;}).sort(function(a,b){return (a.num||0)-(b.num||0);});
-  var myIdx=catWorlds.findIndex(function(x){return x.id===w.id;});
-  if(myIdx<=0) return false; // world pertama tidak pernah terkunci
-  // Cek semua world sebelumnya: harus selesai semua quest-nya
-  for(var i=0;i<myIdx;i++){
-    var prevW=catWorlds[i];
-    var prevDone=prevW.quests.filter(function(q){return sdone[q.id];}).length;
-    // Juga cek final quest jika ada
-    var finalDone=isWorldFinalQuestDoneForSiswa(sid, prevW);
-    if(prevDone<prevW.quests.length || !finalDone) return true;
-  }
+  // Siswa bebas memilih materi apa saja tanpa harus urut level
   return false;
 }
 
@@ -4508,27 +4496,12 @@ function renderSiswa(){
       }).join('');
 
       worldsHtml=window.worlds.map(function(w){
-        var isLocked=isWorldLockedForSiswa(s.id,w);
         var wDone=w.quests.filter(function(q){return sdone[q.id];}).length;
         var wPct=w.quests.length>0?Math.round((wDone/w.quests.length)*100):0;
         var allQuestsDone=isWorldQuestsAllDoneForSiswa(s.id,w);
         var finalQDone=isWorldFinalQuestDoneForSiswa(s.id,w);
         var fqId='fq_'+w.id;
         var hasFinalQuest=w.finalQuest&&w.finalQuest.trim();
-
-        if(isLocked){
-          // Tampilkan world terkunci
-          return '<div class="siswa-world-row" style="opacity:.6;position:relative;overflow:hidden">'+
-            '<div style="position:absolute;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(45deg,rgba(0,0,0,.02),rgba(0,0,0,.02) 4px,transparent 4px,transparent 12px);pointer-events:none;border-radius:10px"></div>'+
-            '<div class="siswa-world-row-top">'+
-              '<span class="siswa-world-icon">🔒</span>'+
-              '<span class="siswa-world-name-txt" style="color:#aaa">'+esc(w.name)+'</span>'+
-              '<span class="siswa-world-count" style="color:#ccc">Terkunci</span>'+
-            '</div>'+
-            '<div class="siswa-world-bar-bg"><div class="siswa-world-bar-fill" style="width:0%;background:#ddd"></div></div>'+
-            '<div style="font-size:10px;color:#aaa;font-style:italic;padding:2px 0">⚠️ Selesaikan level sebelumnya terlebih dahulu</div>'+
-          '</div>';
-        }
 
         var chipsHtml=w.quests.map(function(q){
           var isDone=sdone[q.id];
