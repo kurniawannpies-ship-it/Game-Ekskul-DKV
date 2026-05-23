@@ -127,9 +127,25 @@ window._loadJsQR = function(cb) {
 </script>
 <!-- qrcode-generator: QR Code generator untuk SIM Card siswa -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<!-- Firebase SDK v9 compat (CDN) — defer agar tidak blocking render -->
-<script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<!-- Firebase SDK v9 compat (CDN) — async agar tidak blocking render -->
+<script>
+// ── Tunggu Firebase SDK siap sebelum memanggil initFirebase ──
+window._fbSdkLoadCount = 0;
+window._fbSdkReady = false;
+window._fbPendingInit = false;
+window._onFbSdkLoad = function() {
+  window._fbSdkLoadCount++;
+  if (window._fbSdkLoadCount >= 2) {
+    window._fbSdkReady = true;
+    if (window._fbPendingInit && typeof window.initFirebase === 'function') {
+      window._fbPendingInit = false;
+      window.initFirebase();
+    }
+  }
+};
+</script>
+<script async src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js" onload="window._onFbSdkLoad()"></script>
+<script async src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js" onload="window._onFbSdkLoad()"></script>
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -2557,8 +2573,28 @@ function initFirebase(){
   if(!isFirebaseConfigured()){
     setSyncStatus('error', '⚠️ Firebase Belum Dikonfigurasi');
     console.warn('[DKV Firebase] Config belum diisi. Gunakan localStorage sebagai fallback.');
-    // Tetap load dari localStorage
     _loadFromLocal();
+    return;
+  }
+  // ── Tunggu SDK Firebase siap (async load) ──
+  if(typeof firebase === 'undefined' || !firebase.app){
+    console.log('[DKV Firebase] SDK belum siap, menunggu...');
+    setSyncStatus('connecting', '🔄 Memuat SDK…');
+    window._fbPendingInit = true;
+    var _sdkWait = 0;
+    var _sdkInterval = setInterval(function(){
+      _sdkWait++;
+      if(typeof firebase !== 'undefined' && firebase.app){
+        clearInterval(_sdkInterval);
+        window._fbPendingInit = false;
+        initFirebase();
+      } else if(_sdkWait > 100){
+        clearInterval(_sdkInterval);
+        console.error('[DKV Firebase] SDK timeout — fallback ke localStorage');
+        setSyncStatus('error', '❌ SDK Gagal Dimuat');
+        _loadFromLocal();
+      }
+    }, 100);
     return;
   }
   try {
@@ -2566,11 +2602,9 @@ function initFirebase(){
       firebase.initializeApp(FIREBASE_CONFIG);
     }
     _fbDb  = firebase.database();
-    // Aktifkan persistence agar data di-cache lokal — kunjungan ke-2+ lebih cepat
-    _fbDb.enablePersistence({ synchronizeTabs: true }).catch(function(err){
-      // Tidak masalah jika gagal (multi-tab atau mode privat)
-      console.warn('[Firebase] Persistence tidak aktif:', err.code);
-    });
+    // CATATAN: enablePersistence dinonaktifkan — sering menyebabkan konflik
+    // multi-tab & mode private yang membuat app stuck offline.
+    // localStorage sudah berfungsi sebagai cache offline.
     _fbRef = _fbDb.ref(FB_PATH);
     _fbInitError = null;
     setSyncStatus('connecting', '🔄 Menghubungkan…');
@@ -2590,6 +2624,12 @@ function initFirebase(){
       }
       _fbReady = true;
       setSyncStatus('online', '☁️ Firebase Aktif');
+      // Re-render UI setelah data dari Firebase diterima
+      if(typeof render === 'function') render();
+      if(typeof renderSiswa === 'function') renderSiswa();
+      if(typeof renderKelompok === 'function') renderKelompok();
+      if(typeof renderRanking === 'function') renderRanking();
+      if(typeof applyAppConfig === 'function') applyAppConfig();
     }, function(err){
       _fbReady = false;
       _fbInitError = err.message;
@@ -2730,6 +2770,10 @@ function _applyFirebaseData(data){
   } else {
     if(!Array.isArray(window.dkvEditorAccess)) window.dkvEditorAccess = [];
   }
+  // ProfilChapters — sync dari Firebase
+  if(data.dkv_profil_chapters){
+    window._profilChapters = Array.isArray(data.dkv_profil_chapters) ? data.dkv_profil_chapters : [];
+  }
   // Pending registrasi (dihandle juga via child listener, tapi fallback di sini)
   // Jangan timpa jika panel sedang terbuka (admin sedang review) atau sedang saving
   if(data.dkv_pending_reg){
@@ -2853,6 +2897,10 @@ function saveAll(){
     // Jika saveAll() dipanggil saat ada pending registrasi, tanpa key ini
     // Firebase akan menghapus seluruh antrian pendaftaran siswa!
     if(window.dkvPendingReg && window.dkvPendingReg.length > 0) payload.dkv_pending_reg = window.dkvPendingReg;
+    // Sertakan absensi agar tidak terhapus
+    if(window.absenSesi && window.absenSesi.length > 0) payload.dkv_absensi = window.absenSesi;
+    // Sertakan profilChapters jika ada
+    if(window._profilChapters && window._profilChapters.length > 0) payload.dkv_profil_chapters = window._profilChapters;
     _fbRef.set(payload)
       .then(function(){
         window._isSaving = false;
@@ -6694,8 +6742,31 @@ renderKelompok();
 renderRanking();
 // Sembunyikan skeleton setelah render pertama dari localStorage selesai
 window._hideSkeleton && window._hideSkeleton();
-// Inisialisasi Firebase (async, akan update data ketika tersambung)
-initFirebase();
+// Inisialisasi Firebase — tunggu SDK async selesai dimuat
+(function(){
+  function _tryInitFirebase(){
+    if(typeof firebase !== 'undefined' && firebase.app){
+      // SDK sudah tersedia langsung (dari cache browser)
+      window._fbPendingInit = false;
+      initFirebase();
+    } else if(window._fbSdkReady){
+      // SDK sudah selesai async load
+      window._fbPendingInit = false;
+      initFirebase();
+    } else {
+      // Tandai agar _onFbSdkLoad memanggil initFirebase saat selesai
+      window._fbPendingInit = true;
+      // Fallback: panggil initFirebase() yang akan polling tunggu SDK
+      initFirebase();
+    }
+  }
+  // Tunggu sedikit agar script async sempat dimuat dari cache browser
+  if(typeof firebase !== 'undefined' && firebase.app){
+    _tryInitFirebase();
+  } else {
+    setTimeout(_tryInitFirebase, 50);
+  }
+})();
 
 // ══════════════════════════════════════════════════════════════════
 // ██████╗  SISTEM AKUN SISWA  ██████╗
