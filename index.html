@@ -1231,7 +1231,7 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
         bar.innerHTML = '<span style="color:#f5c842">⚙️ Pembina</span>';
       } else if(window.loggedInStudentId){
         var s = (window.siswaList||[]).find(function(x){return x.id===window.loggedInStudentId;});
-        bar.innerHTML = '<span style="color:#7dd87d">🎮 '+(s?s.name:window.loggedInStudentId)+'</span>';
+        bar.innerHTML = '<span style="color:#7dd87d">🎮 '+(s?esc(s.name):esc(window.loggedInStudentId))+'</span>';
       }
     }
     // Sync nama di header fase 2
@@ -1266,24 +1266,12 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
     btn.textContent=inp.type==='text'?'🙈':'👁';
   };
 
-  // Rate limiting — persistent di sessionStorage agar tahan refresh
-  function _loadRateLimits(){
-    try {
-      var d = JSON.parse(sessionStorage.getItem('dkv_rate_limits')||'{}');
-      return {
-        attemptsSiswa: d.attemptsSiswa||{},
-        lockSiswa:     d.lockSiswa||{},
-        attemptsPembina: d.attemptsPembina||0,
-        lockPembina:   d.lockPembina||0
-      };
-    } catch(e){ return {attemptsSiswa:{},lockSiswa:{},attemptsPembina:0,lockPembina:0}; }
-  }
-  function _saveRateLimits(){
-    try { sessionStorage.setItem('dkv_rate_limits', JSON.stringify({
-      attemptsSiswa: _lAttemptsSiswa, lockSiswa: _lLockSiswa,
-      attemptsPembina: _lAttemptsPembina, lockPembina: _lLockPembina
-    })); } catch(e){}
-  }
+  // Rate limiting — IN-MEMORY (tidak disimpan ke sessionStorage agar tidak bisa
+  // di-bypass siswa iseng via DevTools > Application > sessionStorage)
+  // Trade-off: reset saat halaman di-refresh, tapi cukup efektif untuk mencegah
+  // brute-force dalam satu sesi browsing.
+  function _loadRateLimits(){ return {attemptsSiswa:{},lockSiswa:{},attemptsPembina:0,lockPembina:0}; }
+  function _saveRateLimits(){ /* sengaja tidak disimpan ke storage */ }
   var _rl = _loadRateLimits();
   var _lAttemptsSiswa=_rl.attemptsSiswa, _lLockSiswa=_rl.lockSiswa,
       _lAttemptsPembina=_rl.attemptsPembina, _lLockPembina=_rl.lockPembina;
@@ -2626,22 +2614,44 @@ function initFirebase(){
     _fbRef = _fbDb.ref(FB_PATH);
     _fbInitError = null;
     setSyncStatus('connecting', '🔄 Menghubungkan…');
-    // Listen realtime — update semua tab/device secara langsung
-    _fbRef.on('value', function(snapshot){
-      // Abaikan update dari Firebase jika sedang dalam proses save (hindari race condition)
-      if(window._isSaving){ return; }
+
+    // FIX #6: Gunakan child listeners per-key agar perubahan kecil (mis. satu quest selesai)
+    // tidak memuat ulang semua data dari root. Root listener lama memicu re-render penuh
+    // setiap ada perubahan sekecil apapun di database.
+    // Pendekatan: load data awal SEKALI via .once('value') pada root,
+    // lalu dengarkan perubahan per-key yang penting saja.
+    var _fbKeyListeners = [
+      'dkv_worlds','dkv_done','dkv_siswa','dkv_sdone','dkv_cfg',
+      'dkv_badge_levels','dkv_kelompok','dkv_accounts','dkv_pw_hash',
+      'dkv_pending_reg','dkv_absensi','dkv_profil_chapters','dkv_global_simcard_bg'
+    ];
+
+    // Muat semua data pertama kali
+    _fbRef.once('value', function(snapshot){
       var data = snapshot.val();
       if(data){
-        // Gunakan window._applyFirebaseData agar patch dari modul lain (absensi, dll) aktif
         (window._applyFirebaseData || _applyFirebaseData)(data);
-        // Simpan ke localStorage sebagai cache offline
         Object.keys(data).forEach(function(k){ saveJSON(k, JSON.parse(JSON.stringify(data[k]))); });
       } else {
-        // Database kosong — push data lokal yang ada
         _pushLocalToFirebase();
       }
       _fbReady = true;
       setSyncStatus('online', '☁️ Firebase Aktif');
+
+      // Setelah load awal, pasang child listeners per-key
+      _fbKeyListeners.forEach(function(key){
+        _fbRef.child(key).on('value', function(snap){
+          if(window._isSaving){ return; }
+          var val = snap.val();
+          var partial = {};
+          partial[key] = val;
+          (window._applyFirebaseData || _applyFirebaseData)(partial);
+          if(val !== null && val !== undefined){
+            saveJSON(key, JSON.parse(JSON.stringify(val)));
+          }
+        });
+      });
+
     }, function(err){
       _fbReady = false;
       _fbInitError = err.message;
@@ -2746,10 +2756,11 @@ function _applyFirebaseData(data){
     CORRECT_PW_HASH = data.dkv_pw_hash;
     store_set('dkv_pw_hash', data.dkv_pw_hash);
   } else {
-    // BUGFIX: Jika Firebase tidak menyimpan dkv_pw_hash (terhapus oleh saveAll lama),
-    // reset ke nilai hardcoded default agar localStorage lama tidak dipakai.
-    CORRECT_PW_HASH = '89fb490244aa84f7e98c894139167db5faf2542b11d03daaad03364c1a9eda7d';
-    store_set('dkv_pw_hash', CORRECT_PW_HASH);
+    // Jika Firebase tidak punya hash, jangan gunakan hardcoded fallback.
+    // Bersihkan localStorage agar tidak ada hash lama yang dipakai.
+    // Pembina harus set password baru via panel konfigurasi.
+    store_set('dkv_pw_hash', '');
+    CORRECT_PW_HASH = null;
   }
   // Extended data: akun siswa & profil
   if(data.dkv_accounts && !window._isSaving){
@@ -3490,7 +3501,7 @@ document.getElementById('confirm-cancel-btn').addEventListener('click',function(
    3. Atau gunakan Firebase Cloud Functions untuk verifikasi password server-side.
    Selama masih menggunakan arsitektur ini, ganti password pembina secara berkala
    melalui panel konfigurasi (hash akan diperbarui di Firebase). */
-var CORRECT_PW_HASH = '89fb490244aa84f7e98c894139167db5faf2542b11d03daaad03364c1a9eda7d';
+var CORRECT_PW_HASH = null; // SECURITY: jangan hardcode hash — dimuat dari Firebase saja
 
 // SHA-256 pure JS — bekerja di file://, http://, dan https://
 // (crypto.subtle hanya tersedia di HTTPS/localhost, tidak bisa dipakai saat buka file langsung)
@@ -3562,11 +3573,9 @@ function sha256(message){
   return Promise.resolve(_sha256(toUTF8(message)));
 }
 
-// Load hash dari localStorage/Firebase jika sudah pernah diganti
-(function(){
-  var saved = store_get('dkv_pw_hash');
-  if(saved) CORRECT_PW_HASH = saved;
-})();
+// Hash pembina HANYA dimuat dari Firebase (_applyFirebaseData).
+// Tidak load dari localStorage agar hash lama/hardcoded tidak bisa dipakai.
+// (localStorage bisa berisi hash lama yang sudah diketahui)
 
 document.getElementById('edit-btn').addEventListener('click',function(){
   // Tombol ini hanya muncul saat pembina login, langsung toggle panel
@@ -4751,7 +4760,7 @@ function renderSiswa(){
 
       var avHtml = s.photoData
         ? '<img src="'+s.photoData+'" style="width:100%;height:100%;object-fit:cover">'
-        : '<span style="font-size:16px;font-weight:700;color:#fff">'+(s.initials||s.name[0])+'</span>';
+        : '<span style="font-size:16px;font-weight:700;color:#fff">'+(s.initials ? esc(s.initials) : esc(s.name[0]))+'</span>';
 
       // Dynamically build rows from _profilChapters
       var chapters2 = window._profilChapters || [];
@@ -4830,7 +4839,7 @@ function renderSiswa(){
         '<div class="sc2-photo-col">'+
           (s.photoData
             ? '<img class="sc2-photo" src="'+s.photoData+'" alt="foto" style="border-color:'+s.color+'">'
-            : '<div class="sc2-photo-init" style="background:'+s.color+'">'+(s.initials||s.name[0].toUpperCase())+'</div>')+
+            : '<div class="sc2-photo-init" style="background:'+s.color+'">'+(s.initials ? esc(s.initials) : esc(s.name[0].toUpperCase()))+'</div>')+
         '</div>'+
         (function(){
           var badge = getBadgeForXP(xp);
@@ -4984,7 +4993,7 @@ function openPublicProfile(sid){
   // Avatar
   var avatarHtml = s.photoData
     ? '<img src="'+s.photoData+'" style="width:100%;height:100%;object-fit:cover">'
-    : '<span style="font-size:20px;font-weight:700;color:#fff">'+(s.initials||s.name[0])+'</span>';
+    : '<span style="font-size:20px;font-weight:700;color:#fff">'+(s.initials ? esc(s.initials) : esc(s.name[0]))+'</span>';
 
   // Hobi tags
   var tagsHtml = '';
@@ -5153,7 +5162,7 @@ function showPDF(sid){
 
   var avatarHtml=s.photoData
     ?'<img src="'+s.photoData+'" style="width:56px;height:56px;border-radius:50%;object-fit:cover;flex-shrink:0">'
-    :'<div style="width:56px;height:56px;border-radius:50%;background:'+c+';display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;flex-shrink:0">'+(s.initials||s.name[0].toUpperCase())+'</div>';
+    :'<div style="width:56px;height:56px;border-radius:50%;background:'+c+';display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;flex-shrink:0">'+(s.initials ? esc(s.initials) : esc(s.name[0].toUpperCase()))+'</div>';
 
   var pdfBadge = getBadgeForXP(xp);
   var pdfBadgeImgHtml = pdfBadge.imgData
@@ -5321,7 +5330,7 @@ function buildPodium(sortedByCat, catColor, catLabel){
       var ph=podiumH[rank]||'44px';
       var av=s.photoData?
         '<img src="'+s.photoData+'" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:3px solid '+border+';flex-shrink:0">':
-        '<div style="width:48px;height:48px;border-radius:50%;background:'+s.color+';display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;border:3px solid '+border+';flex-shrink:0">'+(s.initials||s.name[0].toUpperCase())+'</div>';
+        '<div style="width:48px;height:48px;border-radius:50%;background:'+s.color+';display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;border:3px solid '+border+';flex-shrink:0">'+(s.initials ? esc(s.initials) : esc(s.name[0].toUpperCase()))+'</div>';
       return '<div style="display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;-webkit-align-items:center;align-items:center;gap:4px;-webkit-flex:1;flex:1;max-width:115px">'+
         '<div style="font-size:22px">'+medals[rank]+'</div>'+
         av+
@@ -5351,7 +5360,7 @@ function buildCatRankList(sortedByCat, catColor){
     var catPct=catTotal>0?Math.round((catDoneN/catTotal)*100):0;
     var av=s.photoData?
       '<img src="'+s.photoData+'" style="width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid '+(idx<3?catColor:'#e8e6e0')+';-webkit-flex-shrink:0;flex-shrink:0">':
-      '<div style="width:38px;height:38px;border-radius:50%;background:'+s.color+';display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;-webkit-flex-shrink:0;flex-shrink:0">'+(s.initials||s.name[0].toUpperCase())+'</div>';
+      '<div style="width:38px;height:38px;border-radius:50%;background:'+s.color+';display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;-webkit-flex-shrink:0;flex-shrink:0">'+(s.initials ? esc(s.initials) : esc(s.name[0].toUpperCase()))+'</div>';
     var rankNum=idx<3?
       '<span style="font-size:19px;-webkit-flex-shrink:0;flex-shrink:0;width:26px;text-align:center">'+medals[idx]+'</span>':
       '<span style="font-size:13px;font-weight:700;color:#bbb;width:26px;text-align:center;-webkit-flex-shrink:0;flex-shrink:0">'+(idx+1)+'</span>';
@@ -6065,15 +6074,28 @@ var smPhotoData = null;
 document.getElementById('sm-photo-input').addEventListener('change', function(e){
   var file = e.target.files[0];
   if(!file) return;
-  if(file.size > 2097152){ showToast('Foto terlalu besar (maks 2MB)'); return; }
-  var reader = new FileReader();
-  reader.onload = function(ev){
-    smPhotoData = ev.target.result;
+  if(file.size > 5242880){ showToast('Foto terlalu besar (maks 5MB)'); return; }
+  // Resize & compress ke max 200x200px JPEG 75% agar dkv_siswa tidak membesar
+  var img = new Image();
+  var objectUrl = URL.createObjectURL(file);
+  img.onload = function(){
+    URL.revokeObjectURL(objectUrl);
+    var maxSide = 200;
+    var w = img.width, h = img.height;
+    if(w > maxSide || h > maxSide){
+      if(w > h){ h = Math.round(h * maxSide / w); w = maxSide; }
+      else      { w = Math.round(w * maxSide / h); h = maxSide; }
+    }
+    var canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+    smPhotoData = canvas.toDataURL('image/jpeg', 0.75);
     var preview = document.getElementById('sm-photo-preview');
     preview.innerHTML = '<img src="'+smPhotoData+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
     document.getElementById('sm-photo-clear').style.display='inline-block';
   };
-  reader.readAsDataURL(file);
+  img.onerror = function(){ URL.revokeObjectURL(objectUrl); showToast('Gagal membaca foto.'); };
+  img.src = objectUrl;
 });
 document.getElementById('sm-photo-clear').addEventListener('click', function(){
   smPhotoData = null;
@@ -6357,7 +6379,7 @@ function renderKelompok(){
       if(s.photoData){
         return '<img src="'+s.photoData+'" style="'+avStyle.replace('display:inline-flex','display:inline-block')+';object-fit:cover">';
       }
-      return '<div style="'+avStyle+'">'+(s.initials||s.name[0])+'</div>';
+      return '<div style="'+avStyle+'">'+(s.initials ? esc(s.initials) : esc(s.name[0]))+'</div>';
     }).join('');
     var memberCount = (k.memberIds||[]).length;
 
@@ -6369,7 +6391,7 @@ function renderKelompok(){
         if(!s) return '';
         var avBg = s.photoData
           ? '<img src="'+s.photoData+'" style="width:22px;height:22px;border-radius:50%;object-fit:cover">'
-          : '<div class="klp-member-avatar" style="background:'+s.color+'">'+(s.initials||s.name[0])+'</div>';
+          : '<div class="klp-member-avatar" style="background:'+s.color+'">'+(s.initials ? esc(s.initials) : esc(s.name[0]))+'</div>';
         return '<div class="klp-member-chip">'+avBg+esc(s.name)+'</div>';
       }).join('');
 
@@ -7293,13 +7315,13 @@ function updateStudentUI(){
     if(s.photoData){
       sdbChar.innerHTML = '<img src="'+s.photoData+'" style="width:100%;height:100%;object-fit:cover">';
     } else {
-      sdbChar.innerHTML = '<span style="font-size:14px;font-weight:700;color:#fff;pointer-events:none">'+(s.initials||s.name[0])+'</span>';
+      sdbChar.innerHTML = '<span style="font-size:14px;font-weight:700;color:#fff;pointer-events:none">'+(s.initials ? esc(s.initials) : esc(s.name[0]))+'</span>';
     }
   }
 
   // Update login button
   if(loginBtn){
-    loginBtn.innerHTML = '<span style="width:22px;height:22px;border-radius:50%;background:'+themeColor+';display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0">'+(s.initials||s.name[0])+'</span> '+esc(s.name.split(' ')[0]);
+    loginBtn.innerHTML = '<span style="width:22px;height:22px;border-radius:50%;background:'+themeColor+';display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0">'+(s.initials ? esc(s.initials) : esc(s.name[0]))+'</span> '+esc(s.name.split(' ')[0]);
     loginBtn.classList.add('logged-in');
   }
 
@@ -7351,7 +7373,7 @@ function updateStudentUI(){
       if(s.photoData){
         charWrap.innerHTML = '<img src="'+s.photoData+'" style="width:100%;height:100%;object-fit:cover">';
       } else {
-        charWrap.innerHTML = '<span style="font-size:14px;font-weight:700;color:#fff">'+(s.initials||s.name[0])+'</span>';
+        charWrap.innerHTML = '<span style="font-size:14px;font-weight:700;color:#fff">'+(s.initials ? esc(s.initials) : esc(s.name[0]))+'</span>';
       }
     }
   }
@@ -7539,7 +7561,7 @@ function refreshProfilePanel(){
     if(s.photoData){
       photoWrap.innerHTML = '<img src="'+s.photoData+'" alt="'+esc(s.name)+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
     } else {
-      photoWrap.innerHTML = '<span style="font-size:26px;font-weight:700;color:#fff;pointer-events:none">'+(s.initials||s.name[0])+'</span>';
+      photoWrap.innerHTML = '<span style="font-size:26px;font-weight:700;color:#fff;pointer-events:none">'+(s.initials ? esc(s.initials) : esc(s.name[0]))+'</span>';
     }
   }
 
@@ -7550,7 +7572,7 @@ function refreshProfilePanel(){
     if(s.photoData){
       miniPhoto.innerHTML = '<img src="'+s.photoData+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
     } else {
-      miniPhoto.innerHTML = '<span style="font-size:16px;font-weight:700;color:#fff">'+(s.initials||s.name[0])+'</span>';
+      miniPhoto.innerHTML = '<span style="font-size:16px;font-weight:700;color:#fff">'+(s.initials ? esc(s.initials) : esc(s.name[0]))+'</span>';
     }
   }
 
@@ -7580,7 +7602,7 @@ function openProfileEdit(){
     if(s.photoData){
       editPreview.innerHTML = '<img src="'+s.photoData+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
     } else {
-      editPreview.innerHTML = '<span style="font-size:18px;font-weight:700;color:#fff">'+(s.initials||s.name[0])+'</span>';
+      editPreview.innerHTML = '<span style="font-size:18px;font-weight:700;color:#fff">'+(s.initials ? esc(s.initials) : esc(s.name[0]))+'</span>';
     }
   }
   var clearBtn = document.getElementById('spe-photo-clear');
@@ -7644,13 +7666,26 @@ function saveProfileEdit(){
 }
 
 // Photo input listener for profile edit
-document.getElementById('spe-photo-input').addEventListener('change', function(e){
+document.getElementById('spe-photo-input').addEventListener('change', function(e){\
   var file = e.target.files[0];
   if(!file) return;
-  if(file.size > 2097152){ showToast('Foto terlalu besar (maks 2MB)'); return; }
-  var reader = new FileReader();
-  reader.onload = function(ev){
-    _spePhotoData = ev.target.result;
+  if(file.size > 5242880){ showToast('Foto terlalu besar (maks 5MB)'); return; }
+  // Resize & compress menggunakan canvas agar ukuran base64 kecil
+  // (max 200x200px, quality 0.75 JPEG) — cegah dkv_siswa jadi sangat besar
+  var img = new Image();
+  var objectUrl = URL.createObjectURL(file);
+  img.onload = function(){
+    URL.revokeObjectURL(objectUrl);
+    var maxSide = 200;
+    var w = img.width, h = img.height;
+    if(w > maxSide || h > maxSide){
+      if(w > h){ h = Math.round(h * maxSide / w); w = maxSide; }
+      else      { w = Math.round(w * maxSide / h); h = maxSide; }
+    }
+    var canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+    _spePhotoData = canvas.toDataURL('image/jpeg', 0.75);
     // Update edit-mode preview
     var editPreview = document.getElementById('spe-edit-photo-preview');
     if(editPreview) editPreview.innerHTML = '<img src="'+_spePhotoData+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
@@ -7660,7 +7695,8 @@ document.getElementById('spe-photo-input').addEventListener('change', function(e
     var clearBtn = document.getElementById('spe-photo-clear');
     if(clearBtn) clearBtn.style.display = 'inline-block';
   };
-  reader.readAsDataURL(file);
+  img.onerror = function(){ URL.revokeObjectURL(objectUrl); showToast('Gagal membaca foto.'); };
+  img.src = objectUrl;
   this.value = '';
 });
 
@@ -7671,7 +7707,7 @@ function clearProfilePhoto(){
   var editPreview = document.getElementById('spe-edit-photo-preview');
   if(editPreview && s){
     editPreview.style.background = s.color;
-    editPreview.innerHTML = '<span style="font-size:18px;font-weight:700;color:#fff">'+(s.initials||s.name[0])+'</span>';
+    editPreview.innerHTML = '<span style="font-size:18px;font-weight:700;color:#fff">'+(s.initials ? esc(s.initials) : esc(s.name[0]))+'</span>';
   }
   var clearBtn = document.getElementById('spe-photo-clear');
   if(clearBtn) clearBtn.style.display = 'none';
@@ -7950,7 +7986,7 @@ function _buildProfilCardHTML(sid){
   var completion = profilCompletion(sid);
   var avatarHtml = s.photoData
     ? '<img src="'+s.photoData+'" style="width:100%;height:100%;object-fit:cover">'
-    : '<span style="font-size:20px;font-weight:700;color:#fff">'+(s.initials||s.name[0])+'</span>';
+    : '<span style="font-size:20px;font-weight:700;color:#fff">'+(s.initials ? esc(s.initials) : esc(s.name[0]))+'</span>';
   // Collect field values dynamically from _profilChapters
   var chapters = window._profilChapters || [];
   var nicknameVal='', bioVal='', moodVal='';
@@ -8132,7 +8168,7 @@ function renderSiswaAccountList(){
     var acc = window.siswaAccounts[s.id];
     var hasAcc = acc && acc.username;
     return '<div style="background:#f8f7f4;border-radius:10px;border:1px solid #e8e6e0;padding:10px 12px;display:-webkit-flex;display:flex;align-items:center;gap:8px">'+
-      '<div style="width:32px;height:32px;border-radius:50%;background:'+s.color+';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0">'+(s.initials||s.name[0])+'</div>'+
+      '<div style="width:32px;height:32px;border-radius:50%;background:'+s.color+';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0">'+(s.initials ? esc(s.initials) : esc(s.name[0]))+'</div>'+
       '<div style="flex:1;min-width:0">'+
         '<div style="font-size:12px;font-weight:600;color:#1a1a18;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(s.name)+'</div>'+
         '<div style="font-size:10px;color:#888">'+esc(s.kelas)+' · '+(hasAcc?'@'+esc(acc.username):'Belum punya akun')+'</div>'+
@@ -8167,7 +8203,7 @@ function renderEditorAccessList(){
     var hasAccess = hasEditorAccess(s.id);
     var hasAccount = window.siswaAccounts[s.id] && window.siswaAccounts[s.id].username;
     return '<div style="background:#f8f7f4;border-radius:10px;border:1px solid'+(hasAccess?' #378ADD33':' #e8e6e0')+';padding:10px 12px;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;gap:8px;-webkit-transition:border-color .2s;transition:border-color .2s">'+
-      '<div style="width:32px;height:32px;border-radius:50%;background:'+s.color+';display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;-webkit-flex-shrink:0;flex-shrink:0">'+(s.initials||s.name[0])+'</div>'+
+      '<div style="width:32px;height:32px;border-radius:50%;background:'+s.color+';display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;-webkit-flex-shrink:0;flex-shrink:0">'+(s.initials ? esc(s.initials) : esc(s.name[0]))+'</div>'+
       '<div style="-webkit-flex:1;flex:1;min-width:0">'+
         '<div style="font-size:12px;font-weight:600;color:#1a1a18;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(s.name)+'</div>'+
         '<div style="font-size:10px;color:#888">'+esc(s.kelas)+(hasAccess?' · <span style="color:#378ADD;font-weight:700">✏️ Editor Aktif</span>':(!hasAccount?' · <span style="color:#e24b4a">⚠ Belum punya akun login</span>':''))+'</div>'+
@@ -8617,7 +8653,11 @@ function openSetStudentAccModal(sid, currentUsername){
     var conf  = document.getElementById('sac-confirm').value;
     var err   = document.getElementById('sac-err');
     if(!uname){ err.textContent = 'Username tidak boleh kosong.'; return; }
-    if(uname.indexOf(' ') >= 0){ err.textContent = 'Username tidak boleh mengandung spasi.'; return; }
+    if(uname.length < 3){ err.textContent = 'Username minimal 3 karakter.'; return; }
+    if(uname.length > 40){ err.textContent = 'Username terlalu panjang (max 40 karakter).'; return; }
+    // Validasi karakter: hanya huruf kecil, angka, titik, strip, underscore
+    // (Firebase illegal chars: . $ # [ ] / dan spasi — semua diblokir oleh regex ini)
+    if(!/^[a-z0-9._-]+$/.test(uname)){ err.textContent = 'Username hanya boleh huruf kecil, angka, titik, strip.'; return; }
     // Check duplicate username
     for(var otherId in window.siswaAccounts){
       if(otherId !== sid && window.siswaAccounts[otherId] && window.siswaAccounts[otherId].username === uname){
