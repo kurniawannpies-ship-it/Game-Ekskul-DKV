@@ -2615,48 +2615,45 @@ function initFirebase(){
     _fbInitError = null;
     setSyncStatus('connecting', '🔄 Menghubungkan…');
 
-    // FIX #6: Gunakan child listeners per-key agar perubahan kecil (mis. satu quest selesai)
-    // tidak memuat ulang semua data dari root. Root listener lama memicu re-render penuh
-    // setiap ada perubahan sekecil apapun di database.
-    // Pendekatan: load data awal SEKALI via .once('value') pada root,
-    // lalu dengarkan perubahan per-key yang penting saja.
-    var _fbKeyListeners = [
-      'dkv_worlds','dkv_done','dkv_siswa','dkv_sdone','dkv_cfg',
-      'dkv_badge_levels','dkv_kelompok','dkv_accounts','dkv_pw_hash',
-      'dkv_pending_reg','dkv_absensi','dkv_profil_chapters','dkv_global_simcard_bg'
-    ];
-
-    // Muat semua data pertama kali
-    _fbRef.once('value', function(snapshot){
+    // Root listener — lebih sederhana dan reliable dibanding child listeners.
+    // FIX #6 (performa): bandingkan data sebelum dan sesudah, hanya re-render
+    // komponen yang datanya benar-benar berubah (bukan selalu render semua).
+    var _fbLastSnapshot = null;
+    _fbRef.on('value', function(snapshot){
+      // Abaikan update dari Firebase jika sedang dalam proses save (hindari race condition)
+      if(window._isSaving){ return; }
       var data = snapshot.val();
       if(data){
-        (window._applyFirebaseData || _applyFirebaseData)(data);
+        // Deteksi key mana yang berubah agar render lebih efisien
+        var changedKeys = {};
+        if(_fbLastSnapshot){
+          Object.keys(data).forEach(function(k){
+            if(JSON.stringify(data[k]) !== JSON.stringify(_fbLastSnapshot[k])) changedKeys[k] = true;
+          });
+        } else {
+          // Load pertama — semua dianggap baru
+          Object.keys(data).forEach(function(k){ changedKeys[k] = true; });
+        }
+        _fbLastSnapshot = data;
+        // Gunakan window._applyFirebaseData agar patch dari modul lain (absensi, dll) aktif
+        (window._applyFirebaseData || _applyFirebaseData)(data, changedKeys);
+        // Simpan ke localStorage sebagai cache offline
         Object.keys(data).forEach(function(k){ saveJSON(k, JSON.parse(JSON.stringify(data[k]))); });
       } else {
+        // Database kosong — push data lokal yang ada
+        _fbLastSnapshot = null;
         _pushLocalToFirebase();
       }
       _fbReady = true;
       setSyncStatus('online', '☁️ Firebase Aktif');
-
-      // Setelah load awal, pasang child listeners per-key
-      _fbKeyListeners.forEach(function(key){
-        _fbRef.child(key).on('value', function(snap){
-          if(window._isSaving){ return; }
-          var val = snap.val();
-          var partial = {};
-          partial[key] = val;
-          (window._applyFirebaseData || _applyFirebaseData)(partial);
-          if(val !== null && val !== undefined){
-            saveJSON(key, JSON.parse(JSON.stringify(val)));
-          }
-        });
-      });
-
     }, function(err){
       _fbReady = false;
       _fbInitError = err.message;
-      setSyncStatus('error', '❌ ' + (err.message.indexOf('PERMISSION_DENIED') >= 0 ? 'Akses Ditolak' : 'Koneksi Gagal'));
+      var msg = err.message.indexOf('PERMISSION_DENIED') >= 0 ? 'Akses Ditolak — cek Firebase Rules' : 'Koneksi Gagal';
+      setSyncStatus('error', '❌ ' + msg);
       console.error('[DKV Firebase] Error:', err);
+      // BUGFIX: Fallback ke localStorage agar app tidak stuck di layar loading
+      _loadFromLocal();
     });
 
     // Deteksi status koneksi (online/offline)
@@ -2703,7 +2700,9 @@ function getCatLabelFromId(catId, icon){
   return (icon||'📚') + ' ' + name;
 }
 // ─── Terapkan data dari Firebase ke variabel global ───
-function _applyFirebaseData(data){
+function _applyFirebaseData(data, changedKeys){
+  // changedKeys: object {keyName: true} dari listener — undefined = semua dianggap berubah
+  var all = !changedKeys;
   if(data.dkv_worlds){
     var w = typeof data.dkv_worlds === 'string' ? JSON.parse(data.dkv_worlds) : data.dkv_worlds;
     window.worlds = w;
@@ -2828,14 +2827,14 @@ function _applyFirebaseData(data){
       window.absenSesi = merged;
     }
   }
-  // Re-render semua tampilan
-  if(typeof applyAppConfig === 'function') applyAppConfig();
-  if(typeof render === 'function') render();
-  if(typeof renderSiswa === 'function') renderSiswa();
-  if(typeof renderKelompok === 'function') renderKelompok();
-  if(typeof renderRanking === 'function') renderRanking();
-  if(typeof renderBadgeLevelEditor === 'function') renderBadgeLevelEditor();
-  if(typeof renderSiswaAccountList === 'function') renderSiswaAccountList();
+  // Re-render hanya komponen yang datanya berubah (efisiensi Fix #6)
+  if(typeof applyAppConfig === 'function' && (all || changedKeys.dkv_cfg)) applyAppConfig();
+  if(typeof render === 'function' && (all || changedKeys.dkv_worlds || changedKeys.dkv_done)) render();
+  if(typeof renderSiswa === 'function' && (all || changedKeys.dkv_siswa || changedKeys.dkv_accounts || changedKeys.dkv_profiles || changedKeys.dkv_sdone)) renderSiswa();
+  if(typeof renderKelompok === 'function' && (all || changedKeys.dkv_kelompok)) renderKelompok();
+  if(typeof renderRanking === 'function' && (all || changedKeys.dkv_siswa || changedKeys.dkv_sdone || changedKeys.dkv_done)) renderRanking();
+  if(typeof renderBadgeLevelEditor === 'function' && (all || changedKeys.dkv_badge_levels)) renderBadgeLevelEditor();
+  if(typeof renderSiswaAccountList === 'function' && (all || changedKeys.dkv_accounts)) renderSiswaAccountList();
   if(typeof updateStudentUI === 'function') updateStudentUI();
   if(typeof updateMateriEditorTabVisibility === 'function') updateMateriEditorTabVisibility();
 }
@@ -6824,6 +6823,16 @@ window._hideSkeleton && window._hideSkeleton();
 // Inisialisasi Firebase (async, akan update data ketika tersambung)
 initFirebase();
 
+// BUGFIX: Safety timer — jika Firebase tidak respond dalam 6 detik
+// (misal PERMISSION_DENIED, koneksi lambat, atau Rules salah),
+// paksa load dari localStorage agar lobby tidak stuck terus.
+setTimeout(function(){
+  if(!window._fbReady){
+    console.warn('[DKV] Firebase timeout — fallback ke localStorage');
+    _loadFromLocal();
+  }
+}, 6000);
+
 // ══════════════════════════════════════════════════════════════════
 // ██████╗  SISTEM AKUN SISWA  ██████╗
 // ██╔════╝ LOGIN & KARAKTER   ╚════██╗
@@ -6998,7 +7007,8 @@ document.getElementById('notif-mark-all').addEventListener('click', function(){
   var sess = sessionStorage.getItem('dkv_student_sess');
   if(!sess) return;
   var sid = sess;
-  // Tunggu Firebase selesai load dulu, lalu restore session (retry max 10x setiap 200ms)
+  // Tunggu Firebase selesai load, lalu restore session
+  // Jika Firebase gagal/timeout (~4 detik), fallback ke localStorage
   function tryRestore(attempt){
     var s = window.siswaList && window.siswaList.find(function(x){return x.id===sid;});
     var hasAcc = window.siswaAccounts && window.siswaAccounts[sid];
@@ -7010,6 +7020,20 @@ document.getElementById('notif-mark-all').addEventListener('click', function(){
       if(typeof updateToolbarByRole === 'function') updateToolbarByRole();
     } else if(attempt < 20){
       setTimeout(function(){ tryRestore(attempt+1); }, 200);
+    } else {
+      // Timeout 4 detik — Firebase gagal/PERMISSION_DENIED
+      // Coba load dari localStorage agar app tidak stuck
+      if(!window._fbReady) _loadFromLocal();
+      var s2 = window.siswaList && window.siswaList.find(function(x){return x.id===sid;});
+      if(s2){
+        loggedInStudentId = sid;
+        updateStudentUI();
+        updateMateriEditorTabVisibility();
+        if(typeof updateToolbarByRole === 'function') updateToolbarByRole();
+      } else {
+        sessionStorage.removeItem('dkv_student_sess');
+        if(typeof lobbyUpdateStatus === 'function') lobbyUpdateStatus();
+      }
     }
   }
   setTimeout(function(){ tryRestore(0); }, 200);
