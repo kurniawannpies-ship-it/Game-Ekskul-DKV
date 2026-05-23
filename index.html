@@ -2676,11 +2676,28 @@ function _applyFirebaseData(data){
   // Absensi — wajib di sini agar Firebase listener (line 2518) bisa membaca data ini
   if(data.dkv_absensi){
     var incomingAbsen = typeof data.dkv_absensi==='string'?JSON.parse(data.dkv_absensi):data.dkv_absensi;
-    if(Array.isArray(incomingAbsen)){
-      // Gunakan data terbanyak: hindari overwrite data HP (11 sesi) dengan data lama (3 sesi)
-      if(incomingAbsen.length >= (window.absenSesi||[]).length){
-        window.absenSesi = incomingAbsen;
-      }
+    if(Array.isArray(incomingAbsen) && !window._isSaving){
+      // BUGFIX: Merge berbasis id sesi, gabungkan data hadir dari semua perangkat.
+      // Sebelumnya hanya membandingkan panjang array sehingga data bisa saling tindih.
+      var local = window.absenSesi || [];
+      var map = {};
+      // Masukkan data lokal dulu sebagai dasar
+      local.forEach(function(s){ map[s.id] = JSON.parse(JSON.stringify(s)); });
+      // Merge data dari Firebase
+      incomingAbsen.forEach(function(s){
+        if(!map[s.id]){
+          // Sesi baru dari perangkat lain — langsung tambahkan
+          map[s.id] = JSON.parse(JSON.stringify(s));
+        } else {
+          // Sesi sudah ada — gabungkan daftar hadir (union), tidak ada yang hilang
+          var mergedHadir = Object.assign({}, map[s.id].hadir || {}, s.hadir || {});
+          map[s.id] = Object.assign({}, map[s.id], s, { hadir: mergedHadir });
+        }
+      });
+      // Susun kembali ke array, urutkan dari terbaru
+      var merged = Object.keys(map).map(function(k){ return map[k]; });
+      merged.sort(function(a,b){ return (b.tanggal||'') > (a.tanggal||'') ? 1 : -1; });
+      window.absenSesi = merged;
     }
   }
   // Re-render semua tampilan
@@ -8520,13 +8537,18 @@ function loadAbsensi(){
 function saveAbsensi(){
   saveJSON('dkv_absensi', window.absenSesi);
   if(window._fbRef){
-    // Set _isSaving sementara agar listener tidak menimpa data baru dengan snapshot lama
+    // Set _isSaving = true SEBELUM set() agar Firebase listener tidak menimpa
+    // data yang baru diubah selama round-trip ke server.
     window._isSaving = true;
-    window._fbRef.child('dkv_absensi').set(window.absenSesi).then(function(){
+    // Simpan snapshot agar tidak berubah saat async berlangsung
+    var snapshot = JSON.parse(JSON.stringify(window.absenSesi));
+    window._fbRef.child('dkv_absensi').set(snapshot).then(function(){
       window._isSaving = false;
     }).catch(function(){
       window._isSaving = false;
     });
+    // Failsafe: lepas flag maksimal 5 detik agar tidak terkunci selamanya
+    setTimeout(function(){ window._isSaving = false; }, 5000);
   }
 }
 
