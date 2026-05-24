@@ -2310,7 +2310,7 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
         <h2>Daftar Siswa</h2>
         <div style="font-size:11px;color:#888;margin-top:2px" id="siswa-count-label">—</div>
       </div>
-      <button class="btn-add-siswa" id="btn-add-siswa" type="button">&#x2795; Tambah Siswa</button>
+      <button class="btn-add-siswa" id="btn-add-siswa" type="button" style="display:none">&#x2795; Tambah Siswa</button>
     </div>
     <div style="display:-webkit-flex;display:flex;gap:8px;margin-bottom:12px;-webkit-align-items:center;align-items:center">
       <div style="position:relative;-webkit-flex:1;flex:1">
@@ -2394,19 +2394,7 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
       </div>
     </div>
 
-    <!-- Panduan format barcode -->
-    <div style="background:#e8f4ff;border-radius:12px;border:1.5px solid #378ADD33;padding:12px 14px;margin-bottom:14px;font-size:12px;color:#378ADD">
-      <div style="font-weight:700;margin-bottom:6px">💡 Cara Absensi dengan SIM Card</div>
-      <div style="color:#555;line-height:1.7">
-        <div style="margin-bottom:4px">1️⃣ Pilih sesi, lalu tekan <strong>📷 Aktifkan Kamera</strong></div>
-        <div style="margin-bottom:4px">2️⃣ Arahkan kamera ke <strong>QR Code</strong> di sudut SIM Card siswa</div>
-        <div style="margin-bottom:4px">3️⃣ QR Code berisi: <code style="background:#fff;padding:1px 6px;border-radius:4px;font-size:11px;color:#1a1a18">DKV_[ID Siswa]</code></div>
-        <div>4️⃣ Sistem otomatis mencatat kehadiran ✅</div>
-      </div>
-      <div style="margin-top:8px;padding:7px 10px;background:#fff;border-radius:8px;font-size:11px;color:#888">
-        💬 QR Code ada di pojok kanan bawah SIM Card — siswa bisa menunjukkan SIM Card dari tab Siswa → 🪪 SIM Card
-      </div>
-    </div>
+
 
     <div id="absen-rekap-container"></div>
   </div>
@@ -3552,7 +3540,7 @@ function checkPassword(){
       // Tampilkan tombol Konfigurasi untuk pembina
       var editBtnEl = document.getElementById('edit-btn');
       if(editBtnEl){ editBtnEl.style.display=''; editBtnEl.innerHTML='⚙️ Konfigurasi <span class="badge-pembina">Pembina</span>'; editBtnEl.classList.remove('active-mode'); }
-      document.getElementById('btn-add-siswa').style.display='block';
+      document.getElementById('btn-add-siswa').style.display='none';
       // Tampilkan tab Absensi untuk admin
       var absenTab = document.getElementById('tab-btn-absensi');
       if(absenTab) absenTab.style.display='';
@@ -5061,6 +5049,27 @@ function showPDF(sid){
     '</div>';
   }).join('');
 
+  // ── Hitung data kehadiran dari absenSesi ──
+  var absenSesiAll = window.absenSesi || [];
+  var totalSesi = absenSesiAll.length;
+  var hadirCount = absenSesiAll.filter(function(sesi){ return sesi.hadir && sesi.hadir[sid]; }).length;
+  var hadirPct = totalSesi > 0 ? Math.round((hadirCount / totalSesi) * 100) : 0;
+  var hadirColor = hadirPct >= 80 ? '#639922' : hadirPct >= 50 ? '#BA7517' : '#e24b4a';
+  var absensiBlockHtml =
+    '<div style="margin-bottom:18px">'+
+      '<div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">📸 Rekap Kehadiran</div>'+
+      '<div style="display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;gap:8px">'+
+        '<div style="display:inline-block;min-width:80px;-webkit-flex:1;flex:1;background:'+hadirColor+';color:#fff;border-radius:10px;padding:12px;text-align:center;margin:0">'+
+          '<div style="font-size:18px;font-weight:700">'+hadirCount+'/'+totalSesi+'</div>'+
+          '<div style="font-size:9px;opacity:.8;text-transform:uppercase;letter-spacing:.05em">Sesi Hadir</div>'+
+        '</div>'+
+        '<div style="display:inline-block;min-width:80px;-webkit-flex:1;flex:1;background:'+hadirColor+';color:#fff;border-radius:10px;padding:12px;text-align:center;margin:0">'+
+          '<div style="font-size:18px;font-weight:700">'+hadirPct+'%</div>'+
+          '<div style="font-size:9px;opacity:.8;text-transform:uppercase;letter-spacing:.05em">Kehadiran</div>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+
   var worldRowsHtml=window.worlds.map(function(w){
     var wDone=w.quests.filter(function(q){return sdone[q.id];}).length;
     var wPct=w.quests.length>0?Math.round((wDone/w.quests.length)*100):0;
@@ -5153,6 +5162,7 @@ function showPDF(sid){
       '<div style="display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;margin-bottom:18px">'+rankingXPHtml+rankingCatHtml+'</div>'
     : '')+
     '<div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">Detail Quest per Dunia</div>'+
+    absensiBlockHtml+
     worldRowsHtml+
     (s.notes&&s.notes.trim()?
       '<div style="margin-top:20px;padding:14px 16px;background:#FFF8EC;border-radius:10px;border:1.5px solid #BA751733;margin-bottom:4px">'+
@@ -6366,6 +6376,35 @@ function renderKelompok(){
                 (canToggle ? ' data-action="set-status" data-kid="'+k.id+'" data-tidx="'+tidx+'" data-status="done"' : ' disabled style="opacity:.45;cursor:default"')+
                 '>✅ Quest Selesai</button>'+
             '</div>'+
+            // ── XP Tambahan oleh Pembina ──
+            (pembina ?
+              '<div style="margin-top:10px;padding:10px 12px;background:#f0fff0;border-radius:10px;border:1.5px solid #63992233">'+
+                '<div style="font-size:10px;font-weight:700;color:#639922;text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px">⭐ Beri XP Tambahan ke Anggota</div>'+
+                '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">'+
+                  (k.memberIds||[]).map(function(sid){
+                    var ms = window.siswaList.find(function(x){return x.id===sid;});
+                    if(!ms) return '';
+                    return '<div style="display:flex;align-items:center;gap:4px;background:#fff;border-radius:20px;padding:3px 10px 3px 6px;border:1.5px solid #e8e6e0">'+
+                      (ms.photoData
+                        ? '<img src="'+ms.photoData+'" style="width:18px;height:18px;border-radius:50%;object-fit:cover">'
+                        : '<div style="width:18px;height:18px;border-radius:50%;background:'+ms.color+';display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;color:#fff">'+(ms.initials||ms.name[0])+'</div>')+
+                      '<span style="font-size:11px;font-weight:600;color:#1a1a18">'+esc(ms.name)+'</span>'+
+                    '</div>';
+                  }).join('')+
+                '</div>'+
+                '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">'+
+                  '<select id="xp-award-sid-'+k.id+'-'+tidx+'" style="font-family:\'Space Grotesk\',sans-serif;font-size:12px;padding:6px 10px;border-radius:8px;border:1.5px solid #ddd;background:#fff;color:#1a1a18;flex:1;min-width:100px;-webkit-appearance:none;appearance:none">'+
+                    '<option value="">— Pilih Siswa —</option>'+
+                    (k.memberIds||[]).map(function(sid){
+                      var ms = window.siswaList.find(function(x){return x.id===sid;});
+                      return '<option value="'+sid+'">'+(ms?esc(ms.name):sid)+'</option>';
+                    }).join('')+
+                  '</select>'+
+                  '<input type="number" id="xp-award-val-'+k.id+'-'+tidx+'" placeholder="XP" min="1" max="500" value="50" style="font-family:\'Space Grotesk\',sans-serif;font-size:12px;padding:6px 10px;border-radius:8px;border:1.5px solid #ddd;background:#fff;color:#1a1a18;width:70px">'+
+                  '<button type="button" data-action="award-xp" data-kid="'+k.id+'" data-tidx="'+tidx+'" style="font-family:\'Space Grotesk\',sans-serif;font-size:12px;font-weight:700;padding:7px 14px;border-radius:8px;border:none;background:#639922;color:#fff;cursor:pointer;white-space:nowrap">+XP ⭐</button>'+
+                '</div>'+
+              '</div>'
+            : '')+
           '</div>';
       });
 
@@ -6419,6 +6458,54 @@ function renderKelompok(){
   grid.innerHTML = html;
 }
 
+// ─────────────────────────────────────────────
+// AWARD BONUS XP — Pembina memberi XP tambahan dari tabel tugas
+// Disimpan di siswaDone sebagai entri bonus: 'bonus_<timestamp>'
+// ─────────────────────────────────────────────
+function awardBonusXP(sid, xpAmount, kid, tidx){
+  var s = window.siswaList.find(function(x){ return x.id === sid; });
+  var k = window.kelompokList ? window.kelompokList.find(function(x){ return x.id === kid; }) : null;
+  var tugasTitle = k && k.tugas && k.tugas[tidx] ? k.tugas[tidx].title : 'Tugas';
+  if(!s){ showToast('❌ Siswa tidak ditemukan.'); return; }
+
+  // Simpan bonus XP sebagai quest bonus khusus di siswaDone
+  if(!window.siswaDone[sid]) window.siswaDone[sid] = {};
+  var bonusKey = 'bonus_'+Date.now()+'_'+Math.random().toString(36).substr(2,4);
+  window.siswaDone[sid][bonusKey] = { xp: xpAmount, label: tugasTitle, by: 'pembina', ts: Date.now() };
+
+  // Tambahkan ke dkv_done global juga agar fungsi siswaXP bisa menghitungnya
+  if(!window.bonusXP) window.bonusXP = {};
+  if(!window.bonusXP[sid]) window.bonusXP[sid] = 0;
+  window.bonusXP[sid] += xpAmount;
+
+  saveFast(['dkv_sdone']);
+  renderSiswa();
+  renderRanking();
+  renderKelompok();
+  pushSystemNotif(sid, '⭐ Bonus XP dari Pembina!', 'Kamu mendapat +'+xpAmount+' XP bonus untuk tugas: '+tugasTitle+'. Pertahankan! 💪', 'xp');
+  showToast('⭐ +'+xpAmount+' XP diberikan ke '+s.name+'!');
+}
+
+// ─────────────────────────────────────────────
+// PATCH siswaXP: tambahkan bonus XP dari tugas kelompok
+// ─────────────────────────────────────────────
+(function(){
+  var _origSiswaXP = window.siswaXP || siswaXP;
+  // Override siswaXP agar memasukkan bonus dari siswaDone[sid] entries 'bonus_*'
+  window.siswaXP = function(sid){
+    var base = _origSiswaXP(sid);
+    // Tambahkan semua bonus XP yang tersimpan di siswaDone
+    var done = window.siswaDone[sid] || {};
+    var bonusTotal = 0;
+    for(var key in done){
+      if(key.indexOf('bonus_') === 0 && done[key] && done[key].xp){
+        bonusTotal += (done[key].xp || 0);
+      }
+    }
+    return base + bonusTotal;
+  };
+})();
+
 // ─── Toggle kelompok accordion ───
 document.getElementById('kelompok-grid').addEventListener('click', function(e){
   var el = e.target.closest('[data-action]');
@@ -6466,6 +6553,19 @@ document.getElementById('kelompok-grid').addEventListener('click', function(e){
       renderKelompok();
       showToast('Tugas dihapus.');
     });
+    return;
+  }
+
+  if(action === 'award-xp' && pembina){
+    var selId = 'xp-award-sid-'+kid+'-'+tidx;
+    var valId = 'xp-award-val-'+kid+'-'+tidx;
+    var selEl = document.getElementById(selId);
+    var valEl = document.getElementById(valId);
+    var targetSid = selEl ? selEl.value : '';
+    var xpVal = valEl ? parseInt(valEl.value) : 0;
+    if(!targetSid){ showToast('⚠️ Pilih siswa terlebih dahulu.'); return; }
+    if(!xpVal || xpVal < 1 || xpVal > 500){ showToast('⚠️ XP harus antara 1–500.'); return; }
+    awardBonusXP(targetSid, xpVal, kid, tidx);
     return;
   }
 
@@ -7168,7 +7268,7 @@ function updateToolbarByRole(){
   if(window.pembina){
     // ── MODE PEMBINA ──
     if(editBtn){ editBtn.style.display = ''; }
-    if(addSiswa) addSiswa.style.display = 'block';
+    if(addSiswa) addSiswa.style.display = 'none'; // Tambah Siswa dihilangkan — gunakan pendaftaran mandiri
     if(absenTab) absenTab.style.display = '';
     if(adminBell) adminBell.style.display = '';
     if(logoutBtn){ logoutBtn.style.display = ''; logoutBtn.textContent = 'Logout Pembina'; }
