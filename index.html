@@ -1748,17 +1748,19 @@ input:focus,select:focus,textarea:focus{
 .lobby-logout-small { background:none;border:none;color:#ff7b7b;font-family:'Space Grotesk',sans-serif;font-size:12px;cursor:pointer;padding:0 }
 
 /* Edit Lobby FAB */
-.lobby-edit-fab { position:fixed;bottom:20px;right:20px;z-index:10010;background:#f5c842;color:#1a1916;border:none;border-radius:50%;width:46px;height:46px;font-size:19px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;-webkit-appearance:none }
-.lobby-edit-panel { position:fixed;bottom:76px;right:16px;z-index:10010;background:#1c1b18;border:1px solid #3a3836;border-radius:16px;padding:18px;width:270px;max-height:80vh;overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.55);display:none;font-family:'Space Grotesk',sans-serif }
-.lobby-edit-panel.open { display:block;animation:lobbyFadeIn .2s ease both }
-.lobby-edit-title { font-size:13px;font-weight:700;color:#f0ede8;margin-bottom:12px }
-.lobby-edit-label { font-size:11px;font-weight:600;color:#6e6b64;letter-spacing:.05em;margin-bottom:4px;display:block }
-.lobby-edit-inp { width:100%;box-sizing:border-box;background:rgba(255,255,255,.05);border:1.5px solid #3a3836;color:#f0ede8;font-family:'Space Grotesk',sans-serif;font-size:13px;padding:8px 10px;border-radius:9px;outline:none;margin-bottom:10px;-webkit-appearance:none }
-.lobby-edit-inp:focus { border-color:#f5c842 }
-.lobby-edit-save { width:100%;padding:9px;background:#f5c842;color:#1a1916;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;border:none;border-radius:9px;cursor:pointer;-webkit-appearance:none }
+.lobby-edit-fab { position:fixed;bottom:20px;right:20px;z-index:10010;background:linear-gradient(135deg,#f5c842,#e6a000);color:#1a1916;border:none;border-radius:14px;width:48px;height:48px;font-size:20px;cursor:pointer;box-shadow:0 4px 20px rgba(245,200,66,.45);display:none;align-items:center;justify-content:center;-webkit-appearance:none;transition:transform .2s,box-shadow .2s }
+.lobby-edit-fab:hover { transform:scale(1.08);box-shadow:0 6px 28px rgba(245,200,66,.55) }
+.lobby-edit-panel { position:fixed;bottom:0;right:0;top:0;z-index:10010;background:#18171b;border-left:1px solid #2e2c28;padding:18px 16px 24px;width:310px;max-width:100vw;overflow-y:auto;box-shadow:-8px 0 40px rgba(0,0,0,.6);display:none;font-family:'Space Grotesk',sans-serif }
+.lobby-edit-panel.open { display:block;animation:lobbyPanelSlide .22s cubic-bezier(.34,1.1,.64,1) both }
+@keyframes lobbyPanelSlide { from{transform:translateX(100%);opacity:0} to{transform:translateX(0);opacity:1} }
+.lobby-edit-title { font-size:14px;font-weight:800;color:#f0ede8;margin-bottom:0;letter-spacing:-.02em }
+.lobby-edit-label { font-size:10px;font-weight:700;color:#6e6b64;letter-spacing:.06em;margin-bottom:5px;display:block;text-transform:uppercase }
+.lobby-edit-inp { width:100%;box-sizing:border-box;background:rgba(255,255,255,.05);border:1.5px solid #2e2c28;color:#f0ede8;font-family:'Space Grotesk',sans-serif;font-size:13px;padding:9px 11px;border-radius:9px;outline:none;margin-bottom:10px;-webkit-appearance:none;transition:border-color .2s }
+.lobby-edit-inp:focus { border-color:#f5c842;background:rgba(245,200,66,.04) }
+.lobby-edit-save { width:100%;padding:11px;background:linear-gradient(135deg,#f5c842,#e6a000);color:#1a1916;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:800;border:none;border-radius:10px;cursor:pointer;-webkit-appearance:none;box-shadow:0 4px 14px rgba(245,200,66,.35) }
 .lobby-color-grid { display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:10px }
-.lobby-color-swatch { width:100%;aspect-ratio:1;border-radius:7px;border:2px solid transparent;cursor:pointer;transition:transform .15s,border-color .15s }
-.lobby-color-swatch.sel { border-color:#f5c842;transform:scale(1.1) }
+.lobby-color-swatch { width:100%;aspect-ratio:1;border-radius:8px;border:2px solid transparent;cursor:pointer;transition:transform .15s,border-color .15s }
+.lobby-color-swatch.sel { border-color:#f5c842;transform:scale(1.12);box-shadow:0 0 8px rgba(245,200,66,.4) }
 </style>
 
 <!-- ══ LOBBY SCREEN v2 ══ -->
@@ -1858,7 +1860,107 @@ input:focus,select:focus,textarea:focus{
   </div><!-- end scroll-inner -->
 </div>
 
-<!-- Edit Lobby FAB (dihapus - tidak tampil di ruang ekskul) -->
+<!-- ══ LOBBY EDIT FAB & PANEL (Pembina Only) ══ -->
+<button id="lobby-edit-fab" class="lobby-edit-fab" type="button" onclick="lobbyToggleEditPanel()" title="Edit Tampilan Lobby">✏️</button>
+
+<div id="lobby-edit-panel" class="lobby-edit-panel">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+    <div class="lobby-edit-title" style="margin-bottom:0">🎨 Edit Tampilan Lobby</div>
+    <button type="button" onclick="document.getElementById('lobby-edit-panel').classList.remove('open')" style="background:none;border:none;color:#6e6b64;font-size:18px;cursor:pointer;line-height:1;padding:0">✕</button>
+  </div>
+
+  <!-- Nama & Sub -->
+  <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:12px;margin-bottom:10px;border:1px solid #2e2c28">
+    <div style="font-size:10px;font-weight:700;color:#f5c842;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">📝 Teks Lobby</div>
+    <label class="lobby-edit-label">Nama Ekskul</label>
+    <input type="text" id="ledit-appname" class="lobby-edit-inp" placeholder="Contoh: DKV" maxlength="40">
+    <label class="lobby-edit-label">Sub Judul</label>
+    <input type="text" id="ledit-appsub" class="lobby-edit-inp" placeholder="Contoh: SMPN 1 Sumenep" maxlength="60">
+  </div>
+
+  <!-- Logo -->
+  <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:12px;margin-bottom:10px;border:1px solid #2e2c28">
+    <div style="font-size:10px;font-weight:700;color:#f5c842;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">🖼️ Logo</div>
+    <!-- Preview logo -->
+    <div id="ledit-logo-preview" style="width:56px;height:56px;border-radius:14px;overflow:hidden;border:2px solid #3a3836;background:#1a1917;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 10px"></div>
+    <label class="lobby-edit-label">Upload Logo</label>
+    <label style="display:block;width:100%;box-sizing:border-box;padding:9px 10px;background:rgba(255,255,255,.06);border:1.5px dashed #4a4846;color:#d0cdc8;font-family:'Space Grotesk',sans-serif;font-size:12px;border-radius:9px;cursor:pointer;text-align:center;margin-bottom:8px">
+      📁 Pilih Gambar Logo
+      <input type="file" accept="image/*" onchange="lobbyHandleLogoUpload(this)" style="display:none">
+    </label>
+    <label class="lobby-edit-label">Atau URL Logo</label>
+    <input type="url" id="ledit-logourl" class="lobby-edit-inp" placeholder="https://..." oninput="lobbyPreviewLogoUrl(this.value)">
+    <label class="lobby-edit-label" style="margin-top:4px">Atau Emoji Logo</label>
+    <input type="text" id="ledit-logoemoji" class="lobby-edit-inp" placeholder="Contoh: 🎨" maxlength="4" oninput="lobbyPreviewEmoji(this.value)">
+    <button type="button" onclick="lobbyResetLogo()" style="background:transparent;border:1px solid #4a4846;color:#888;font-family:'Space Grotesk',sans-serif;font-size:11px;padding:5px 10px;border-radius:7px;cursor:pointer;width:100%;margin-top:4px">Reset ke Default 🎨</button>
+  </div>
+
+  <!-- Background -->
+  <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:12px;margin-bottom:10px;border:1px solid #2e2c28">
+    <div style="font-size:10px;font-weight:700;color:#f5c842;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">🌄 Background</div>
+
+    <!-- Tab BG -->
+    <div style="display:flex;border-radius:9px;overflow:hidden;background:rgba(255,255,255,.05);border:1px solid #3a3836;margin-bottom:10px">
+      <button type="button" id="ledit-bg-tab-color" onclick="lobbyBgTab('color')" style="flex:1;padding:7px 0;font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;border:none;background:linear-gradient(135deg,#f5c842,#e6a000);color:#1a1916;cursor:pointer">🎨 Warna</button>
+      <button type="button" id="ledit-bg-tab-img" onclick="lobbyBgTab('img')" style="flex:1;padding:7px 0;font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;border:none;background:transparent;color:#6e6b64;cursor:pointer">🖼 Gambar</button>
+      <button type="button" id="ledit-bg-tab-gradient" onclick="lobbyBgTab('gradient')" style="flex:1;padding:7px 0;font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;border:none;background:transparent;color:#6e6b64;cursor:pointer">🌈 Gradien</button>
+    </div>
+
+    <!-- Warna solid -->
+    <div id="ledit-bg-panel-color">
+      <label class="lobby-edit-label">Pilih Warna</label>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+        <input type="color" id="ledit-bgcolor-picker" value="#02023a" oninput="lobbyPickBgColor(this.value)" style="width:44px;height:36px;border-radius:8px;border:2px solid #3a3836;background:none;cursor:pointer;padding:2px">
+        <input type="text" id="ledit-bgcolor-hex" class="lobby-edit-inp" placeholder="#02023a" maxlength="7" style="flex:1;margin-bottom:0" oninput="lobbyBgHexInput(this.value)">
+      </div>
+      <label class="lobby-edit-label">Preset Warna</label>
+      <div id="ledit-color-grid" class="lobby-color-grid"></div>
+    </div>
+
+    <!-- Gambar -->
+    <div id="ledit-bg-panel-img" style="display:none">
+      <label style="display:block;width:100%;box-sizing:border-box;padding:9px 10px;background:rgba(255,255,255,.06);border:1.5px dashed #4a4846;color:#d0cdc8;font-family:'Space Grotesk',sans-serif;font-size:12px;border-radius:9px;cursor:pointer;text-align:center;margin-bottom:8px">
+        📁 Upload Gambar BG
+        <input type="file" accept="image/*" onchange="lobbyHandleBgUpload(this)" style="display:none">
+      </label>
+      <label class="lobby-edit-label">Atau URL Gambar</label>
+      <input type="url" id="ledit-bgurl" class="lobby-edit-inp" placeholder="https://..." oninput="lobbyPreviewBgUrl(this.value)">
+      <div style="display:flex;gap:6px;margin-top:4px">
+        <label class="lobby-edit-label" style="margin-bottom:0;display:flex;align-items:center;gap:5px;cursor:pointer">
+          <input type="checkbox" id="ledit-bg-dim" onchange="lobbyBgDimChange(this.checked)" style="accent-color:#f5c842"> Redup (overlay gelap)
+        </label>
+      </div>
+    </div>
+
+    <!-- Gradien -->
+    <div id="ledit-bg-panel-gradient" style="display:none">
+      <label class="lobby-edit-label">Warna Awal</label>
+      <div style="display:flex;gap:6px;margin-bottom:6px">
+        <input type="color" id="ledit-grad-c1" value="#02023a" oninput="lobbyPreviewGradient()" style="width:44px;height:36px;border-radius:8px;border:2px solid #3a3836;cursor:pointer;padding:2px">
+        <input type="text" id="ledit-grad-c1-hex" class="lobby-edit-inp" style="flex:1;margin-bottom:0" placeholder="#02023a" oninput="lobbyGradHex('c1',this.value)">
+      </div>
+      <label class="lobby-edit-label">Warna Akhir</label>
+      <div style="display:flex;gap:6px;margin-bottom:6px">
+        <input type="color" id="ledit-grad-c2" value="#0f0e1f" oninput="lobbyPreviewGradient()" style="width:44px;height:border-radius:8px;border:2px solid #3a3836;cursor:pointer;padding:2px;height:36px">
+        <input type="text" id="ledit-grad-c2-hex" class="lobby-edit-inp" style="flex:1;margin-bottom:0" placeholder="#0f0e1f" oninput="lobbyGradHex('c2',this.value)">
+      </div>
+      <label class="lobby-edit-label">Arah Gradien</label>
+      <select id="ledit-grad-dir" class="lobby-edit-inp" onchange="lobbyPreviewGradient()" style="margin-bottom:6px">
+        <option value="135deg">↘ Diagonal</option>
+        <option value="180deg">↓ Bawah</option>
+        <option value="90deg">→ Kanan</option>
+        <option value="45deg">↗ Serong</option>
+      </select>
+      <div id="ledit-grad-preview" style="height:36px;border-radius:8px;border:1px solid #3a3836;margin-bottom:4px;background:linear-gradient(135deg,#02023a,#0f0e1f)"></div>
+      <label class="lobby-edit-label">Preset Gradien</label>
+      <div id="ledit-grad-presets" style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:4px"></div>
+    </div>
+  </div>
+
+  <!-- Tombol Aksi -->
+  <button class="lobby-edit-save" type="button" onclick="lobbySaveEdit()" style="margin-bottom:7px">💾 Simpan Perubahan</button>
+  <button type="button" onclick="lobbyResetEdit()" style="width:100%;padding:8px;background:transparent;border:1px solid #3a3836;color:#888;font-family:'Space Grotesk',sans-serif;font-size:12px;border-radius:9px;cursor:pointer">🔄 Reset ke Default</button>
+</div>
 
 <script>
 // ══════════════════════════════════════════════════════
@@ -2046,25 +2148,43 @@ input:focus,select:focus,textarea:focus{
     }
     if(s.appSub){ var el=document.getElementById('lobby-app-sub-display'); if(el)el.textContent=s.appSub; }
     if(s.logoUrl) applyLobbyLogo(s.logoUrl);
+    else if(s.logoEmoji){
+      ['lobby-logo-display','lobby-logo-display-2'].forEach(function(id){
+        var el=document.getElementById(id); if(!el) return;
+        var sz=id==='lobby-logo-display-2'?'52px':'68px', fsz=id==='lobby-logo-display-2'?'26px':'32px', mb=id==='lobby-logo-display-2'?'8':'12';
+        el.innerHTML='<div class="lobby-logo-emoji" style="width:'+sz+';height:'+sz+';font-size:'+fsz+';margin-bottom:'+mb+'px">'+s.logoEmoji+'</div>';
+      });
+    }
     var bgLayer=document.getElementById('lobby-bg-layer');
     if(bgLayer){
-      if(s.bgImg){ bgLayer.style.backgroundImage='url('+s.bgImg+')'; bgLayer.style.background='#02023a'; }
-      else if(s.bgColor){ bgLayer.style.background=s.bgColor; bgLayer.style.backgroundImage='none'; }
-    }
-    // Populate edit fields if open
-    var pan=document.getElementById('lobby-edit-panel');
-    if(pan&&pan.classList.contains('open')){
-      var ai=document.getElementById('ledit-appname'); if(ai)ai.value=s.appName||'';
-      var si=document.getElementById('ledit-appsub'); if(si)si.value=s.appSub||'';
-      var li=document.getElementById('ledit-logourl'); if(li)li.value=s.logoUrl||'';
-      var bi=document.getElementById('ledit-bgurl'); if(bi)bi.value=s.bgImg||'';
+      if(s.bgImg){
+        bgLayer.style.background='#02023a';
+        bgLayer.style.backgroundImage='url('+s.bgImg+')';
+        bgLayer.style.backgroundSize='cover';
+        bgLayer.style.backgroundPosition='center';
+        bgLayer.style.filter=s.bgDim?'brightness(0.45)':'';
+      } else if(s.bgGradient){
+        bgLayer.style.background=s.bgGradient;
+        bgLayer.style.backgroundImage='none';
+        bgLayer.style.filter='';
+      } else if(s.bgColor){
+        bgLayer.style.background=s.bgColor;
+        bgLayer.style.backgroundImage='none';
+        bgLayer.style.filter='';
+      }
     }
   };
 
   window.lobbyHandleLogoUpload = function(input){
     var file=input.files[0]; if(!file) return;
     var r=new FileReader();
-    r.onload=function(e){ document.getElementById('ledit-logourl').value=e.target.result; applyLobbyLogo(e.target.result); };
+    r.onload=function(e){
+      var data=e.target.result;
+      var ui=document.getElementById('ledit-logourl'); if(ui)ui.value=data;
+      var ei=document.getElementById('ledit-logoemoji'); if(ei)ei.value='';
+      applyLobbyLogo(data);
+      lobbyUpdateLogoPreview(data,'img');
+    };
     r.readAsDataURL(file);
   };
 
@@ -2072,18 +2192,152 @@ input:focus,select:focus,textarea:focus{
     var file=input.files[0]; if(!file) return;
     var r=new FileReader();
     r.onload=function(e){
-      document.getElementById('ledit-bgurl').value=e.target.result;
+      var data=e.target.result;
+      var bi=document.getElementById('ledit-bgurl'); if(bi)bi.value=data;
       var bg=document.getElementById('lobby-bg-layer');
-      if(bg) bg.style.backgroundImage='url('+e.target.result+')';
+      if(bg){ bg.style.backgroundImage='url('+data+')'; bg.style.backgroundSize='cover'; bg.style.backgroundPosition='center'; }
+      window._lobbyTempBgImg=data; window._lobbyTempBgColor='';
     };
     r.readAsDataURL(file);
   };
 
-  var _lobbyBgColors=['#02023a','#0e1a0e','#0e1219','#1a0e14','#1a1411','#141d2e','#2a1a0e','#0e1a1a','#1a0e1a','#1d1a0e'];
+  // ── Logo Preview Helper ────────────────────────────
+  function lobbyUpdateLogoPreview(val, type){
+    var prev=document.getElementById('ledit-logo-preview'); if(!prev) return;
+    if(type==='emoji'&&val){
+      prev.innerHTML=''; prev.style.fontSize='30px'; prev.textContent=val;
+    } else if(type==='img'&&val){
+      prev.style.fontSize=''; prev.innerHTML='<img src="'+val+'" style="width:100%;height:100%;object-fit:cover;border-radius:12px" onerror="this.parentNode.textContent=\'❌\'">';
+    } else {
+      prev.style.fontSize='26px'; prev.textContent='🎨';
+    }
+  }
+
+  window.lobbyPreviewLogoUrl = function(v){
+    if(!v){ lobbyUpdateLogoPreview('',''); return; }
+    applyLobbyLogo(v);
+    lobbyUpdateLogoPreview(v,'img');
+    var ei=document.getElementById('ledit-logoemoji'); if(ei)ei.value='';
+  };
+
+  window.lobbyPreviewEmoji = function(v){
+    if(!v){ lobbyUpdateLogoPreview('',''); return; }
+    // Apply emoji to lobby
+    ['lobby-logo-display','lobby-logo-display-2'].forEach(function(id){
+      var el=document.getElementById(id); if(!el) return;
+      var sz=id==='lobby-logo-display-2'?'52px':'68px', fsz=id==='lobby-logo-display-2'?'26px':'32px', mb=id==='lobby-logo-display-2'?'8':'12';
+      el.innerHTML='<div class="lobby-logo-emoji" style="width:'+sz+';height:'+sz+';font-size:'+fsz+';margin-bottom:'+mb+'px">'+v+'</div>';
+    });
+    lobbyUpdateLogoPreview(v,'emoji');
+    var li=document.getElementById('ledit-logourl'); if(li)li.value='';
+  };
+
+  window.lobbyResetLogo = function(){
+    ['lobby-logo-display','lobby-logo-display-2'].forEach(function(id){
+      var el=document.getElementById(id); if(!el) return;
+      var sz=id==='lobby-logo-display-2'?'52px':'68px', fsz=id==='lobby-logo-display-2'?'26px':'32px', mb=id==='lobby-logo-display-2'?'8':'12';
+      el.innerHTML='<div class="lobby-logo-emoji" style="width:'+sz+';height:'+sz+';font-size:'+fsz+';margin-bottom:'+mb+'px">🎨</div>';
+    });
+    var li=document.getElementById('ledit-logourl'); if(li)li.value='';
+    var ei=document.getElementById('ledit-logoemoji'); if(ei)ei.value='';
+    lobbyUpdateLogoPreview('','');
+  };
+
+  // ── Background Tab Switch ──────────────────────────
+  window.lobbyBgTab = function(tab){
+    ['color','img','gradient'].forEach(function(t){
+      var panel=document.getElementById('ledit-bg-panel-'+t);
+      var btn=document.getElementById('ledit-bg-tab-'+t);
+      if(panel) panel.style.display=(t===tab)?'block':'none';
+      if(btn){
+        if(t===tab){
+          btn.style.background='linear-gradient(135deg,#f5c842,#e6a000)';
+          btn.style.color='#1a1916';
+        } else {
+          btn.style.background='transparent';
+          btn.style.color='#6e6b64';
+        }
+      }
+    });
+    window._lobbyBgTabActive = tab;
+  };
+
+  // ── BG Color picker sync ──────────────────────────
+  window.lobbyBgHexInput = function(v){
+    if(/^#[0-9a-fA-F]{6}$/.test(v)){
+      var pk=document.getElementById('ledit-bgcolor-picker');
+      if(pk) pk.value=v;
+      lobbyPickBgColor(v);
+    }
+  };
+
+  window.lobbyPreviewBgUrl = function(v){
+    if(!v) return;
+    var bg=document.getElementById('lobby-bg-layer');
+    if(bg){ bg.style.backgroundImage='url('+v+')'; bg.style.backgroundSize='cover'; bg.style.backgroundPosition='center'; }
+    window._lobbyTempBgImg=v; window._lobbyTempBgColor='';
+  };
+
+  window.lobbyBgDimChange = function(checked){
+    window._lobbyBgDim = checked;
+    var bg=document.getElementById('lobby-bg-layer');
+    if(bg) bg.style.filter = checked ? 'brightness(0.45)' : '';
+  };
+
+  // ── Gradient ──────────────────────────────────────
+  var _gradPresets=[
+    {c1:'#02023a',c2:'#0f0e1f',d:'135deg'},
+    {c1:'#0a1628',c2:'#0d3b2b',d:'135deg'},
+    {c1:'#1a0028',c2:'#3a0a4a',d:'135deg'},
+    {c1:'#0a0a0a',c2:'#1a1a2e',d:'180deg'},
+    {c1:'#0d1b2a',c2:'#1b4332',d:'135deg'},
+    {c1:'#1a0a0a',c2:'#2d1b1b',d:'135deg'},
+    {c1:'#03045E',c2:'#0077B6',d:'135deg'},
+    {c1:'#0b3d0b',c2:'#1a5c1a',d:'135deg'},
+  ];
+
+  function renderGradPresets(){
+    var el=document.getElementById('ledit-grad-presets'); if(!el) return;
+    el.innerHTML=_gradPresets.map(function(g,i){
+      return '<div onclick="lobbyApplyGradPreset('+i+')" style="height:32px;border-radius:7px;cursor:pointer;border:2px solid transparent;background:linear-gradient('+g.d+','+g.c1+','+g.c2+')" title="Preset '+(i+1)+'"></div>';
+    }).join('');
+  }
+
+  window.lobbyApplyGradPreset = function(i){
+    var g=_gradPresets[i]; if(!g) return;
+    var c1=document.getElementById('ledit-grad-c1'), c2=document.getElementById('ledit-grad-c2');
+    var c1h=document.getElementById('ledit-grad-c1-hex'), c2h=document.getElementById('ledit-grad-c2-hex');
+    var d=document.getElementById('ledit-grad-dir');
+    if(c1){c1.value=g.c1;} if(c2){c2.value=g.c2;} if(d){d.value=g.d;}
+    if(c1h)c1h.value=g.c1; if(c2h)c2h.value=g.c2;
+    lobbyPreviewGradient();
+  };
+
+  window.lobbyGradHex = function(which, v){
+    if(/^#[0-9a-fA-F]{6}$/.test(v)){
+      var pk=document.getElementById('ledit-grad-'+which); if(pk) pk.value=v;
+      lobbyPreviewGradient();
+    }
+  };
+
+  window.lobbyPreviewGradient = function(){
+    var c1=document.getElementById('ledit-grad-c1'), c2=document.getElementById('ledit-grad-c2');
+    var d=document.getElementById('ledit-grad-dir');
+    if(!c1||!c2||!d) return;
+    var c1h=document.getElementById('ledit-grad-c1-hex'), c2h=document.getElementById('ledit-grad-c2-hex');
+    if(c1h)c1h.value=c1.value; if(c2h)c2h.value=c2.value;
+    var grad='linear-gradient('+d.value+','+c1.value+','+c2.value+')';
+    var prev=document.getElementById('ledit-grad-preview'); if(prev) prev.style.background=grad;
+    var bg=document.getElementById('lobby-bg-layer');
+    if(bg){ bg.style.background=grad; bg.style.backgroundImage='none'; }
+    window._lobbyTempBgGradient=grad; window._lobbyTempBgColor=''; window._lobbyTempBgImg='';
+  };
+
+  var _lobbyBgColors=['#02023a','#0e1a0e','#0e1219','#1a0e14','#1a1411','#141d2e','#2a1a0e','#0e1a1a','#1a0e1a','#1d1a0e','#0a0a14','#14000e','#001a14','#14100a','#0e0e0e'];
 
   function renderLobbyColorGrid(){
     var grid=document.getElementById('ledit-color-grid'); if(!grid) return;
-    var cur=getLobbySettings().bgColor||'#02023a';
+    var s=getLobbySettings(); var cur=s.bgColor||'#02023a';
     grid.innerHTML=_lobbyBgColors.map(function(c){
       return '<div class="lobby-color-swatch'+(c===cur?' sel':'')+'" style="background:'+c+'" onclick="lobbyPickBgColor(\''+c+'\')" title="'+c+'"></div>';
     }).join('');
@@ -2091,9 +2345,11 @@ input:focus,select:focus,textarea:focus{
 
   window.lobbyPickBgColor = function(c){
     var bg=document.getElementById('lobby-bg-layer');
-    if(bg){ bg.style.background=c; bg.style.backgroundImage='none'; }
-    document.getElementById('ledit-bgurl').value='';
-    window._lobbyTempBgColor=c; window._lobbyTempBgImg='';
+    if(bg){ bg.style.background=c; bg.style.backgroundImage='none'; bg.style.filter=''; }
+    var bi=document.getElementById('ledit-bgurl'); if(bi)bi.value='';
+    var pk=document.getElementById('ledit-bgcolor-picker'); if(pk)pk.value=c.length===7?c:'#02023a';
+    var hx=document.getElementById('ledit-bgcolor-hex'); if(hx)hx.value=c;
+    window._lobbyTempBgColor=c; window._lobbyTempBgImg=''; window._lobbyTempBgGradient='';
     Array.from(document.querySelectorAll('.lobby-color-swatch')).forEach(function(el){
       el.classList.toggle('sel', el.getAttribute('title')===c);
     });
@@ -2106,8 +2362,31 @@ input:focus,select:focus,textarea:focus{
       var ai=document.getElementById('ledit-appname'); if(ai)ai.value=s.appName||'';
       var si=document.getElementById('ledit-appsub'); if(si)si.value=s.appSub||'';
       var li=document.getElementById('ledit-logourl'); if(li)li.value=s.logoUrl||'';
+      var ei=document.getElementById('ledit-logoemoji'); if(ei)ei.value=s.logoEmoji||'';
       var bi=document.getElementById('ledit-bgurl'); if(bi)bi.value=s.bgImg||'';
+      var pk=document.getElementById('ledit-bgcolor-picker'); if(pk)pk.value=s.bgColor||'#02023a';
+      var hx=document.getElementById('ledit-bgcolor-hex'); if(hx)hx.value=s.bgColor||'#02023a';
+      // Update logo preview
+      if(s.logoUrl) lobbyUpdateLogoPreview(s.logoUrl,'img');
+      else if(s.logoEmoji) lobbyUpdateLogoPreview(s.logoEmoji,'emoji');
+      else lobbyUpdateLogoPreview('','');
+      // Gradient
+      if(s.bgGradient){
+        var c1=document.getElementById('ledit-grad-c1'), c2=document.getElementById('ledit-grad-c2');
+        var dv=document.getElementById('ledit-grad-dir');
+        if(s.bgGradC1&&c1){ c1.value=s.bgGradC1; var c1h=document.getElementById('ledit-grad-c1-hex'); if(c1h)c1h.value=s.bgGradC1; }
+        if(s.bgGradC2&&c2){ c2.value=s.bgGradC2; var c2h=document.getElementById('ledit-grad-c2-hex'); if(c2h)c2h.value=s.bgGradC2; }
+        if(s.bgGradDir&&dv) dv.value=s.bgGradDir;
+        var prev=document.getElementById('ledit-grad-preview');
+        if(prev) prev.style.background=s.bgGradient;
+      }
       renderLobbyColorGrid();
+      renderGradPresets();
+      // Determine active tab
+      var activeTab='color';
+      if(s.bgImg) activeTab='img';
+      else if(s.bgGradient) activeTab='gradient';
+      lobbyBgTab(activeTab);
     }
     panel.classList.toggle('open');
   };
@@ -2117,30 +2396,58 @@ input:focus,select:focus,textarea:focus{
     var an=document.getElementById('ledit-appname').value.trim();
     var as_=document.getElementById('ledit-appsub').value.trim();
     var lu=document.getElementById('ledit-logourl').value.trim();
+    var le=document.getElementById('ledit-logoemoji').value.trim();
     var bu=document.getElementById('ledit-bgurl').value.trim();
-    if(an) s.appName=an;
-    if(as_) s.appSub=as_;
-    if(lu) s.logoUrl=lu;
-    if(bu){ s.bgImg=bu; s.bgColor=''; }
-    else if(window._lobbyTempBgColor){ s.bgColor=window._lobbyTempBgColor; s.bgImg=''; }
+    var tab=window._lobbyBgTabActive||'color';
+    if(an) s.appName=an; else delete s.appName;
+    if(as_) s.appSub=as_; else delete s.appSub;
+    if(lu){ s.logoUrl=lu; delete s.logoEmoji; }
+    else if(le){ s.logoEmoji=le; delete s.logoUrl; }
+    if(tab==='img'){
+      if(bu){ s.bgImg=bu; delete s.bgColor; delete s.bgGradient; delete s.bgGradC1; delete s.bgGradC2; delete s.bgGradDir; }
+      s.bgDim=window._lobbyBgDim||false;
+    } else if(tab==='gradient'&&window._lobbyTempBgGradient){
+      var c1v=document.getElementById('ledit-grad-c1').value;
+      var c2v=document.getElementById('ledit-grad-c2').value;
+      var dv=document.getElementById('ledit-grad-dir').value;
+      s.bgGradient=window._lobbyTempBgGradient;
+      s.bgGradC1=c1v; s.bgGradC2=c2v; s.bgGradDir=dv;
+      delete s.bgImg; delete s.bgColor; delete s.bgDim;
+    } else if(tab==='color'&&window._lobbyTempBgColor){
+      s.bgColor=window._lobbyTempBgColor;
+      delete s.bgImg; delete s.bgGradient; delete s.bgGradC1; delete s.bgGradC2; delete s.bgGradDir;
+    }
     localStorage.setItem('dkv_lobby_settings',JSON.stringify(s));
     window.lobbyApplySettings();
-    window._lobbyTempBgColor=null;
+    window._lobbyTempBgColor=null; window._lobbyTempBgImg=null; window._lobbyTempBgGradient=null;
     if(typeof showToast==='function') showToast('Tampilan lobby disimpan! ✨');
     document.getElementById('lobby-edit-panel').classList.remove('open');
   };
 
   window.lobbyResetEdit = function(){
-    localStorage.removeItem('dkv_lobby_settings');
-    window._lobbyTempBgColor=null;
-    document.getElementById('lobby-app-name-display').textContent='DKV';
-    document.getElementById('lobby-app-sub-display').textContent='SMPN 1 Sumenep';
-    document.getElementById('lobby-logo-display').innerHTML='<div class="lobby-logo-emoji">🎨</div>';
-    var bgLayer=document.getElementById('lobby-bg-layer');
-    if(bgLayer){ bgLayer.style.background='#02023a'; bgLayer.style.backgroundImage='none'; }
-    if(typeof showToast==='function') showToast('Tampilan lobby direset.');
-    document.getElementById('lobby-edit-panel').classList.remove('open');
+    if(typeof showConfirm==='function'){
+      showConfirm('Reset semua pengaturan lobby ke default?', function(){
+        _doLobbyReset();
+      }); return;
+    }
+    _doLobbyReset();
   };
+
+  function _doLobbyReset(){
+    localStorage.removeItem('dkv_lobby_settings');
+    window._lobbyTempBgColor=null; window._lobbyTempBgGradient=null; window._lobbyTempBgImg=null;
+    ['lobby-app-name-display','lobby-app-name-display-2'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent='DKV';});
+    var sub=document.getElementById('lobby-app-sub-display'); if(sub) sub.textContent='SMPN 1 Sumenep';
+    ['lobby-logo-display','lobby-logo-display-2'].forEach(function(id){
+      var el=document.getElementById(id); if(!el) return;
+      var sz=id==='lobby-logo-display-2'?'52px':'68px', fsz=id==='lobby-logo-display-2'?'26px':'32px', mb=id==='lobby-logo-display-2'?'8':'12';
+      el.innerHTML='<div class="lobby-logo-emoji" style="width:'+sz+';height:'+sz+';font-size:'+fsz+';margin-bottom:'+mb+'px">🎨</div>';
+    });
+    var bgLayer=document.getElementById('lobby-bg-layer');
+    if(bgLayer){ bgLayer.style.background='linear-gradient(135deg,#0b0918 0%,#0f0e1f 40%,#150b24 70%,#080d1a 100%)'; bgLayer.style.backgroundImage='none'; bgLayer.style.filter=''; }
+    if(typeof showToast==='function') showToast('Tampilan lobby direset ke default.');
+    document.getElementById('lobby-edit-panel').classList.remove('open');
+  }
 
   // ── Init saat DOM siap ──────────────────────────────
   document.addEventListener('DOMContentLoaded', function(){
@@ -2157,14 +2464,14 @@ input:focus,select:focus,textarea:focus{
 </script>
 
 <!-- ═══════ RUANG UJIAN OVERLAY ═══════ -->
-<div id="ujian-screen" style="display:none;position:fixed;inset:0;z-index:9998;background:#02023a;overflow-y:auto;font-family:'Space Grotesk',sans-serif">
+<div id="ujian-screen" style="display:none;position:fixed;inset:0;z-index:9998;background:linear-gradient(180deg,#e8f9fd 0%,#CAF0F8 20%,#90E0EF 55%,#00B4D8 85%,#0077B6 100%);background-attachment:fixed;overflow-y:auto;font-family:'Space Grotesk',sans-serif">
 
   <!-- Header Ujian -->
-  <div style="position:sticky;top:0;z-index:10;background:rgba(15,14,20,.92);backdrop-filter:blur(10px);border-bottom:1px solid #2e2c29;padding:14px 20px;display:flex;align-items:center;justify-content:space-between">
-    <div style="font-size:15px;font-weight:700;color:#f0ede8">📝 Ruang Ujian</div>
+  <div style="position:sticky;top:0;z-index:10;background:rgba(255,255,255,0.25);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-bottom:1.5px solid rgba(255,255,255,0.4);padding:14px 20px;display:flex;align-items:center;justify-content:space-between">
+    <div style="font-size:15px;font-weight:700;color:#03045E;font-weight:800">📝 Ruang Ujian</div>
     <div style="display:flex;align-items:center;gap:10px">
-      <div id="ujian-timer-badge" style="display:none;font-family:monospace;font-size:13px;padding:5px 12px;border-radius:99px;background:#1a1916;border:1px solid #2e2c29;color:#f0ede8"></div>
-      <button id="ujian-back-btn" type="button" style="font-size:12px;font-weight:600;padding:6px 14px;border-radius:99px;border:1px solid #2e2c29;background:transparent;color:#9e9b95;cursor:pointer;font-family:'Space Grotesk',sans-serif">← Kembali</button>
+      <div id="ujian-timer-badge" style="display:none;font-family:monospace;font-size:13px;padding:5px 12px;border-radius:99px;background:rgba(255,255,255,0.2);border:1.5px solid rgba(0,119,182,0.25);color:#03045E"></div>
+      <button id="ujian-back-btn" type="button" style="font-size:12px;font-weight:600;padding:6px 14px;border-radius:99px;border:1.5px solid rgba(0,119,182,0.3);background:rgba(255,255,255,0.2);color:#0077B6;cursor:pointer;font-family:'Space Grotesk',sans-serif;backdrop-filter:blur(8px)">← Kembali</button>
     </div>
   </div>
 
@@ -2172,38 +2479,38 @@ input:focus,select:focus,textarea:focus{
 
     <!-- STATE: belum login -->
     <div id="ujian-login-state">
-      <div style="background:#1a1916;border:1.5px solid #2e2c29;border-radius:16px;padding:28px 24px;max-width:380px;margin:40px auto">
+      <div style="background:rgba(255,255,255,0.25);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1.5px solid rgba(255,255,255,0.5);border-radius:16px;padding:28px 24px;max-width:380px;margin:40px auto">
         <div style="text-align:center;margin-bottom:20px">
           <div style="font-size:28px;margin-bottom:8px">📝</div>
-          <div style="font-size:17px;font-weight:700;color:#f0ede8">Masuk ke Ruang Ujian</div>
-          <div style="font-size:12px;color:#6e6b64;margin-top:4px">Pilih jenis akun untuk melanjutkan</div>
+          <div style="font-size:17px;font-weight:700;color:#03045E">Masuk ke Ruang Ujian</div>
+          <div style="font-size:12px;color:#0077B6;margin-top:4px">Pilih jenis akun untuk melanjutkan</div>
         </div>
         <!-- Tab Siswa / Pembina -->
         <div id="ujian-gate-tab-row" style="display:flex;gap:8px;margin-bottom:20px">
-          <button id="ujian-gate-tab-siswa" type="button" onclick="ujianGateSetTab('siswa')" style="flex:1;padding:9px;border-radius:10px;border:1.5px solid #e8774a;background:#e8774a;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s">Siswa</button>
-          <button id="ujian-gate-tab-pembina" type="button" onclick="ujianGateSetTab('pembina')" style="flex:1;padding:9px;border-radius:10px;border:1.5px solid #2e2c29;background:transparent;color:#9e9b95;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s">Pembina</button>
+          <button id="ujian-gate-tab-siswa" type="button" onclick="ujianGateSetTab('siswa')" style="flex:1;padding:9px;border-radius:10px;border:1.5px solid #0077B6;background:linear-gradient(135deg,#03045E,#0077B6,#00B4D8);color:#fff;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 12px rgba(0,119,182,0.3)">Siswa</button>
+          <button id="ujian-gate-tab-pembina" type="button" onclick="ujianGateSetTab('pembina')" style="flex:1;padding:9px;border-radius:10px;border:1.5px solid rgba(0,119,182,0.25);background:transparent;color:#0077B6;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s">Pembina</button>
         </div>
 
         <!-- Form Siswa -->
         <div id="ujian-gate-form-siswa">
           <!-- Sudah login (carry-over dari ekskul) -->
           <div id="ujian-gate-siswa-logged" style="display:none;text-align:center;padding:8px 0 16px">
-            <div style="font-size:13px;color:#e8774a;font-weight:700;margin-bottom:4px">✅ Sudah login sebagai</div>
-            <div id="ujian-gate-siswa-logged-name" style="font-size:15px;font-weight:700;color:#f0ede8"></div>
-            <button type="button" onclick="ujianGateEnterAsSiswa()" style="margin-top:14px;width:100%;padding:12px;border-radius:11px;border:none;background:#e8774a;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Masuk Sekarang →</button>
-            <button type="button" onclick="ujianGateDoLogoutSiswa()" style="margin-top:8px;width:100%;padding:9px;border-radius:11px;border:none;background:transparent;color:#888;font-family:'Space Grotesk',sans-serif;font-size:12px;cursor:pointer">Ganti Akun</button>
+            <div style="font-size:13px;color:#0077B6;font-weight:700;margin-bottom:4px">✅ Sudah login sebagai</div>
+            <div id="ujian-gate-siswa-logged-name" style="font-size:15px;font-weight:700;color:#03045E"></div>
+            <button type="button" onclick="ujianGateEnterAsSiswa()" style="margin-top:14px;width:100%;padding:12px;border-radius:11px;border:none;background:linear-gradient(135deg,#03045E,#0077B6,#00B4D8);color:#fff;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(0,119,182,0.4)">Masuk Sekarang →</button>
+            <button type="button" onclick="ujianGateDoLogoutSiswa()" style="margin-top:8px;width:100%;padding:9px;border-radius:11px;border:none;background:rgba(255,255,255,0.15);border-radius:11px;border:1px solid rgba(0,119,182,0.15);color:#0077B6;font-family:'Space Grotesk',sans-serif;font-size:12px;cursor:pointer">Ganti Akun</button>
           </div>
           <!-- Form login siswa -->
           <div id="ujian-gate-siswa-form">
-            <label style="font-size:11px;font-weight:600;color:#9e9b95;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px">Username</label>
-            <input id="ujian-username" type="text" placeholder="Username kamu..." autocomplete="off" autocapitalize="none" style="width:100%;padding:10px 12px;border-radius:9px;border:1.5px solid #2e2c29;background:#02023a;color:#f0ede8;font-family:'Space Grotesk',sans-serif;font-size:14px;outline:none;box-sizing:border-box;margin-bottom:12px">
-            <label style="font-size:11px;font-weight:600;color:#9e9b95;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px">Password</label>
+            <label style="font-size:11px;font-weight:600;color:#0077B6;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;color:#0077B6">Username</label>
+            <input id="ujian-username" type="text" placeholder="Username kamu..." autocomplete="off" autocapitalize="none" style="width:100%;padding:10px 12px;border-radius:9px;border:1.5px solid rgba(0,119,182,0.25);background:rgba(255,255,255,0.6);color:#03045E;font-family:'Space Grotesk',sans-serif;font-size:14px;outline:none;box-sizing:border-box;margin-bottom:12px">
+            <label style="font-size:11px;font-weight:600;color:#0077B6;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;color:#0077B6">Password</label>
             <div style="position:relative;margin-bottom:6px">
-              <input id="ujian-password" type="password" placeholder="Password kamu..." autocomplete="current-password" style="width:100%;padding:10px 36px 10px 12px;border-radius:9px;border:1.5px solid #2e2c29;background:#02023a;color:#f0ede8;font-family:'Space Grotesk',sans-serif;font-size:14px;outline:none;box-sizing:border-box">
+              <input id="ujian-password" type="password" placeholder="Password kamu..." autocomplete="current-password" style="width:100%;padding:10px 36px 10px 12px;border-radius:9px;border:1.5px solid rgba(0,119,182,0.25);background:rgba(255,255,255,0.6);color:#03045E;font-family:'Space Grotesk',sans-serif;font-size:14px;outline:none;box-sizing:border-box">
               <button type="button" id="ujian-gate-sl-eye" onclick="ujianGateToggleEye('ujian-password','ujian-gate-sl-eye')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:14px">👁</button>
             </div>
             <div id="ujian-login-err" style="font-size:12px;color:#e05252;min-height:16px;margin-bottom:10px"></div>
-            <button id="ujian-login-btn" type="button" style="width:100%;padding:12px;border-radius:11px;border:none;background:#e8774a;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Masuk →</button>
+            <button id="ujian-login-btn" type="button" style="width:100%;padding:12px;border-radius:11px;border:none;background:linear-gradient(135deg,#03045E,#0077B6,#00B4D8);color:#fff;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(0,119,182,0.4)">Masuk →</button>
           </div>
         </div>
 
@@ -2212,18 +2519,18 @@ input:focus,select:focus,textarea:focus{
           <!-- Sudah login sebagai pembina -->
           <div id="ujian-gate-pembina-logged" style="display:none;text-align:center;padding:8px 0 16px">
             <div style="font-size:13px;color:#f5c842;font-weight:700;margin-bottom:4px">⚙️ Sudah login sebagai Pembina</div>
-            <button type="button" onclick="ujianGateEnterAsPembina()" style="margin-top:14px;width:100%;padding:12px;border-radius:11px;border:none;background:linear-gradient(135deg,#f5c842,#e8774a);color:#02023a;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Masuk → Kelola Ujian</button>
-            <button type="button" onclick="ujianGateDoLogoutPembina()" style="margin-top:8px;width:100%;padding:9px;border-radius:11px;border:none;background:transparent;color:#888;font-family:'Space Grotesk',sans-serif;font-size:12px;cursor:pointer">Logout Pembina</button>
+            <button type="button" onclick="ujianGateEnterAsPembina()" style="margin-top:14px;width:100%;padding:12px;border-radius:11px;border:none;background:linear-gradient(135deg,#03045E,#0077B6,#00B4D8);color:#fff;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Masuk → Kelola Ujian</button>
+            <button type="button" onclick="ujianGateDoLogoutPembina()" style="margin-top:8px;width:100%;padding:9px;border-radius:11px;border:none;background:rgba(255,255,255,0.15);border-radius:11px;border:1px solid rgba(0,119,182,0.15);color:#0077B6;font-family:'Space Grotesk',sans-serif;font-size:12px;cursor:pointer">Logout Pembina</button>
           </div>
           <!-- Form password pembina -->
           <div id="ujian-gate-pembina-form">
-            <label style="font-size:11px;font-weight:600;color:#9e9b95;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px">Password Pembina</label>
+            <label style="font-size:11px;font-weight:600;color:#0077B6;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;color:#0077B6">Password Pembina</label>
             <div style="position:relative;margin-bottom:6px">
-              <input id="ujian-gate-pw-input" type="password" placeholder="Password pembina..." autocomplete="current-password" style="width:100%;padding:10px 36px 10px 12px;border-radius:9px;border:1.5px solid #2e2c29;background:#02023a;color:#f0ede8;font-family:'Space Grotesk',sans-serif;font-size:14px;outline:none;box-sizing:border-box">
+              <input id="ujian-gate-pw-input" type="password" placeholder="Password pembina..." autocomplete="current-password" style="width:100%;padding:10px 36px 10px 12px;border-radius:9px;border:1.5px solid rgba(0,119,182,0.25);background:rgba(255,255,255,0.6);color:#03045E;font-family:'Space Grotesk',sans-serif;font-size:14px;outline:none;box-sizing:border-box">
               <button type="button" id="ujian-gate-pw-eye" onclick="ujianGateToggleEye('ujian-gate-pw-input','ujian-gate-pw-eye')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:14px">👁</button>
             </div>
             <div id="ujian-gate-pw-err" style="font-size:12px;color:#e05252;min-height:16px;margin-bottom:10px"></div>
-            <button id="ujian-gate-pw-submit" type="button" style="width:100%;padding:12px;border-radius:11px;border:none;background:linear-gradient(135deg,#f5c842,#e8774a);color:#02023a;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Masuk →</button>
+            <button id="ujian-gate-pw-submit" type="button" style="width:100%;padding:12px;border-radius:11px;border:none;background:linear-gradient(135deg,#03045E,#0077B6,#00B4D8);color:#fff;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Masuk →</button>
           </div>
         </div>
 
@@ -2233,11 +2540,11 @@ input:focus,select:focus,textarea:focus{
     <!-- STATE: sudah login — daftar ujian -->
     <div id="ujian-list-state" style="display:none">
       <div style="margin-bottom:20px">
-        <div style="font-size:20px;font-weight:700;color:#f0ede8" id="ujian-welcome-txt">Halo!</div>
-        <div style="font-size:13px;color:#6e6b64;margin-top:4px">Pilih ujian yang ingin dikerjakan</div>
+        <div style="font-size:20px;font-weight:700;color:#03045E" id="ujian-welcome-txt">Halo!</div>
+        <div style="font-size:13px;color:#0077B6;margin-top:4px">Pilih ujian yang ingin dikerjakan</div>
       </div>
       <div id="ujian-cards-wrap" style="display:flex;flex-direction:column;gap:12px"></div>
-      <div id="ujian-empty" style="display:none;text-align:center;padding:60px 0;color:#3e3c38;font-size:14px">Belum ada ujian tersedia 📭</div>
+      <div id="ujian-empty" style="display:none;text-align:center;padding:60px 0;color:#0077B6;font-size:14px">Belum ada ujian tersedia 📭</div>
 
     </div>
 
@@ -2245,19 +2552,19 @@ input:focus,select:focus,textarea:focus{
     <div id="ujian-kerja-state" style="display:none">
       <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
         <div>
-          <div style="font-size:18px;font-weight:700;color:#f0ede8" id="ujian-kerja-title"></div>
-          <div style="font-size:12px;color:#6e6b64;margin-top:3px" id="ujian-kerja-meta"></div>
+          <div style="font-size:18px;font-weight:700;color:#03045E" id="ujian-kerja-title"></div>
+          <div style="font-size:12px;color:#0077B6;margin-top:3px" id="ujian-kerja-meta"></div>
         </div>
-        <div id="ujian-progress-txt" style="font-size:12px;color:#9e9b95"></div>
+        <div id="ujian-progress-txt" style="font-size:12px;color:#0077B6"></div>
       </div>
       <!-- Progress bar -->
-      <div style="height:4px;background:#2e2c29;border-radius:99px;margin-bottom:28px;overflow:hidden">
-        <div id="ujian-progress-bar" style="height:100%;background:#e8774a;border-radius:99px;transition:width .3s;width:0%"></div>
+      <div style="height:4px;background:rgba(0,119,182,0.15);border-radius:99px;margin-bottom:28px;overflow:hidden">
+        <div id="ujian-progress-bar" style="height:100%;background:linear-gradient(90deg,#03045E,#0077B6,#00B4D8);border-radius:99px;box-shadow:0 0 8px rgba(0,180,216,0.5);transition:width .3s;width:0%"></div>
       </div>
       <div id="ujian-soal-wrap"></div>
       <div style="margin-top:28px;display:flex;gap:10px;flex-wrap:wrap">
-        <button id="ujian-prev-btn" type="button" style="padding:10px 20px;border-radius:8px;border:1.5px solid #2e2c29;background:transparent;color:#9e9b95;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;cursor:pointer">← Sebelumnya</button>
-        <button id="ujian-next-btn" type="button" style="padding:10px 20px;border-radius:8px;border:none;background:#e8774a;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer">Selanjutnya →</button>
+        <button id="ujian-prev-btn" type="button" style="padding:10px 20px;border-radius:8px;border:1.5px solid rgba(0,119,182,0.3);background:rgba(255,255,255,0.25);backdrop-filter:blur(8px);color:#0077B6;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;cursor:pointer">← Sebelumnya</button>
+        <button id="ujian-next-btn" type="button" style="padding:10px 20px;border-radius:8px;border:none;background:linear-gradient(135deg,#03045E,#0077B6,#00B4D8);color:#fff;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 3px 10px rgba(0,119,182,0.4)">Selanjutnya →</button>
         <button id="ujian-submit-btn" type="button" style="display:none;padding:10px 24px;border-radius:8px;border:none;background:#4caf7d;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer">✓ Kumpulkan</button>
       </div>
     </div>
@@ -2265,42 +2572,42 @@ input:focus,select:focus,textarea:focus{
     <!-- STATE: hasil ujian -->
     <div id="ujian-hasil-state" style="display:none;text-align:center;padding:40px 0">
       <div style="font-size:52px;margin-bottom:16px" id="ujian-hasil-emoji">🎉</div>
-      <div style="font-size:22px;font-weight:700;color:#f0ede8;margin-bottom:8px" id="ujian-hasil-nilai"></div>
-      <div style="font-size:13px;color:#6e6b64;margin-bottom:28px" id="ujian-hasil-detail"></div>
-      <div style="background:#1a1916;border:1px solid #2e2c29;border-radius:12px;padding:20px;max-width:360px;margin:0 auto 24px;text-align:left" id="ujian-hasil-breakdown"></div>
-      <button id="ujian-selesai-btn" type="button" style="padding:11px 28px;border-radius:8px;border:none;background:#e8774a;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Kembali ke Daftar Ujian</button>
+      <div style="font-size:22px;font-weight:700;color:#03045E;margin-bottom:8px" id="ujian-hasil-nilai"></div>
+      <div style="font-size:13px;color:#0077B6;margin-bottom:28px" id="ujian-hasil-detail"></div>
+      <div style="background:rgba(255,255,255,0.2);border:1.5px solid rgba(0,119,182,0.2);border-radius:12px;padding:20px;max-width:360px;margin:0 auto 24px;text-align:left" id="ujian-hasil-breakdown"></div>
+      <button id="ujian-selesai-btn" type="button" style="padding:11px 28px;border-radius:8px;border:none;background:linear-gradient(135deg,#03045E,#0077B6,#00B4D8);color:#fff;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(0,119,182,0.4)">Kembali ke Daftar Ujian</button>
     </div>
 
     <!-- STATE: Pembina — kelola ujian -->
     <div id="ujian-admin-state" style="display:none">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
         <div>
-          <div style="font-size:20px;font-weight:700;color:#f0ede8">Panel Pembina</div>
-          <div style="font-size:12px;color:#6e6b64;margin-top:3px">Kelola ujian & lihat hasil siswa</div>
+          <div style="font-size:20px;font-weight:700;color:#03045E">Panel Pembina</div>
+          <div style="font-size:12px;color:#0077B6;margin-top:3px">Kelola ujian & lihat hasil siswa</div>
         </div>
-        <button id="ujian-buat-btn" type="button" style="padding:9px 18px;border-radius:8px;border:none;background:#f5c842;color:#0f0e0c;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer">+ Buat Ujian</button>
+        <button id="ujian-buat-btn" type="button" style="padding:9px 18px;border-radius:8px;border:none;background:linear-gradient(135deg,#03045E,#0077B6);color:#fff;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer">+ Buat Ujian</button>
       </div>
 
       <!-- Form buat ujian -->
-      <div id="ujian-form-wrap" style="display:none;background:#1a1916;border:1.5px solid #2e2c29;border-radius:14px;padding:24px;margin-bottom:20px">
-        <div style="font-size:15px;font-weight:700;color:#f0ede8;margin-bottom:16px" id="ujian-form-title-label">Buat Ujian Baru</div>
-        <label style="font-size:11px;font-weight:600;color:#9e9b95;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px">Judul Ujian</label>
-        <input id="uf-judul" type="text" placeholder="cth: Ujian Teori DKV Semester 1" style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid #2e2c29;background:#242220;color:#f0ede8;font-family:'Space Grotesk',sans-serif;font-size:13px;margin-bottom:12px">
-        <label style="font-size:11px;font-weight:600;color:#9e9b95;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px">Durasi (menit)</label>
-        <input id="uf-durasi" type="number" placeholder="cth: 60" min="1" max="300" style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid #2e2c29;background:#242220;color:#f0ede8;font-family:'Space Grotesk',sans-serif;font-size:13px;margin-bottom:12px">
-        <label style="font-size:11px;font-weight:600;color:#9e9b95;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px">Deskripsi (opsional)</label>
-        <input id="uf-desc" type="text" placeholder="Keterangan tambahan..." style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid #2e2c29;background:#242220;color:#f0ede8;font-family:'Space Grotesk',sans-serif;font-size:13px;margin-bottom:16px">
+      <div id="ujian-form-wrap" style="display:none;background:rgba(255,255,255,0.25);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1.5px solid rgba(255,255,255,0.45);border-radius:14px;padding:24px;margin-bottom:20px">
+        <div style="font-size:15px;font-weight:700;color:#03045E;margin-bottom:16px" id="ujian-form-title-label">Buat Ujian Baru</div>
+        <label style="font-size:11px;font-weight:600;color:#0077B6;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;color:#0077B6">Judul Ujian</label>
+        <input id="uf-judul" type="text" placeholder="cth: Ujian Teori DKV Semester 1" style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid rgba(0,119,182,0.25);background:rgba(255,255,255,0.6);color:#03045E;font-family:'Space Grotesk',sans-serif;font-size:13px;margin-bottom:12px">
+        <label style="font-size:11px;font-weight:600;color:#0077B6;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;color:#0077B6">Durasi (menit)</label>
+        <input id="uf-durasi" type="number" placeholder="cth: 60" min="1" max="300" style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid rgba(0,119,182,0.25);background:rgba(255,255,255,0.6);color:#03045E;font-family:'Space Grotesk',sans-serif;font-size:13px;margin-bottom:12px">
+        <label style="font-size:11px;font-weight:600;color:#0077B6;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;color:#0077B6">Deskripsi (opsional)</label>
+        <input id="uf-desc" type="text" placeholder="Keterangan tambahan..." style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid rgba(0,119,182,0.25);background:rgba(255,255,255,0.6);color:#03045E;font-family:'Space Grotesk',sans-serif;font-size:13px;margin-bottom:16px">
 
         <!-- Soal builder -->
-        <div style="font-size:13px;font-weight:700;color:#f0ede8;margin-bottom:10px">Daftar Soal <span id="uf-soal-count" style="color:#6e6b64;font-weight:400">(0 soal)</span></div>
+        <div style="font-size:13px;font-weight:700;color:#03045E;margin-bottom:10px">Daftar Soal <span id="uf-soal-count" style="color:#0077B6;font-weight:400">(0 soal)</span></div>
         <div id="uf-soal-list" style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px"></div>
-        <button id="uf-add-pg" type="button" style="padding:7px 14px;border-radius:7px;border:1.5px dashed #2e2c29;background:transparent;color:#9e9b95;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;cursor:pointer;margin-right:8px">+ Pilihan Ganda</button>
-        <button id="uf-add-essay" type="button" style="padding:7px 14px;border-radius:7px;border:1.5px dashed #2e2c29;background:transparent;color:#9e9b95;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;cursor:pointer">+ Essay</button>
+        <button id="uf-add-pg" type="button" style="padding:7px 14px;border-radius:7px;border:1.5px dashed rgba(0,119,182,0.4);background:rgba(255,255,255,0.15);color:#0077B6;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;cursor:pointer;margin-right:8px">+ Pilihan Ganda</button>
+        <button id="uf-add-essay" type="button" style="padding:7px 14px;border-radius:7px;border:1.5px dashed rgba(0,119,182,0.4);background:rgba(255,255,255,0.15);color:#0077B6;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;cursor:pointer">+ Essay</button>
 
         <div id="uf-err" style="font-size:12px;color:#e05252;min-height:16px;margin-top:10px"></div>
         <div style="display:flex;gap:10px;margin-top:16px">
-          <button id="uf-save-btn" type="button" style="padding:10px 22px;border-radius:8px;border:none;background:#f5c842;color:#0f0e0c;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer">Simpan Ujian</button>
-          <button id="uf-cancel-btn" type="button" style="padding:10px 18px;border-radius:8px;border:1.5px solid #2e2c29;background:transparent;color:#9e9b95;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;cursor:pointer">Batal</button>
+          <button id="uf-save-btn" type="button" style="padding:10px 22px;border-radius:8px;border:none;background:linear-gradient(135deg,#03045E,#0077B6);color:#fff;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer">Simpan Ujian</button>
+          <button id="uf-cancel-btn" type="button" style="padding:10px 18px;border-radius:8px;border:1.5px solid rgba(0,119,182,0.3);background:rgba(255,255,255,0.2);color:#0077B6;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;cursor:pointer">Batal</button>
         </div>
       </div>
 
@@ -2308,10 +2615,10 @@ input:focus,select:focus,textarea:focus{
       <div id="ujian-admin-list" style="display:flex;flex-direction:column;gap:12px"></div>
 
       <!-- Panel nilai siswa -->
-      <div id="ujian-nilai-panel" style="display:none;margin-top:20px;background:#1a1916;border:1.5px solid #2e2c29;border-radius:14px;padding:20px">
+      <div id="ujian-nilai-panel" style="display:none;margin-top:20px;background:rgba(255,255,255,0.25);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1.5px solid rgba(255,255,255,0.45);border-radius:14px;padding:20px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-          <div style="font-size:14px;font-weight:700;color:#f0ede8" id="nilai-panel-title">Hasil Ujian</div>
-          <button id="nilai-panel-close" type="button" style="font-size:12px;color:#6e6b64;background:none;border:none;cursor:pointer">✕ Tutup</button>
+          <div style="font-size:14px;font-weight:700;color:#03045E" id="nilai-panel-title">Hasil Ujian</div>
+          <button id="nilai-panel-close" type="button" style="font-size:12px;color:#0077B6;background:none;border:none;cursor:pointer">✕ Tutup</button>
         </div>
         <div id="nilai-panel-table"></div>
       </div>
@@ -2322,6 +2629,8 @@ input:focus,select:focus,textarea:focus{
   </div><!-- end padding wrap -->
 </div>
 <!-- ═══════ END RUANG UJIAN ═══════ -->
+
+
 
 <!-- ═══════ NOTIFIKASI PANEL ═══════ -->
 <div class="notif-panel-overlay" id="notif-panel-overlay"></div>
@@ -10639,7 +10948,7 @@ document.addEventListener('click', function(e){
     if(!window.pembina && !window.loggedInStudentId && !sessionStorage.getItem('dkv_student_sess')){
       // Belum login — highlight form login
       var form = document.getElementById('lobby-form-siswa');
-      if(form){ form.style.boxShadow='0 0 0 2px #e8774a'; setTimeout(function(){ form.style.boxShadow=''; },1200); }
+      if(form){ form.style.boxShadow='0 0 0 2px #0077B6'; setTimeout(function(){ form.style.boxShadow=''; },1200); }
       var inp = document.getElementById('lobby-sl-username');
       if(inp) inp.focus();
       if(typeof showToast==='function') showToast('Login dulu untuk masuk ke ruangan 🔑');
@@ -10690,12 +10999,12 @@ document.addEventListener('click', function(e){
     var tPemb  = document.getElementById('ujian-gate-tab-pembina');
     if(tab==='siswa'){
       fSiswa.style.display=''; fPemb.style.display='none';
-      tSiswa.style.background='#e8774a'; tSiswa.style.borderColor='#e8774a'; tSiswa.style.color='#fff';
+      tSiswa.style.background='linear-gradient(135deg,#03045E,#0077B6,#00B4D8)'; tSiswa.style.borderColor='#0077B6'; tSiswa.style.color='#fff';
       tPemb.style.background='transparent'; tPemb.style.borderColor='#2e2c29'; tPemb.style.color='#9e9b95';
       _updateUjianGateSiswaView();
     } else {
       fSiswa.style.display='none'; fPemb.style.display='';
-      tPemb.style.background='linear-gradient(135deg,#f5c842,#e8774a)'; tPemb.style.borderColor='#f5c842'; tPemb.style.color='#02023a';
+      tPemb.style.background='linear-gradient(135deg,#03045E,#0077B6,#00B4D8)'; tPemb.style.borderColor='#0077B6'; tPemb.style.color='#fff';
       tSiswa.style.background='transparent'; tSiswa.style.borderColor='#2e2c29'; tSiswa.style.color='#9e9b95';
       _updateUjianGatePembinaView();
     }
@@ -10909,15 +11218,15 @@ document.addEventListener('click', function(e){
             nilaiTxt='Nilai PG: '+np+(ne!==null?' | Essay: '+ne:'');
           }
           var card=document.createElement('div');
-          card.style.cssText='background:#1a1916;border:1.5px solid '+(sudah?'#4caf7d':'#2e2c29')+';border-radius:14px;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;';
+          card.style.cssText='background:rgba(255,255,255,0.2);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1.5px solid '+(sudah?'#4caf7d':'rgba(255,255,255,0.45)')+';border-radius:14px;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 4px 24px rgba(0,119,182,.12);';
           card.innerHTML='<div>'+
-            '<div style="font-size:15px;font-weight:700;color:#f0ede8;margin-bottom:4px">'+esc(u.judul||'Ujian')+'</div>'+
+            '<div style="font-size:15px;font-weight:700;color:#03045E;margin-bottom:4px">'+esc(u.judul||'Ujian')+'</div>'+
             '<div style="font-size:12px;color:#6e6b64">'+totalSoal+' soal &bull; '+esc(u.durasi||60)+' menit'+(u.desc?' &bull; '+esc(u.desc):'')+'</div>'+
             (nilaiTxt?'<div style="font-size:11px;color:#4caf7d;margin-top:4px">'+esc(nilaiTxt)+'</div>':'')+
             '</div>'+
             (sudah
               ?'<div style="font-size:11px;font-weight:700;color:#4caf7d;white-space:nowrap">✓ Selesai</div>'
-              :'<button data-uid="'+uid+'" class="mulai-ujian-btn" type="button" style="padding:8px 16px;border-radius:8px;border:none;background:#e8774a;color:#fff;font-family:\'Space Grotesk\',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">Mulai →</button>'
+              :'<button data-uid="'+uid+'" class="mulai-ujian-btn" type="button" style="padding:8px 16px;border-radius:8px;border:none;background:linear-gradient(135deg,#03045E,#0077B6,#00B4D8);color:#fff;font-family:\'Space Grotesk\',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:0 3px 10px rgba(0,119,182,.35)">Mulai →</button>'
             );
           wrap.appendChild(card);
         });
@@ -10976,23 +11285,23 @@ document.addEventListener('click', function(e){
     var s=soal[idx];
     var wrap=document.getElementById('ujian-soal-wrap');
     var saved=_ujianState.jawaban[idx];
-    var html='<div style="background:#1a1916;border:1.5px solid #2e2c29;border-radius:14px;padding:22px">';
+    var html='<div style="background:rgba(255,255,255,0.25);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1.5px solid rgba(255,255,255,0.45);border-radius:14px;padding:22px;box-shadow:0 4px 24px rgba(0,119,182,.1)">';
     html+='<div style="font-size:11px;font-weight:600;color:#6e6b64;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">';
     html+=s.type==='pg'?'📋 Pilihan Ganda':'✏️ Essay';
     html+='</div>';
-    html+='<div style="font-size:15px;color:#f0ede8;line-height:1.6;margin-bottom:18px">'+esc(s.pertanyaan)+'</div>';
+    html+='<div style="font-size:15px;color:#03045E;font-weight:500;line-height:1.6;margin-bottom:18px">'+esc(s.pertanyaan)+'</div>';
     if(s.type==='pg'){
       var opsi=s.opsi||[];
       opsi.forEach(function(o,i){
         var huruf=String.fromCharCode(65+i);
         var checked=saved===huruf;
-        html+='<label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;border:1.5px solid '+(checked?'#e8774a':'#2e2c29')+';background:'+(checked?'rgba(232,119,74,.08)':'transparent')+';cursor:pointer;margin-bottom:8px;transition:.15s">';
-        html+='<input type="radio" name="pg-soal" value="'+huruf+'" style="accent-color:#e8774a"'+(checked?' checked':'')+'>';
-        html+='<span style="font-size:13px;color:#f0ede8"><b style="color:#e8774a">'+huruf+'.</b> '+esc(o)+'</span>';
+        html+='<label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;border:1.5px solid '+(checked?'#0077B6':'rgba(0,119,182,0.2)')+';background:'+(checked?'rgba(0,119,182,.1)':'rgba(255,255,255,0.15)')+';cursor:pointer;margin-bottom:8px;transition:.15s">';
+        html+='<input type="radio" name="pg-soal" value="'+huruf+'" style="accent-color:#0077B6"'+(checked?' checked':'')+'>';
+        html+='<span style="font-size:13px;color:#03045E"><b style="color:#0077B6">'+huruf+'.</b> '+esc(o)+'</span>';
         html+='</label>';
       });
     } else {
-      html+='<textarea id="essay-input" placeholder="Tulis jawabanmu di sini..." rows="5" style="width:100%;padding:10px 12px;border-radius:8px;border:1.5px solid #2e2c29;background:#242220;color:#f0ede8;font-family:\'Space Grotesk\',sans-serif;font-size:13px;resize:vertical;line-height:1.6">'+esc(saved||'')+'</textarea>';
+      html+='<textarea id="essay-input" placeholder="Tulis jawabanmu di sini..." rows="5" style="width:100%;padding:10px 12px;border-radius:8px;border:1.5px solid rgba(0,119,182,0.25);background:rgba(255,255,255,0.6);color:#03045E;font-family:\'Space Grotesk\',sans-serif;font-size:13px;resize:vertical;line-height:1.6">'+esc(saved||'')+'</textarea>';
     }
     html+='</div>';
     wrap.innerHTML=html;
@@ -11064,10 +11373,10 @@ document.addEventListener('click', function(e){
       nilaiPG!==null?'Nilai Pilihan Ganda: '+nilaiPG+'/100':'Ujian Selesai';
     document.getElementById('ujian-hasil-detail').textContent=
       habisWaktu?'Waktu habis — jawaban otomatis dikumpulkan.':'Jawaban berhasil dikumpulkan!';
-    var breakdown='<div style="font-size:12px;color:#9e9b95;margin-bottom:8px;font-weight:600">Ringkasan</div>';
-    breakdown+='<div style="font-size:13px;color:#f0ede8;margin-bottom:4px">PG benar: '+pgBenar+' / '+pgTotal+'</div>';
+    var breakdown='<div style="font-size:12px;color:#0077B6;margin-bottom:8px;font-weight:600">Ringkasan</div>';
+    breakdown+='<div style="font-size:13px;color:#03045E;margin-bottom:4px">PG benar: '+pgBenar+' / '+pgTotal+'</div>';
     if(Object.keys(essayJawaban).length){
-      breakdown+='<div style="font-size:13px;color:#f0ede8">Essay: menunggu penilaian pembina</div>';
+      breakdown+='<div style="font-size:13px;color:#0077B6">Essay: menunggu penilaian pembina</div>';
     }
     document.getElementById('ujian-hasil-breakdown').innerHTML=breakdown;
   }
@@ -11094,16 +11403,16 @@ document.addEventListener('click', function(e){
       keys.forEach(function(uid){
         var u=data[uid];
         var card=document.createElement('div');
-        card.style.cssText='background:#1a1916;border:1.5px solid #2e2c29;border-radius:14px;padding:18px 20px;';
+        card.style.cssText='background:rgba(255,255,255,0.2);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1.5px solid rgba(255,255,255,0.4);border-radius:14px;padding:18px 20px;box-shadow:0 4px 24px rgba(0,119,182,.1);';
         card.innerHTML=
           '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">'+
           '<div>'+
-            '<div style="font-size:15px;font-weight:700;color:#f0ede8;margin-bottom:3px">'+esc(u.judul||'Ujian')+'</div>'+
+            '<div style="font-size:15px;font-weight:700;color:#03045E;margin-bottom:3px">'+esc(u.judul||'Ujian')+'</div>'+
             '<div style="font-size:12px;color:#6e6b64">'+(u.soal||[]).length+' soal &bull; '+esc(u.durasi||60)+' menit</div>'+
           '</div>'+
           '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
-            '<button data-uid="'+uid+'" class="admin-lihat-nilai" type="button" style="padding:7px 13px;border-radius:7px;border:1.5px solid #2e2c29;background:transparent;color:#9e9b95;font-family:\'Space Grotesk\',sans-serif;font-size:12px;font-weight:600;cursor:pointer">📊 Nilai</button>'+
-            '<button data-uid="'+uid+'" data-judul="'+esc(u.judul)+'" class="admin-edit-ujian" type="button" style="padding:7px 13px;border-radius:7px;border:1.5px solid #2e2c29;background:transparent;color:#9e9b95;font-family:\'Space Grotesk\',sans-serif;font-size:12px;font-weight:600;cursor:pointer">✏️ Edit</button>'+
+            '<button data-uid="'+uid+'" class="admin-lihat-nilai" type="button" style="padding:7px 13px;border-radius:7px;border:1.5px solid rgba(0,119,182,0.3);background:rgba(255,255,255,0.2);color:#0077B6;font-family:\'Space Grotesk\',sans-serif;font-size:12px;font-weight:600;cursor:pointer">📊 Nilai</button>'+
+            '<button data-uid="'+uid+'" data-judul="'+esc(u.judul)+'" class="admin-edit-ujian" type="button" style="padding:7px 13px;border-radius:7px;border:1.5px solid rgba(0,119,182,0.3);background:rgba(255,255,255,0.2);color:#0077B6;font-family:\'Space Grotesk\',sans-serif;font-size:12px;font-weight:600;cursor:pointer">✏️ Edit</button>'+
             '<button data-uid="'+uid+'" class="admin-hapus-ujian" type="button" style="padding:7px 13px;border-radius:7px;border:1.5px solid #3e2020;background:transparent;color:#e05252;font-family:\'Space Grotesk\',sans-serif;font-size:12px;font-weight:600;cursor:pointer">🗑 Hapus</button>'+
           '</div>'+
           '</div>';
@@ -11145,13 +11454,13 @@ document.addEventListener('click', function(e){
         var npg=j.nilai_pg!==null&&j.nilai_pg!==undefined?j.nilai_pg:'—';
         var ne=j.nilai_essay!==null&&j.nilai_essay!==undefined?j.nilai_essay:'Belum dinilai';
         rows+='<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #2e2c29;gap:10px;flex-wrap:wrap">>';
-        rows+='<div><div style="font-size:13px;font-weight:600;color:#f0ede8">'+esc(s.name)+'</div>';
+        rows+='<div><div style="font-size:13px;font-weight:600;color:#03045E">'+esc(s.name)+'</div>';
         rows+='<div style="font-size:11px;color:#6e6b64">'+tgl+'</div></div>';
         rows+='<div style="display:flex;gap:10px;align-items:center">';
         rows+='<span style="font-size:12px;color:#4caf7d;font-weight:700">PG: '+npg+'</span>';
-        rows+='<span style="font-size:12px;color:#9e9b95">Essay: ';
+        rows+='<span style="font-size:12px;color:#0077B6">Essay: ';
         if(j.nilai_essay===null||j.nilai_essay===undefined){
-          rows+='<input type="number" min="0" max="100" placeholder="0-100" data-sid="'+s.id+'" data-uid="'+uid+'" class="essay-nilai-input" style="width:64px;padding:3px 7px;border-radius:6px;border:1px solid #2e2c29;background:#242220;color:#f0ede8;font-size:12px;font-family:\'Space Grotesk\',sans-serif"> ';
+          rows+='<input type="number" min="0" max="100" placeholder="0-100" data-sid="'+s.id+'" data-uid="'+uid+'" class="essay-nilai-input" style="width:64px;padding:3px 7px;border-radius:6px;border:1px solid rgba(0,119,182,0.3);background:rgba(255,255,255,0.6);color:#03045E;font-size:12px;font-family:\'Space Grotesk\',sans-serif"> ';
           rows+='<button data-sid="'+s.id+'" data-uid="'+uid+'" class="essay-nilai-save" style="padding:3px 9px;border-radius:6px;border:none;background:#f5c842;color:#0f0e0c;font-size:11px;font-weight:700;cursor:pointer;font-family:\'Space Grotesk\',sans-serif">Simpan</button>';
         } else {
           rows+=ne;
@@ -11220,19 +11529,19 @@ document.addEventListener('click', function(e){
     list.innerHTML='';
     _soalFormItems.forEach(function(s,i){
       var div=document.createElement('div');
-      div.style.cssText='background:#242220;border:1.5px solid #2e2c29;border-radius:10px;padding:14px;';
+      div.style.cssText='background:rgba(255,255,255,0.2);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1.5px solid rgba(0,119,182,0.25);border-radius:10px;padding:14px;';
       var html='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">';
-      html+='<span style="font-size:11px;font-weight:700;color:#9e9b95;text-transform:uppercase;letter-spacing:.05em">Soal '+(i+1)+' — '+(s.type==='pg'?'Pilihan Ganda':'Essay')+'</span>';
+      html+='<span style="font-size:11px;font-weight:700;color:#0077B6;text-transform:uppercase;letter-spacing:.05em">Soal '+(i+1)+' — '+(s.type==='pg'?'Pilihan Ganda':'Essay')+'</span>';
       html+='<button data-i="'+i+'" class="hapus-soal-btn" type="button" style="font-size:11px;color:#e05252;background:none;border:none;cursor:pointer">✕ Hapus</button>';
       html+='</div>';
-      html+='<textarea data-i="'+i+'" class="sf-pertanyaan" placeholder="Pertanyaan..." rows="2" style="width:100%;padding:8px 10px;border-radius:7px;border:1px solid #3e3c38;background:#1a1916;color:#f0ede8;font-family:\'Space Grotesk\',sans-serif;font-size:12px;resize:vertical;margin-bottom:8px">'+esc(s.pertanyaan)+'</textarea>';
+      html+='<textarea data-i="'+i+'" class="sf-pertanyaan" placeholder="Pertanyaan..." rows="2" style="width:100%;padding:8px 10px;border-radius:7px;border:1px solid rgba(0,119,182,0.25);background:rgba(255,255,255,0.6);color:#03045E;font-family:\'Space Grotesk\',sans-serif;font-size:12px;resize:vertical;margin-bottom:8px">'+esc(s.pertanyaan)+'</textarea>';
       if(s.type==='pg'){
         s.opsi.forEach(function(o,j){
           var huruf=String.fromCharCode(65+j);
           html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">';
-          html+='<span style="font-size:12px;font-weight:700;color:#e8774a;width:14px">'+huruf+'.</span>';
-          html+='<input type="text" data-i="'+i+'" data-j="'+j+'" class="sf-opsi" value="'+esc(o)+'" placeholder="Pilihan '+huruf+'..." style="flex:1;padding:7px 10px;border-radius:7px;border:1px solid #3e3c38;background:#1a1916;color:#f0ede8;font-family:\'Space Grotesk\',sans-serif;font-size:12px">';
-          html+='<label style="font-size:11px;color:#9e9b95;display:flex;align-items:center;gap:4px;cursor:pointer"><input type="radio" name="kunci-'+i+'" value="'+huruf+'"'+(s.kunci===huruf?' checked':'')+' style="accent-color:#4caf7d"> Kunci</label>';
+          html+='<span style="font-size:12px;font-weight:700;color:#0077B6;width:14px">'+huruf+'.</span>';
+          html+='<input type="text" data-i="'+i+'" data-j="'+j+'" class="sf-opsi" value="'+esc(o)+'" placeholder="Pilihan '+huruf+'..." style="flex:1;padding:7px 10px;border-radius:7px;border:1px solid rgba(0,119,182,0.2);background:rgba(255,255,255,0.6);color:#03045E;font-family:\'Space Grotesk\',sans-serif;font-size:12px">';
+          html+='<label style="font-size:11px;color:#0077B6;display:flex;align-items:center;gap:4px;cursor:pointer"><input type="radio" name="kunci-'+i+'" value="'+huruf+'"'+(s.kunci===huruf?' checked':'')+' style="accent-color:#4caf7d"> Kunci</label>';
           html+='</div>';
         });
       }
