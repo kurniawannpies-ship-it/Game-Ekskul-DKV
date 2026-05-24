@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0077B6">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
 <title>Ekskul DKV SMPN 1 Sumenep — Quest Board</title>
 <!-- Preconnect: percepat koneksi awal ke domain eksternal -->
 <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
@@ -230,6 +234,8 @@ body{
   min-height:100vh;
   padding:20px 14px 80px;
   -webkit-text-size-adjust:100%;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
 }
 .container{max-width:720px;margin:0 auto}
 
@@ -468,12 +474,12 @@ body::before {
   content: '';
   position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background:
-    radial-gradient(ellipse at 20% 10%, rgba(255,255,255,.7) 0%, transparent 40%),
-    radial-gradient(ellipse at 80% 90%, rgba(0,180,216,.2) 0%, transparent 40%);
+    radial-gradient(ellipse at 20% 10%, rgba(255,255,255,.25) 0%, transparent 40%),
+    radial-gradient(ellipse at 80% 90%, rgba(0,180,216,.15) 0%, transparent 40%);
 }
 .container { position: relative; z-index: 1; }
 
-/* World card — deeper glass */
+/* World card — referensi utama glass */
 .world-card {
   background: rgba(255,255,255,.18) !important;
   backdrop-filter: blur(20px) saturate(160%) !important;
@@ -483,27 +489,27 @@ body::before {
   transition: all .3s cubic-bezier(.34,1.2,.64,1) !important;
 }
 .world-card:hover {
-  background: rgba(255,255,255,.28) !important;
-  box-shadow: 0 12px 40px rgba(0,119,182,.3), 0 4px 12px rgba(3,4,94,.1), inset 0 1px 0 rgba(255,255,255,.65) !important;
-  transform: translateY(-3px) !important;
+  background: rgba(255,255,255,.26) !important;
+  box-shadow: 0 10px 36px rgba(0,119,182,.22), 0 2px 8px rgba(3,4,94,.08), inset 0 1px 0 rgba(255,255,255,.6) !important;
+  transform: translateY(-2px) !important;
 }
 
-/* HUD glass */
+/* HUD — sama dengan world-card */
 .hud {
-  background: rgba(255,255,255,.22) !important;
-  backdrop-filter: blur(28px) saturate(200%) !important;
-  -webkit-backdrop-filter: blur(28px) saturate(200%) !important;
-  border: 1.5px solid rgba(255,255,255,.5) !important;
-  box-shadow: 0 4px 24px rgba(0,119,182,.12), inset 0 1px 0 rgba(255,255,255,.65) !important;
+  background: rgba(255,255,255,.18) !important;
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+  border: 1.5px solid rgba(255,255,255,.4) !important;
+  box-shadow: 0 4px 24px rgba(0,119,182,.15), inset 0 1px 0 rgba(255,255,255,.5) !important;
 }
 
-/* Tab bar glass */
+/* Tab bar — sama */
 .tab-bar {
-  background: rgba(255,255,255,.2) !important;
-  backdrop-filter: blur(20px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-  border: 1.5px solid rgba(255,255,255,.45) !important;
-  box-shadow: 0 4px 20px rgba(0,119,182,.1), inset 0 1px 0 rgba(255,255,255,.5) !important;
+  background: rgba(255,255,255,.18) !important;
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+  border: 1.5px solid rgba(255,255,255,.4) !important;
+  box-shadow: 0 4px 24px rgba(0,119,182,.15), inset 0 1px 0 rgba(255,255,255,.5) !important;
 }
 
 /* Active tab button */
@@ -513,25 +519,26 @@ body::before {
   box-shadow: 0 4px 16px rgba(3,4,94,.5), 0 0 12px rgba(0,119,182,.3) !important;
 }
 
-/* Siswa cards glass */
+/* Siswa cards — sama */
 .siswa-card {
-  background: rgba(255,255,255,.2) !important;
-  backdrop-filter: blur(16px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(16px) saturate(160%) !important;
+  background: rgba(255,255,255,.18) !important;
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
   border: 1.5px solid rgba(255,255,255,.4) !important;
-  box-shadow: 0 4px 20px rgba(0,119,182,.12), inset 0 1px 0 rgba(255,255,255,.5) !important;
+  box-shadow: 0 4px 24px rgba(0,119,182,.15), inset 0 1px 0 rgba(255,255,255,.5) !important;
 }
 .siswa-card:hover {
-  box-shadow: 0 8px 32px rgba(0,119,182,.25), inset 0 1px 0 rgba(255,255,255,.65) !important;
+  background: rgba(255,255,255,.26) !important;
+  box-shadow: 0 10px 36px rgba(0,119,182,.22), inset 0 1px 0 rgba(255,255,255,.6) !important;
 }
 
-/* Modal box glass */
+/* Modal box — sedikit lebih solid karena layered di atas konten */
 .modal-box {
-  background: rgba(202,240,248,.35) !important;
-  backdrop-filter: blur(32px) saturate(200%) !important;
-  -webkit-backdrop-filter: blur(32px) saturate(200%) !important;
-  border: 1.5px solid rgba(255,255,255,.55) !important;
-  box-shadow: 0 20px 60px rgba(3,4,94,.25), inset 0 1px 0 rgba(255,255,255,.7) !important;
+  background: rgba(255,255,255,.22) !important;
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+  border: 1.5px solid rgba(255,255,255,.4) !important;
+  box-shadow: 0 20px 60px rgba(3,4,94,.2), inset 0 1px 0 rgba(255,255,255,.55) !important;
 }
 .modal-title { color: #03045E !important; }
 .modal-sub { color: #0077B6 !important; }
@@ -560,7 +567,7 @@ body::before {
   transform: translateY(-2px) !important;
 }
 
-/* Top title color = #03045E per user request */
+/* Top title */
 .top-title {
   background: none !important;
   -webkit-background-clip: unset !important;
@@ -577,69 +584,65 @@ body::before {
   box-shadow: 0 0 12px rgba(0,180,216,.7) !important;
 }
 
-/* Student dashboard bar glass */
+/* Student dashboard bar — sama dengan world-card */
 .student-dashboard-bar {
-  background: rgba(255,255,255,.22) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
-  border: 1.5px solid rgba(255,255,255,.45) !important;
+  background: rgba(255,255,255,.18) !important;
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+  border: 1.5px solid rgba(255,255,255,.4) !important;
+  box-shadow: 0 4px 24px rgba(0,119,182,.15), inset 0 1px 0 rgba(255,255,255,.5) !important;
   color: #03045E !important;
 }
 
-/* Notif panel glass */
+/* Notif & pending panel */
 .notif-panel {
-  background: rgba(202,240,248,.85) !important;
-  backdrop-filter: blur(24px) !important;
-  -webkit-backdrop-filter: blur(24px) !important;
+  background: rgba(255,255,255,.22) !important;
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
 }
-
-/* Pending panel glass */
 .pending-panel {
-  background: rgba(202,240,248,.9) !important;
-  backdrop-filter: blur(24px) !important;
-  -webkit-backdrop-filter: blur(24px) !important;
+  background: rgba(255,255,255,.22) !important;
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
 }
 
 /* Edit panel */
 .edit-panel {
-  background: rgba(144,224,239,.2) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
-  border: 2px solid rgba(0,119,182,.3) !important;
+  background: rgba(255,255,255,.18) !important;
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+  border: 2px solid rgba(255,255,255,.4) !important;
 }
 
-/* Skill filter chips */
+/* Skill filter chips — sama */
 .skill-filter-btn {
-  background: rgba(255,255,255,.25) !important;
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-  border: 1.5px solid rgba(255,255,255,.45) !important;
+  background: rgba(255,255,255,.18) !important;
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+  border: 1.5px solid rgba(255,255,255,.4) !important;
   color: #03045E !important;
   box-shadow: inset 0 1px 0 rgba(255,255,255,.5) !important;
 }
 .skill-filter-btn:hover {
-  background: rgba(255,255,255,.4) !important;
-  transform: translateY(-2px) !important;
-  box-shadow: 0 4px 16px rgba(0,119,182,.2), inset 0 1px 0 rgba(255,255,255,.6) !important;
+  background: rgba(255,255,255,.3) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 16px rgba(0,119,182,.15), inset 0 1px 0 rgba(255,255,255,.6) !important;
 }
 .skill-filter-btn.active {
   box-shadow: 0 4px 16px rgba(3,4,94,.35), inset 0 1px 0 rgba(255,255,255,.3) !important;
 }
 
-/* Quest items */
+/* Quest items hover */
 .quest-item:hover {
-  background: rgba(255,255,255,.25) !important;
+  background: rgba(255,255,255,.2) !important;
   border-color: rgba(255,255,255,.4) !important;
-  backdrop-filter: blur(8px) !important;
 }
 
 /* XP pill */
 .xp-pill {
-  background: rgba(255,255,255,.3) !important;
+  background: rgba(255,255,255,.25) !important;
   color: #03045E !important;
-  border: 1px solid rgba(255,255,255,.5) !important;
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(255,255,255,.45) !important;
 }
 
 /* Quest done check */
@@ -1541,654 +1544,202 @@ input:focus,select:focus,textarea:focus{
 }
 .pers-btn.active{border-color:#90E0EF;background:linear-gradient(135deg,#90E0EF,#f0a0d4);color:#fff;box-shadow:0 3px 10px rgba(0,180,216,.3)}
 
-/* ════════════════════════════════════════════════════════════════
-   📱 MOBILE GLASSMORPHISM OPTIMIZATION — FULL SUITE
-   Targeted: viewport ≤ 480px (primary) & ≤ 768px (tablet)
-════════════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   📱 MOBILE OPTIMIZATION — Comprehensive
+══════════════════════════════════════════════ */
 
-/* ── 1. GLOBAL MOBILE BASE ───────────────────────────────── */
-@media (max-width: 768px) {
-  :root {
-    --radius-card: 18px;
-    --radius-btn: 12px;
-  }
-
-  /* Reduce blur intensity on mobile GPU — prevents jank */
-  * {
-    -webkit-backdrop-filter: none !important;
-    backdrop-filter: none !important;
-  }
-
-  /* Re-enable blur only on key glass elements (performance budget) */
-  .hud,
-  .tab-bar,
-  .modal-box,
-  .reg-modal-box,
-  .toast,
-  #ekskul-gate-overlay > div,
-  .confirm-box,
-  .pending-panel,
-  .notif-panel,
-  .char-modal-box,
-  .pubprof-box,
-  .klp-modal-box {
-    -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
-    backdrop-filter: blur(20px) saturate(160%) !important;
-  }
-
-  body {
-    padding: 14px 10px 100px;
-    /* Smoother scroll on iOS */
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior-y: contain;
-  }
-
-  .container {
-    padding: 0;
-  }
+/* ── Safe area & base ── */
+body {
+  padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  padding-top: env(safe-area-inset-top);
+  padding-left: max(14px, env(safe-area-inset-left));
+  padding-right: max(14px, env(safe-area-inset-right));
 }
 
-/* ── 2. TYPOGRAPHY & SPACING ─────────────────────────────── */
-@media (max-width: 480px) {
-  .top-title {
-    font-size: 18px !important;
-    letter-spacing: -.025em !important;
-  }
+/* ── Touch targets minimum 44px ── */
+.tab-btn,
+.skill-filter-btn,
+.notif-bell-btn,
+.edit-btn,
+.btn-save,
+.btn-cancel,
+.btn-danger,
+.quest-check {
+  min-height: 44px;
+}
+.tab-btn { padding: 10px 12px; }
+.skill-filter-btn { padding: 10px 16px; min-height: 40px; }
+.notif-bell-btn, .admin-bell-btn { width: 40px; height: 40px; border-radius: 12px; }
+.quest-check { width: 26px; height: 26px; border-radius: 8px; }
 
-  .top-bar {
-    margin-bottom: 12px;
-    gap: 6px;
-  }
+/* ── Top bar: wrap gracefully on small screens ── */
+.top-bar { gap: 6px; margin-bottom: 12px; }
+.top-title { font-size: 18px; line-height: 1.1; }
+.top-title-wrap { gap: 8px; }
+.app-logo, .app-logo-placeholder { width: 32px; height: 32px; }
+.top-actions { gap: 6px; }
+.sync-badge { font-size: 10px; padding: 4px 8px; }
 
-  /* Tighter top actions on small screens */
-  .top-actions {
-    gap: 6px;
-    flex-wrap: nowrap;
-  }
-  .edit-btn {
-    font-size: 11px;
-    padding: 7px 12px;
-  }
+/* ── HUD stats: 3-column on mobile ── */
+.hud { padding: 12px 14px; border-radius: 16px; margin-bottom: 14px; }
+.hud-stat { padding: 7px 10px; min-width: 52px; border-radius: 10px; }
+.hud-stat-num { font-size: 16px; }
+.hud-stat-lbl { font-size: 8px; letter-spacing: .04em; }
+
+/* ── Tab bar: sticky on scroll ── */
+.tab-bar {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 100;
+  margin-bottom: 14px;
+  gap: 3px;
+  padding: 4px;
+}
+.tab-btn { font-size: 11px; padding: 9px 8px; border-radius: 10px; }
+
+/* ── Skill filter: horizontal scroll, no wrap ── */
+.skill-filter {
+  flex-wrap: nowrap !important;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+  margin-bottom: 14px;
+  gap: 5px;
+}
+.skill-filter::-webkit-scrollbar { display: none; }
+.skill-filter-btn { flex-shrink: 0; white-space: nowrap; font-size: 11px; padding: 8px 13px; }
+
+/* ── World cards: more compact ── */
+.world-card { border-radius: 16px; }
+.world-header { padding: 12px 14px; gap: 10px; }
+.world-icon { width: 40px; height: 40px; border-radius: 12px; font-size: 19px; }
+.world-name { font-size: 13px; }
+.world-sub { font-size: 10px; }
+.world-badge { font-size: 8px; padding: 2px 8px; }
+.mini-bar-bg { width: 44px; }
+.worlds { gap: 10px; }
+
+/* ── Quest items: larger tap area ── */
+.quest-item { padding: 11px 12px; margin-bottom: 6px; border-radius: 12px; gap: 11px; }
+.qt { font-size: 12.5px; line-height: 1.45; }
+.qd { font-size: 10.5px; }
+.xp-pill { font-size: 9px; padding: 3px 8px; }
+
+/* ── Student dashboard bar ── */
+.student-dashboard-bar { padding: 11px 13px; border-radius: 14px; margin-bottom: 12px; }
+.sdb-char { width: 44px; height: 44px; }
+.sdb-name { font-size: 13px; }
+
+/* ── Toast: above safe area ── */
+.toast { bottom: calc(28px + env(safe-area-inset-bottom)); font-size: 12px; padding: 10px 18px; max-width: 88vw; }
+
+/* ── Back to lobby button ── */
+#back-to-lobby-btn {
+  font-size: 11px !important;
+  padding: 7px 12px !important;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
 }
 
-/* ── 3. HUD — COMPACT MOBILE ─────────────────────────────── */
-@media (max-width: 480px) {
-  .hud {
-    padding: 11px 13px !important;
-    gap: 10px !important;
-    border-radius: 18px !important;
-    margin-bottom: 14px !important;
-  }
-
-  .hud-lvl {
-    width: 42px !important;
-    height: 42px !important;
-    font-size: 17px !important;
-    border-radius: 13px !important;
-  }
-
-  .hud-stat {
-    padding: 7px 9px !important;
-    min-width: 50px !important;
-  }
-
-  .hud-stat-num {
-    font-size: 16px !important;
-  }
-
-  .hud-stat-lbl {
-    font-size: 8px !important;
-  }
-
-  .xp-label {
-    font-size: 9px !important;
-  }
+/* ── Modals: full bottom sheet on mobile ── */
+.modal-box {
+  border-radius: 24px 24px 0 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 20px 16px 28px !important;
+  padding-bottom: calc(20px + env(safe-area-inset-bottom)) !important;
+}
+.modal-overlay {
+  align-items: flex-end !important;
 }
 
-/* ── 4. TAB BAR — TOUCH-FRIENDLY ─────────────────────────── */
-@media (max-width: 480px) {
-  .tab-bar {
-    padding: 4px !important;
-    border-radius: 14px !important;
-    margin-bottom: 14px !important;
-    /* Snap scrolling for overflow tabs */
-    scroll-snap-type: x mandatory;
-    -webkit-scroll-snap-type: x mandatory;
-  }
-
-  .tab-btn {
-    font-size: 11px !important;
-    padding: 10px 8px !important;
-    border-radius: 10px !important;
-    /* Minimum touch target 44px */
-    min-height: 40px;
-    scroll-snap-align: start;
-    /* Prevent text wrapping causing height jumps */
-    white-space: nowrap;
-  }
-
-  .tab-btn.active {
-    box-shadow: 0 3px 12px rgba(3,4,94,.4), 0 0 8px rgba(0,180,216,.2) !important;
-  }
+/* ── Ujian screen: mobile layout ── */
+#ujian-screen > div[style*="max-width"] {
+  padding: 16px 14px !important;
 }
 
-/* ── 5. WORLD / QUEST CARDS ──────────────────────────────── */
-@media (max-width: 480px) {
-  .worlds {
-    gap: 10px !important;
-  }
-
-  .world-card {
-    border-radius: 18px !important;
-    /* Disable transform hover — use active instead on touch */
-    transition: none !important;
-  }
-
-  /* Touch feedback instead of hover */
-  .world-card:active {
-    transform: scale(.985) !important;
-    transition: transform .12s ease !important;
-  }
-
-  .world-header {
-    padding: 13px 14px !important;
-    gap: 10px !important;
-    /* Minimum 48px touch target */
-    min-height: 56px;
-  }
-
-  .world-icon {
-    width: 38px !important;
-    height: 38px !important;
-    font-size: 19px !important;
-    border-radius: 12px !important;
-  }
-
-  .world-name {
-    font-size: 13px !important;
-  }
-
-  .world-sub {
-    font-size: 10px !important;
-  }
-
-  .world-badge {
-    font-size: 8px !important;
-    padding: 2px 7px !important;
-  }
-
-  /* Mini progress bar — hide label on tiny screens */
-  .world-prog-num {
-    display: none;
-  }
-
-  .mini-bar-bg {
-    width: 44px !important;
-  }
-
-  /* Quest items — larger touch target */
-  .quest-item {
-    padding: 12px 10px !important;
-    gap: 12px !important;
-    border-radius: 11px !important;
-  }
-
-  .quest-check {
-    width: 26px !important;
-    height: 26px !important;
-    border-radius: 8px !important;
-    /* Visible tap area */
-    margin: -4px 0;
-  }
-
-  .qt {
-    font-size: 13px !important;
-    line-height: 1.45 !important;
-  }
-
-  .qd {
-    font-size: 11px !important;
-  }
-
-  .xp-pill {
-    font-size: 9px !important;
-    padding: 3px 8px !important;
-  }
-
-  .quests {
-    padding: 0 8px 12px !important;
-  }
+/* ── Lobby edit panel: full width on mobile ── */
+.lobby-edit-panel {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 16px 14px 24px !important;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom)) !important;
 }
 
-/* ── 6. SKILL FILTER CHIPS ───────────────────────────────── */
-@media (max-width: 480px) {
-  .skill-filter {
-    gap: 5px !important;
-    margin-bottom: 12px !important;
-    /* Horizontal scroll, no wrap */
-    flex-wrap: nowrap !important;
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch !important;
-    scrollbar-width: none !important;
-    padding-bottom: 3px;
-    /* Fade edges */
-    mask-image: linear-gradient(to right, transparent 0, black 8px, black calc(100% - 8px), transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, transparent 0, black 8px, black calc(100% - 8px), transparent 100%);
-  }
+/* ── Rank tabs: horizontal scroll ── */
+#rank-cat-tabs {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  flex-wrap: nowrap !important;
+}
+#rank-cat-tabs::-webkit-scrollbar { display: none; }
+#rank-cat-tabs button { flex-shrink: 0; white-space: nowrap; min-height: 38px; font-size: 11px; }
 
-  .skill-filter::-webkit-scrollbar {
-    display: none !important;
-  }
+/* ── Char modal ── */
+.char-modal-box { max-height: 92vh; }
+.char-stage { padding: 16px 14px; }
+.char-tab-btn { font-size: 12px; padding: 9px 6px; min-height: 40px; }
+.char-body-section { padding: 12px 14px; }
 
-  .skill-filter-btn {
-    font-size: 11px !important;
-    padding: 8px 13px !important;
-    flex-shrink: 0 !important;
-    /* Minimum touch height */
-    min-height: 36px;
-    /* Disable hover lift on touch */
-    transform: none !important;
-  }
+/* ── Siswa cat stats: 2 col grid ── */
+.siswa-cat-stat { min-width: 72px; padding: 8px; font-size: 11px; }
 
-  .skill-filter-btn:active {
-    transform: scale(.94) !important;
-    transition: transform .1s !important;
-  }
-
-  .skill-dot {
-    width: 7px !important;
-    height: 7px !important;
-  }
+/* ── HUD level badge ── */
+.hud-lvl {
+  min-width: 36px;
+  height: 36px;
+  font-size: 16px;
+  border-radius: 12px;
 }
 
-/* ── 7. MODALS — BOTTOM SHEET STYLE ─────────────────────── */
-@media (max-width: 480px) {
-  /* Center modals with full-width feel */
+/* ── Active states for touch (replaces :hover) ── */
+.world-card:active { transform: scale(0.98) !important; }
+.tab-btn:active { opacity: 0.8; }
+.skill-filter-btn:active { transform: translateY(0) scale(0.96); }
+.quest-item:active { background: rgba(0,119,182,.08) !important; }
+.btn-save:active, .btn-cancel:active { transform: scale(0.97); }
+
+/* ── Quests container padding ── */
+.quests { padding: 0 10px 10px; }
+
+/* ── Ujian overlay: full screen, no margin ── */
+#ujian-screen {
+  padding: env(safe-area-inset-top) 0 0 !important;
+}
+
+/* ── Large screen override ── */
+@media (min-width: 480px) {
+  .tab-btn { font-size: 12px; padding: 9px 10px; }
+  .skill-filter-btn { font-size: 12px; padding: 8px 15px; }
+  .top-title { font-size: 20px; }
+  .world-icon { width: 42px; height: 42px; }
+  .hud-stat-num { font-size: 18px; }
+  .hud-stat-lbl { font-size: 9px; }
+  .lobby-edit-panel { width: 310px !important; }
   .modal-box {
-    width: calc(100% - 24px) !important;
-    max-width: 100% !important;
-    border-radius: 22px !important;
-    padding: 24px 18px 20px !important;
-    max-height: 90vh !important;
+    border-radius: 24px !important;
+    width: 90% !important;
+    max-width: 480px !important;
   }
-
-  .modal-title {
-    font-size: 16px !important;
-  }
-
-  .modal-sub {
-    font-size: 12px !important;
-    margin-bottom: 16px !important;
-  }
-
-  .modal-btn {
-    padding: 14px !important;
-    font-size: 15px !important;
-    border-radius: 13px !important;
-    /* Easier thumb reach */
-    min-height: 48px;
-  }
-
-  .modal-input-wrap input {
-    font-size: 16px !important; /* prevent iOS zoom */
-    padding: 13px 44px 13px 14px !important;
-    border-radius: 11px !important;
-  }
-
-  /* Registration modal */
-  .reg-modal-box {
-    border-radius: 22px !important;
-    padding: 22px 16px 20px !important;
-    width: calc(100% - 20px) !important;
-    max-height: 92vh !important;
-  }
-
-  .reg-title {
-    font-size: 17px !important;
-  }
-
-  .reg-btn {
-    min-height: 48px !important;
-    font-size: 14px !important;
-  }
-
-  .reg-field input,
-  .reg-field select {
-    font-size: 16px !important;
-    padding: 12px 13px !important;
-  }
-
-  /* Confirm dialog */
-  .confirm-box {
-    border-radius: 20px !important;
-    padding: 22px 18px 18px !important;
-    width: calc(100% - 40px) !important;
-  }
-
-  .confirm-actions button {
-    min-height: 46px !important;
-    font-size: 14px !important;
-  }
+  .modal-overlay { align-items: center !important; }
 }
 
-/* ── 8. LOGIN GATE — MOBILE ──────────────────────────────── */
-@media (max-width: 480px) {
-  #ekskul-gate-overlay {
-    align-items: flex-end !important;
-    -webkit-align-items: flex-end !important;
-    padding: 0 !important;
-  }
-
-  #ekskul-gate-overlay > div {
-    border-radius: 24px 24px 0 0 !important;
-    padding: 28px 20px 40px !important;
-    max-width: 100% !important;
-    width: 100% !important;
-    margin: 0 !important;
-    /* Drag handle visual */
-    border-top: none !important;
-  }
-
-  /* Drag handle indicator */
-  #ekskul-gate-overlay > div::before {
-    content: '';
-    display: block;
-    width: 36px;
-    height: 4px;
-    background: rgba(255,255,255,.3);
-    border-radius: 2px;
-    margin: 0 auto 20px;
-  }
-
-  #gate-sl-username,
-  #gate-sl-password,
-  #gate-pw-input {
-    font-size: 16px !important;
-    padding: 13px 14px !important;
-  }
-
-  #gate-sl-submit,
-  #gate-pw-submit {
-    min-height: 48px !important;
-    font-size: 15px !important;
-  }
+@media (min-width: 640px) {
+  .top-title { font-size: 22px; }
+  .quest-item { padding: 12px 14px; }
+  .world-header { padding: 14px 16px; }
 }
 
-/* ── 9. STUDENT CARDS (sc2) ──────────────────────────────── */
-@media (max-width: 480px) {
-  .sc2-card {
-    border-radius: 16px !important;
-    margin-bottom: 8px !important;
-  }
-
-  .sc2-header {
-    padding: 12px 13px !important;
-    gap: 11px !important;
-    min-height: 64px;
-  }
-
-  .sc2-photo-init {
-    width: 52px !important;
-    height: 52px !important;
-    font-size: 19px !important;
-    border-radius: 16px !important;
-  }
-
-  .sc2-name {
-    font-size: 14px !important;
-  }
-
-  .sc2-badge-level-name {
-    font-size: 10px !important;
-  }
-
-  .sc2-badge-circle {
-    width: 50px !important;
-    height: 50px !important;
-  }
-
-  .sc2-badge-circle img {
-    width: 46px !important;
-    height: 46px !important;
-  }
+/* ── Focus visible (accessibility) ── */
+button:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 2px solid rgba(0,180,216,.7);
+  outline-offset: 2px;
 }
-
-/* ── 10. TOAST NOTIFICATIONS ─────────────────────────────── */
-@media (max-width: 480px) {
-  .toast {
-    bottom: 20px !important;
-    font-size: 13px !important;
-    padding: 12px 20px !important;
-    max-width: 85vw !important;
-    /* Stay above bottom nav */
-    z-index: 9999 !important;
-  }
-}
-
-/* ── 11. CHAR MODAL / PROFILE SHEET ─────────────────────── */
-@media (max-width: 480px) {
-  .char-modal-overlay {
-    align-items: flex-end !important;
-    -webkit-align-items: flex-end !important;
-  }
-
-  .char-modal-box {
-    border-radius: 24px 24px 0 0 !important;
-    max-height: 92vh !important;
-    width: 100% !important;
-    padding-bottom: 32px !important;
-  }
-
-  .char-stage {
-    border-radius: 24px 24px 0 0 !important;
-    padding-top: 10px !important;
-  }
-}
-
-/* ── 12. PUBLIC PROFILE & KELOMPOK BOTTOM SHEET ──────────── */
-@media (max-width: 480px) {
-  .pubprof-box {
-    border-radius: 26px 26px 0 0 !important;
-    padding-bottom: 32px !important;
-  }
-
-  .klp-modal-box {
-    border-radius: 26px 26px 0 0 !important;
-    padding: 16px 16px 36px !important;
-  }
-
-  .klp-modal-drag,
-  .pubprof-drag {
-    width: 40px !important;
-    height: 4px !important;
-    margin-bottom: 14px !important;
-  }
-}
-
-/* ── 13. RANKING TABLE ───────────────────────────────────── */
-@media (max-width: 480px) {
-  .rank-table th {
-    font-size: 9px !important;
-    padding: 6px 7px !important;
-  }
-
-  .rank-table td {
-    font-size: 11px !important;
-    padding: 8px 7px !important;
-  }
-
-  .rank-bar-bg {
-    min-width: 56px !important;
-  }
-
-  .rank-num {
-    font-size: 13px !important;
-  }
-}
-
-/* ── 14. ADMIN/PENDING PANEL ─────────────────────────────── */
-@media (max-width: 480px) {
-  .pending-panel {
-    width: 100% !important;
-    max-width: 100% !important;
-    right: -100% !important;
-    border-radius: 0 !important;
-  }
-
-  .pending-panel.open {
-    right: 0 !important;
-  }
-
-  .pending-panel-head {
-    padding: 16px 14px 12px !important;
-  }
-}
-
-/* ── 15. BUTTONS — UNIVERSAL TOUCH TARGETS ───────────────── */
-@media (max-width: 480px) {
-  /* All interactive buttons minimum 44px height */
-  .btn-save,
-  .btn-cancel,
-  .btn-danger,
-  .btn-add-siswa,
-  .btn-student-login,
-  .pending-approve-btn,
-  .pending-reject-btn,
-  .reg-btn,
-  .spe-btn-save {
-    min-height: 44px !important;
-  }
-
-  /* Pill buttons */
-  .skill-filter-btn,
-  .world-badge,
-  .siswa-xp-badge {
-    /* No hover transforms on touch — use active state */
-  }
-
-  /* Active press animation — unified */
-  button:active,
-  [onclick]:active {
-    transform: scale(.95) !important;
-    transition: transform .1s ease !important;
-  }
-}
-
-/* ── 16. STREAKS & STATS ─────────────────────────────────── */
-@media (max-width: 480px) {
-  .streak-row {
-    padding: 9px 12px !important;
-    border-radius: 11px !important;
-  }
-
-  .streak-fire {
-    font-size: 20px !important;
-  }
-
-  .streak-txt {
-    font-size: 12px !important;
-  }
-
-  .siswa-stat {
-    padding: 8px 6px !important;
-    min-width: 60px !important;
-  }
-
-  .siswa-stat-num {
-    font-size: 15px !important;
-  }
-}
-
-/* ── 17. SCROLLBAR — HIDE ON MOBILE ─────────────────────── */
-@media (max-width: 768px) {
-  ::-webkit-scrollbar {
-    width: 2px !important;
-    height: 2px !important;
-  }
-}
-
-/* ── 18. SKELETON LOADING — MOBILE SIZE ─────────────────── */
-@media (max-width: 480px) {
-  #app-skeleton > div:first-child {
-    width: 220px !important;
-    height: 220px !important;
-  }
-}
-
-/* ── 19. SAFE AREA INSETS (iPhone notch / home indicator) ── */
-@supports (padding-bottom: env(safe-area-inset-bottom)) {
-  body {
-    padding-bottom: calc(80px + env(safe-area-inset-bottom)) !important;
-  }
-
-  .toast {
-    bottom: calc(20px + env(safe-area-inset-bottom)) !important;
-  }
-
-  .char-modal-box,
-  .pubprof-box,
-  .klp-modal-box,
-  #ekskul-gate-overlay > div {
-    padding-bottom: calc(32px + env(safe-area-inset-bottom)) !important;
-  }
-}
-
-/* ── 20. SMOOTH MOMENTUM SCROLL — ALL OVERFLOW ELEMENTS ─── */
-@media (max-width: 768px) {
-  .modal-box,
-  .reg-modal-box,
-  .char-modal-box,
-  .pubprof-box,
-  .klp-modal-box,
-  .pending-list,
-  .tab-bar,
-  .skill-filter {
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-  }
-}
-
-/* ── 21. LANDSCAPE PHONE ADJUSTMENTS ─────────────────────── */
-@media (max-width: 768px) and (orientation: landscape) {
-  body {
-    padding-bottom: 70px !important;
-  }
-
-  .hud {
-    padding: 10px 13px !important;
-    margin-bottom: 10px !important;
-  }
-
-  .tab-btn {
-    padding: 8px 10px !important;
-    min-height: 36px !important;
-  }
-
-  .char-modal-box,
-  .pubprof-box,
-  .klp-modal-box {
-    max-height: 80vh !important;
-  }
-
-  #ekskul-gate-overlay > div {
-    padding: 20px 20px 28px !important;
-  }
-}
-
-/* ── 22. REDUCE MOTION — ACCESSIBILITY ──────────────────── */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: .01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: .01ms !important;
-  }
-}
-
-
-
-</style>
+button:focus:not(:focus-visible) { outline: none; }
 </head>
 <body>
 
@@ -2355,49 +1906,49 @@ input:focus,select:focus,textarea:focus{
 
 /* Header */
 .lobby-header { text-align:center;margin-bottom:28px; }
-.lobby-logo-wrap { width:72px;height:72px;border-radius:22px;overflow:hidden;margin:0 auto 12px;border:2px solid rgba(255,255,255,.9);box-shadow:0 0 0 6px rgba(255,255,255,.25),0 8px 24px rgba(0,119,182,.15) }
+.lobby-logo-wrap { width:72px;height:72px;border-radius:22px;overflow:hidden;margin:0 auto 12px;border:2px solid rgba(0,119,182,.35);box-shadow:0 0 0 6px rgba(0,119,182,.08),0 12px 32px rgba(0,119,182,.2) }
 .lobby-logo-wrap img { width:100%;height:100%;object-fit:cover }
-.lobby-logo-emoji { width:72px;height:72px;border-radius:22px;background:rgba(255,255,255,.75);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 12px;border:2px solid rgba(255,255,255,.9);box-shadow:0 0 0 6px rgba(255,255,255,.25),0 8px 24px rgba(0,119,182,.15) }
-.lobby-app-name { font-size:22px;font-weight:800;color:#03045E;letter-spacing:-.03em;line-height:1.2;text-shadow:0 1px 6px rgba(255,255,255,.6) }
-.lobby-app-sub { font-size:12px;color:#03045E;margin-top:3px;letter-spacing:.04em;text-transform:uppercase;font-weight:700;opacity:.75 }
-.lobby-divider { width:40px;height:3px;background:linear-gradient(90deg,#03045E,#0077B6,#00B4D8);margin:10px auto 0;border-radius:99px;box-shadow:0 0 8px rgba(0,180,216,.4) }
+.lobby-logo-emoji { width:72px;height:72px;border-radius:22px;background:linear-gradient(135deg,#03045E,rgba(0,119,182,.2));display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 12px;border:2px solid rgba(0,119,182,.3);box-shadow:0 0 0 6px rgba(0,119,182,.08) }
+.lobby-app-name { font-size:22px;font-weight:800;color:#03045E;letter-spacing:-.03em;line-height:1.2;text-shadow:0 1px 4px rgba(255,255,255,.4) }
+.lobby-app-sub { font-size:12px;color:#0077B6;margin-top:3px;letter-spacing:.04em;text-transform:uppercase;font-weight:600 }
+.lobby-divider { width:36px;height:2px;background:linear-gradient(90deg,#03045E,#0077B6,#00B4D8);margin:10px auto 0;border-radius:99px }
 
 /* Tab login */
-.lobby-login-tabs { display:-webkit-flex;display:flex;border-radius:16px;overflow:hidden;background:rgba(255,255,255,.55);border:1.5px solid rgba(255,255,255,.9);margin-bottom:14px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 2px 12px rgba(0,119,182,.1),inset 0 1px 0 rgba(255,255,255,.9) }
-.lobby-tab-btn { flex:1;padding:11px 0;font-family:'Plus Jakarta Sans','Space Grotesk',sans-serif;font-size:13px;font-weight:700;border:none;background:transparent;color:rgba(3,4,94,.7);cursor:pointer;transition:all .2s }
-.lobby-tab-btn.active { background:linear-gradient(135deg,#03045E,#0077B6,#00B4D8);color:#fff;box-shadow:0 3px 12px rgba(0,119,182,.5);border-radius:13px;margin:3px }
+.lobby-login-tabs { display:-webkit-flex;display:flex;border-radius:14px;overflow:hidden;background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.4);margin-bottom:14px;backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%) }
+.lobby-tab-btn { flex:1;padding:10px 0;font-family:'Plus Jakarta Sans','Space Grotesk',sans-serif;font-size:13px;font-weight:700;border:none;background:transparent;color:#03045E;cursor:pointer;transition:all .2s }
+.lobby-tab-btn.active { background:linear-gradient(135deg,#03045E,#0077B6,#00B4D8);color:#fff;box-shadow:0 2px 10px rgba(0,119,182,.4) }
 
 /* Form box */
-.lobby-form-wrap { background:rgba(255,255,255,.72);-webkit-backdrop-filter:blur(40px) saturate(200%);backdrop-filter:blur(40px) saturate(200%);border:1.5px solid rgba(255,255,255,.95);border-radius:22px;padding:22px 20px 20px;box-shadow:0 8px 32px rgba(0,119,182,.14),0 2px 8px rgba(3,4,94,.06),inset 0 1px 0 rgba(255,255,255,1) }
-.lobby-inp { width:100%;box-sizing:border-box;background:rgba(255,255,255,.7);border:1.5px solid rgba(255,255,255,.9);color:#03045E;font-family:'Plus Jakarta Sans','Space Grotesk',sans-serif;font-size:14px;padding:12px 14px;border-radius:13px;outline:none;margin-bottom:10px;transition:border .2s,box-shadow .2s,background .2s;-webkit-appearance:none;box-shadow:0 2px 6px rgba(0,119,182,.06) }
-.lobby-inp:focus { border-color:rgba(0,119,182,.5);background:rgba(255,255,255,.95);box-shadow:0 0 0 3px rgba(0,119,182,.12) }
-.lobby-inp::placeholder { color:rgba(3,4,94,.45) }
+.lobby-form-wrap { background:rgba(255,255,255,.18);-webkit-backdrop-filter:blur(20px) saturate(160%);backdrop-filter:blur(20px) saturate(160%);border:1.5px solid rgba(255,255,255,.4);border-radius:20px;padding:22px 20px 20px;box-shadow:0 4px 24px rgba(0,119,182,.15),inset 0 1px 0 rgba(255,255,255,.5) }
+.lobby-inp { width:100%;box-sizing:border-box;background:rgba(255,255,255,.35);border:1.5px solid rgba(255,255,255,.6);color:#03045E;font-family:'Plus Jakarta Sans','Space Grotesk',sans-serif;font-size:14px;padding:11px 14px;border-radius:12px;outline:none;margin-bottom:10px;transition:border .2s,box-shadow .2s;-webkit-appearance:none }
+.lobby-inp:focus { border-color:rgba(0,119,182,.6);box-shadow:0 0 0 3px rgba(0,119,182,.15) }
+.lobby-inp::placeholder { color:rgba(3,4,94,.4) }
 .lobby-inp-row { position:relative;margin-bottom:10px }
 .lobby-inp-row .lobby-inp { margin-bottom:0;padding-right:42px }
-.lobby-eye-btn { position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:#6e6b64;padding:4px }
+.lobby-eye-btn { position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:#0077B6;padding:4px }
 .lobby-submit-btn { width:100%;padding:14px;background:linear-gradient(135deg,#03045E,#0077B6,#00B4D8);color:#fff;font-family:'Plus Jakarta Sans','Space Grotesk',sans-serif;font-size:14px;font-weight:800;border:none;border-radius:13px;cursor:pointer;margin-top:6px;transition:opacity .2s,transform .15s;-webkit-appearance:none;box-shadow:0 6px 20px rgba(0,119,182,.4);letter-spacing:-.01em }
 .lobby-submit-btn:active { opacity:.85;transform:scale(.98) }
-.lobby-err { color:#C0392B;font-size:12px;min-height:14px;margin:4px 0 6px;text-align:center;font-weight:600 }
-.lobby-link-btn { background:none;border:none;color:#03045E;font-weight:700;font-family:'Plus Jakarta Sans','Space Grotesk',sans-serif;font-size:12px;cursor:pointer;text-decoration:none;padding:0;margin-top:12px;display:block;text-align:center;width:100%;font-weight:600 }
+.lobby-err { color:#ff8080;font-size:12px;min-height:14px;margin:4px 0 6px;text-align:center;font-weight:600 }
+.lobby-link-btn { background:none;border:none;color:#0077B6;font-weight:700;font-family:'Plus Jakarta Sans','Space Grotesk',sans-serif;font-size:12px;cursor:pointer;text-decoration:none;padding:0;margin-top:12px;display:block;text-align:center;width:100%;font-weight:600 }
 
 /* Room cards */
-.lobby-rooms-grid { display:-webkit-flex;display:flex;gap:14px;-webkit-flex-wrap:wrap;flex-wrap:wrap }
-.lobby-room-card { flex:1;min-width:150px;background:rgba(255,255,255,.72);-webkit-backdrop-filter:blur(40px) saturate(200%);backdrop-filter:blur(40px) saturate(200%);border:1.5px solid rgba(255,255,255,.95);border-radius:22px;padding:22px 16px 20px;cursor:pointer;text-align:left;transition:background .2s,transform .18s,box-shadow .2s;font-family:'Plus Jakarta Sans','Space Grotesk',sans-serif;position:relative;overflow:hidden;-webkit-appearance:none;box-shadow:0 8px 32px rgba(0,119,182,.14),0 2px 8px rgba(3,4,94,.06),inset 0 1px 0 rgba(255,255,255,1) }
+.lobby-rooms-grid { display:-webkit-flex;display:flex;gap:12px;-webkit-flex-wrap:wrap;flex-wrap:wrap }
+.lobby-room-card { flex:1;min-width:150px;background:rgba(255,255,255,.18);-webkit-backdrop-filter:blur(20px) saturate(160%);backdrop-filter:blur(20px) saturate(160%);border:1.5px solid rgba(255,255,255,.4);border-radius:18px;padding:22px 16px 18px;cursor:pointer;text-align:left;transition:border-color .2s,transform .18s,box-shadow .2s;font-family:'Plus Jakarta Sans','Space Grotesk',sans-serif;position:relative;overflow:hidden;-webkit-appearance:none;box-shadow:0 4px 24px rgba(0,119,182,.15),inset 0 1px 0 rgba(255,255,255,.5) }
 .lobby-room-card:active { transform:scale(.97) }
-.lobby-room-card:hover { background:rgba(255,255,255,.88);transform:translateY(-3px);box-shadow:0 16px 40px rgba(0,119,182,.22),inset 0 1px 0 rgba(255,255,255,1) }
-.lobby-room-card.ujian:hover { box-shadow:0 16px 40px rgba(232,119,74,.18),inset 0 1px 0 rgba(255,255,255,1) }
-.lobby-room-card.ujian .lobby-room-label { color:#B45A0A }
-.lobby-room-label { font-size:11px;font-weight:800;color:#03045E;letter-spacing:.05em;margin-top:14px;text-transform:uppercase }
+.lobby-room-card:hover { border-color:rgba(0,119,182,.5);transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,119,182,.2) }
+.lobby-room-card.ujian:hover { border-color:rgba(232,119,74,.5);box-shadow:0 12px 32px rgba(232,119,74,.15) }
+.lobby-room-label { font-size:10px;font-weight:700;color:rgba(0,119,182,.7);letter-spacing:.04em;margin-top:10px;text-transform:uppercase }
+.lobby-room-card.ujian .lobby-room-label { color:rgba(232,119,74,.7) }
 
 /* Logged-in info bar */
-.lobby-user-bar { display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:space-between;justify-content:space-between;background:rgba(255,255,255,.62);border:1.5px solid rgba(255,255,255,.9);border-radius:16px;padding:11px 16px;margin-bottom:16px;font-size:13px;-webkit-backdrop-filter:blur(30px);backdrop-filter:blur(30px);box-shadow:0 4px 16px rgba(0,119,182,.1),inset 0 1px 0 rgba(255,255,255,.9) }
-.lobby-user-name { color:#03045E;font-weight:800 }
-.lobby-logout-small { background:none;border:none;color:#e24b4a;font-family:'Space Grotesk',sans-serif;font-size:12px;cursor:pointer;padding:0;font-weight:700 }
+.lobby-user-bar { display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:space-between;justify-content:space-between;background:rgba(0,119,182,.08);border:1px solid rgba(0,119,182,.15);border-radius:14px;padding:10px 14px;margin-bottom:16px;font-size:13px }
+.lobby-user-name { color:#03045E;font-weight:600 }
+.lobby-logout-small { background:none;border:none;color:#ff7b7b;font-family:'Space Grotesk',sans-serif;font-size:12px;cursor:pointer;padding:0 }
 
 /* Edit Lobby FAB */
 .lobby-edit-fab { position:fixed;bottom:20px;right:20px;z-index:10010;background:linear-gradient(135deg,#f5c842,#e6a000);color:#1a1916;border:none;border-radius:14px;width:48px;height:48px;font-size:20px;cursor:pointer;box-shadow:0 4px 20px rgba(245,200,66,.45);display:none;align-items:center;justify-content:center;-webkit-appearance:none;transition:transform .2s,box-shadow .2s }
 .lobby-edit-fab:hover { transform:scale(1.08);box-shadow:0 6px 28px rgba(245,200,66,.55) }
-.lobby-edit-panel { position:fixed;bottom:0;right:0;top:0;z-index:10010;background:#18171b;border-left:1px solid #2e2c28;padding:18px 16px 24px;width:310px;max-width:100vw;overflow-y:auto;box-shadow:-8px 0 40px rgba(0,0,0,.6);display:none;font-family:'Space Grotesk',sans-serif }
+.lobby-edit-panel { position:fixed;bottom:0;right:0;top:0;z-index:10010;background:#18171b;border-left:1px solid #2e2c28;padding:18px 16px 24px;width:310px;max-width:100vw;overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:-8px 0 40px rgba(0,0,0,.6);display:none;font-family:'Space Grotesk',sans-serif;scrollbar-width:none }
 .lobby-edit-panel.open { display:block;animation:lobbyPanelSlide .22s cubic-bezier(.34,1.1,.64,1) both }
 @keyframes lobbyPanelSlide { from{transform:translateX(100%);opacity:0} to{transform:translateX(0);opacity:1} }
 .lobby-edit-title { font-size:14px;font-weight:800;color:#f0ede8;margin-bottom:0;letter-spacing:-.02em }
@@ -2446,7 +1997,7 @@ input:focus,select:focus,textarea:focus{
 
       <!-- Form Siswa -->
       <div class="lobby-form-wrap" id="lobby-form-siswa">
-        <div style="font-size:12px;color:#03045E;margin-bottom:12px;text-align:center;font-weight:700">Masuk ke akun siswa kamu</div>
+        <div style="font-size:12px;color:#0077B6;margin-bottom:12px;text-align:center">Masuk ke akun siswa kamu</div>
         <input type="text" id="lobby-sl-username" class="lobby-inp" placeholder="Username" autocomplete="off" autocapitalize="none"
           onkeydown="if(event.key==='Enter') document.getElementById('lobby-sl-password').focus()">
         <div class="lobby-inp-row">
@@ -2461,7 +2012,7 @@ input:focus,select:focus,textarea:focus{
 
       <!-- Form Pembina -->
       <div class="lobby-form-wrap" id="lobby-form-pembina" style="display:none">
-        <div style="font-size:12px;color:#03045E;margin-bottom:12px;text-align:center;font-weight:700">Login sebagai pembina / admin ⚙️</div>
+        <div style="font-size:12px;color:#0077B6;margin-bottom:12px;text-align:center">Login sebagai pembina / admin ⚙️</div>
         <div class="lobby-inp-row">
           <input type="password" id="lobby-pw-input" class="lobby-inp" placeholder="Password pembina..."
             onkeydown="if(event.key==='Enter') lobbyDoAdminLogin()">
@@ -2491,14 +2042,14 @@ input:focus,select:focus,textarea:focus{
       <div class="lobby-rooms-grid">
         <button id="lobby-ekskul-btn" type="button" class="lobby-room-card">
           <div style="font-size:30px;margin-bottom:10px">🎮</div>
-          <div style="font-size:15px;font-weight:800;color:#03045E;margin-bottom:5px;letter-spacing:-.01em">Ruang Ekskul</div>
-          <div style="font-size:12px;color:#0099BB;line-height:1.55;font-weight:600">Quest, profil,<br>absensi & materi</div>
+          <div style="font-size:14px;font-weight:700;color:#03045E;margin-bottom:4px">Ruang Ekskul</div>
+          <div style="font-size:11px;color:#0077B6;line-height:1.5">Quest, profil,<br>absensi & materi</div>
           <div class="lobby-room-label">MASUK →</div>
         </button>
         <button id="lobby-ujian-btn" type="button" class="lobby-room-card ujian">
           <div style="font-size:30px;margin-bottom:10px">📝</div>
-          <div style="font-size:15px;font-weight:800;color:#03045E;margin-bottom:5px;letter-spacing:-.01em">Ruang Ujian</div>
-          <div style="font-size:12px;color:#0099BB;line-height:1.55;font-weight:600">Kerjakan soal,<br>nilai & riwayat</div>
+          <div style="font-size:14px;font-weight:700;color:#03045E;margin-bottom:4px">Ruang Ujian</div>
+          <div style="font-size:11px;color:#0077B6;line-height:1.5">Kerjakan soal,<br>nilai & riwayat</div>
           <div class="lobby-room-label">MASUK →</div>
         </button>
       </div>
@@ -2663,9 +2214,13 @@ input:focus,select:focus,textarea:focus{
     if(n2 && s2.appName) n2.textContent = s2.appName;
     var l2 = document.getElementById('lobby-logo-display-2');
     if(l2 && s2.logoUrl){ l2.innerHTML='<div class="lobby-logo-wrap" style="width:52px;height:52px;margin-bottom:8px"><img src="'+s2.logoUrl+'" alt="logo"></div>'; }
-    // Tampilkan FAB edit jika pembina
+    // Tampilkan FAB edit HANYA jika lobby-screen aktif dan pembina login
     var fab = document.getElementById('lobby-edit-fab');
-    if(fab) fab.style.display = window.pembina ? 'flex' : 'none';
+    if(fab){
+      var ls = document.getElementById('lobby-screen');
+      var lobbyActive = ls && ls.style.display !== 'none';
+      fab.style.display = (window.pembina && lobbyActive) ? 'flex' : 'none';
+    }
   }
 
   // ── Tab switch ──────────────────────────────────────
@@ -3105,6 +2660,26 @@ input:focus,select:focus,textarea:focus{
     } else {
       showPhaseLogin(false);
     }
+
+    // ── Swipe kiri untuk tutup lobby edit panel ──
+    var panel = document.getElementById('lobby-edit-panel');
+    if(panel){
+      var _tx=0, _sx=0, _dragging=false;
+      panel.addEventListener('touchstart', function(e){
+        if(e.touches[0].clientX > window.innerWidth - 280) return; // only from panel edge
+        _sx = e.touches[0].clientX; _dragging=true; _tx=0;
+      },{passive:true});
+      panel.addEventListener('touchmove', function(e){
+        if(!_dragging) return;
+        _tx = e.touches[0].clientX - _sx;
+        if(_tx > 0) panel.style.transform = 'translateX('+_tx+'px)';
+      },{passive:true});
+      panel.addEventListener('touchend', function(){
+        if(_tx > 80){ panel.classList.remove('open'); }
+        panel.style.transform = '';
+        _dragging=false; _tx=0;
+      },{passive:true});
+    }
   });
 
 })();
@@ -3114,15 +2689,15 @@ input:focus,select:focus,textarea:focus{
 <div id="ujian-screen" style="display:none;position:fixed;inset:0;z-index:9998;background:linear-gradient(180deg,#e8f9fd 0%,#CAF0F8 20%,#90E0EF 55%,#00B4D8 85%,#0077B6 100%);background-attachment:fixed;overflow-y:auto;font-family:'Space Grotesk',sans-serif">
 
   <!-- Header Ujian -->
-  <div style="position:sticky;top:0;z-index:10;background:rgba(255,255,255,0.25);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-bottom:1.5px solid rgba(255,255,255,0.4);padding:14px 20px;display:flex;align-items:center;justify-content:space-between">
+  <div style="position:sticky;top:0;z-index:10;background:rgba(255,255,255,0.25);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-bottom:1.5px solid rgba(255,255,255,0.4);padding:max(14px,env(safe-area-inset-top)) 20px 14px;display:flex;align-items:center;justify-content:space-between">
     <div style="font-size:15px;font-weight:700;color:#03045E;font-weight:800">📝 Ruang Ujian</div>
     <div style="display:flex;align-items:center;gap:10px">
       <div id="ujian-timer-badge" style="display:none;font-family:monospace;font-size:13px;padding:5px 12px;border-radius:99px;background:rgba(255,255,255,0.2);border:1.5px solid rgba(0,119,182,0.25);color:#03045E"></div>
-      <button id="ujian-back-btn" type="button" style="font-size:12px;font-weight:600;padding:6px 14px;border-radius:99px;border:1.5px solid rgba(0,119,182,0.3);background:rgba(255,255,255,0.2);color:#0077B6;cursor:pointer;font-family:'Space Grotesk',sans-serif;backdrop-filter:blur(8px)">← Kembali</button>
+      <button id="ujian-back-btn" type="button" style="font-size:12px;font-weight:600;padding:7px 14px;border-radius:99px;border:1.5px solid rgba(0,119,182,0.3);background:rgba(255,255,255,0.2);color:#0077B6;cursor:pointer;font-family:'Space Grotesk',sans-serif;backdrop-filter:blur(8px);min-height:36px">← Kembali</button>
     </div>
   </div>
 
-  <div style="max-width:680px;margin:0 auto;padding:28px 20px 80px">
+  <div style="max-width:680px;margin:0 auto;padding:20px 14px calc(80px + env(safe-area-inset-bottom))">
 
     <!-- STATE: belum login -->
     <div id="ujian-login-state">
@@ -8915,6 +8490,18 @@ function updateToolbarByRole(){
   var notifBell  = document.getElementById('notif-bell-wrap');
   var logoutBtn  = document.getElementById('global-logout-btn');
 
+  // FAB edit lobby HANYA muncul di lobby screen fase rooms (bukan fase login, bukan di ruang ekskul)
+  var lobbyFab   = document.getElementById('lobby-edit-fab');
+  var lobbyFabEp = document.getElementById('lobby-edit-panel');
+  var lobbyVisible = document.getElementById('lobby-screen') &&
+                     document.getElementById('lobby-screen').style.display !== 'none';
+  var lobbyPhaseRooms = document.getElementById('lobby-phase-rooms') &&
+                        document.getElementById('lobby-phase-rooms').style.display !== 'none';
+  if(lobbyFab){
+    lobbyFab.style.display = (window.pembina && lobbyVisible && lobbyPhaseRooms) ? 'flex' : 'none';
+  }
+  if(!lobbyVisible && lobbyFabEp) lobbyFabEp.classList.remove('open');
+
   if(window.pembina){
     // ── MODE PEMBINA ──
     if(editBtn){ editBtn.style.display = ''; }
@@ -11595,6 +11182,11 @@ document.addEventListener('click', function(e){
   document.getElementById('back-to-lobby-btn').addEventListener('click',function(){
     document.getElementById('lobby-screen').style.display='flex';
     document.getElementById('ujian-screen').style.display='none';
+    // Kembalikan FAB edit lobby jika pembina sedang di fase rooms
+    var _rfab = document.getElementById('lobby-edit-fab');
+    var _rPhaseRooms = document.getElementById('lobby-phase-rooms') &&
+                       document.getElementById('lobby-phase-rooms').style.display !== 'none';
+    if(_rfab) _rfab.style.display = (window.pembina && _rPhaseRooms) ? 'flex' : 'none';
     if(typeof lobbyUpdateStatus==='function') setTimeout(lobbyUpdateStatus,30);
   });
 
@@ -11610,6 +11202,11 @@ document.addEventListener('click', function(e){
     }
     document.getElementById('lobby-screen').style.display='none';
     document.getElementById('ujian-screen').style.display='block';
+    // Sembunyikan FAB edit lobby saat masuk ruang ujian
+    var _ufab = document.getElementById('lobby-edit-fab');
+    if(_ufab) _ufab.style.display = 'none';
+    var _uep = document.getElementById('lobby-edit-panel');
+    if(_uep) _uep.classList.remove('open');
     initUjianRef();
     // Auto-carry sesi yang sudah aktif
     // PRIORITAS: siswa login > pembina — siswa tidak boleh masuk sebagai pembina
@@ -11639,6 +11236,11 @@ document.addEventListener('click', function(e){
     document.getElementById('ujian-timer-badge').style.display='none';
     document.getElementById('ujian-screen').style.display='none';
     document.getElementById('lobby-screen').style.display='flex';
+    // Kembalikan FAB edit lobby jika pembina sedang di fase rooms
+    var _rfab = document.getElementById('lobby-edit-fab');
+    var _rPhaseRooms2 = document.getElementById('lobby-phase-rooms') &&
+                        document.getElementById('lobby-phase-rooms').style.display !== 'none';
+    if(_rfab) _rfab.style.display = (window.pembina && _rPhaseRooms2) ? 'flex' : 'none';
     if(typeof lobbyUpdateStatus==='function') setTimeout(lobbyUpdateStatus,30);
   });
 
