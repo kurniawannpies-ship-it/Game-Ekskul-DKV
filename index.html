@@ -1799,7 +1799,7 @@ input:focus,select:focus,textarea:focus{
 
       <!-- Form Siswa -->
       <div class="lobby-form-wrap" id="lobby-form-siswa">
-        <div style="font-size:12px;color:#6e6b64;margin-bottom:12px;text-align:center">Masuk ke akun siswa kamu 🎒</div>
+        <div style="font-size:12px;color:#6e6b64;margin-bottom:12px;text-align:center">Masuk ke akun siswa kamu</div>
         <input type="text" id="lobby-sl-username" class="lobby-inp" placeholder="Username" autocomplete="off" autocapitalize="none"
           onkeydown="if(event.key==='Enter') document.getElementById('lobby-sl-password').focus()">
         <div class="lobby-inp-row">
@@ -1821,7 +1821,7 @@ input:focus,select:focus,textarea:focus{
           <button type="button" class="lobby-eye-btn" id="lobby-pw-eye" onclick="lobbyToggleEye('lobby-pw-input','lobby-pw-eye')">👁</button>
         </div>
         <div class="lobby-err" id="lobby-pw-err"></div>
-        <button type="button" class="lobby-submit-btn" onclick="lobbyDoAdminLogin()">Masuk sebagai Pembina →</button>
+        <button type="button" class="lobby-submit-btn" onclick="lobbyDoAdminLogin()">Masuk →</button>
       </div>
     </div>
 
@@ -6371,10 +6371,17 @@ function renderRanking(){
   // Build per-category rank sections (tab style)
   // Encode cat ID agar aman sebagai HTML id attribute
   function safeCatHtmlId(catId){ return 'rcat_'+catId.replace(/[^a-z0-9]/gi,'_'); }
+  // Helper: strip leading emoji/icon dari label kategori untuk rank
+  function stripCatIcon(lbl){
+    if(!lbl) return '';
+    // Remove leading non-ASCII characters (emoji, symbols) and trailing space
+    return lbl.replace(/^[^\x00-\x7F\w]+\s*/, '').trim() || lbl.trim();
+  }
+
   var tabsHtml='<div style="display:-webkit-flex;display:flex;gap:4px;background:#f0eeea;border-radius:12px;padding:4px;margin-bottom:14px" id="rank-cat-tabs">';
   cats.forEach(function(c,i){
     var col=getCatColor(c.id);
-    var lbl2=getCatLabel(c.id);
+    var lbl2=stripCatIcon(getCatLabel(c.id));
     var sid=safeCatHtmlId(c.id);
     tabsHtml+='<button type="button" onclick="switchRankTab(\''+c.id+'\')" id="rank-tab-btn-'+sid+'" style="-webkit-flex:1;flex:1;font-family:\'Space Grotesk\',sans-serif;font-size:12px;font-weight:700;padding:8px 6px;border-radius:8px;border:none;outline:none;-webkit-appearance:none;appearance:none;background:'+(i===0?'#fff':'transparent')+';color:'+(i===0?col:'#888')+';cursor:pointer;-webkit-transition:all .2s;transition:all .2s;box-shadow:'+(i===0?'0 1px 4px rgba(0,0,0,.1)':'none')+'">'+lbl2+'</button>';
   });
@@ -6383,7 +6390,7 @@ function renderRanking(){
   var panelsHtml='';
   cats.forEach(function(c,i){
     var col=getCatColor(c.id);
-    var lbl2=getCatLabel(c.id);
+    var lbl2=stripCatIcon(getCatLabel(c.id));
     var sid=safeCatHtmlId(c.id);
     // sort siswa by XP in this category
     var sortedByCat=window.siswaList.slice().map(function(s){
