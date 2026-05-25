@@ -1662,12 +1662,6 @@ body {
 }
 
 /* ── Lobby edit panel: full width on mobile ── */
-.lobby-edit-panel {
-  width: 100% !important;
-  max-width: 100% !important;
-  padding: 16px 14px 24px !important;
-  padding-bottom: calc(24px + env(safe-area-inset-bottom)) !important;
-}
 
 /* ── Rank tabs: horizontal scroll ── */
 #rank-cat-tabs {
@@ -1719,8 +1713,7 @@ body {
   .world-icon { width: 42px; height: 42px; }
   .hud-stat-num { font-size: 18px; }
   .hud-stat-lbl { font-size: 9px; }
-  .lobby-edit-panel { width: 310px !important; }
-  .modal-box {
+    .modal-box {
     border-radius: 24px !important;
     width: 90% !important;
     max-width: 480px !important;
@@ -1889,11 +1882,39 @@ button:focus:not(:focus-visible) { outline: none; }
 <!-- ═══════ LOBBY — PILIH RUANGAN ═══════ -->
 <style>
 /* ══ LOBBY v2 — LOGIN FIRST, THEN PICK ROOM ══ */
-#lobby-screen { font-family:'Space Grotesk',sans-serif; overflow-y:auto; -webkit-overflow-scrolling:touch; }
-.lobby-bg-layer { position:fixed;top:0;left:0;right:0;bottom:0;background-size:cover;background-position:center;z-index:0; }
+#lobby-screen { font-family:'Space Grotesk',sans-serif; overflow:hidden; }
+/* Background lobby — fixed agar tidak ikut scroll */
+#lobby-screen-bg {
+  position:fixed;inset:0;z-index:9999;
+  background:linear-gradient(180deg,#e8f9fd 0%,#CAF0F8 20%,#90E0EF 55%,#00B4D8 85%,#0077B6 100%);
+  background-size:cover;background-position:center;
+  pointer-events:none;
+}
 .lobby-bg-overlay { display:none; }
 .lobby-dot-pattern { display:none;pointer-events:none; }
-.lobby-scroll-inner { position:relative;z-index:2;min-height:100vh;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;padding:32px 20px 48px; }
+.lobby-scroll-inner {
+  position:relative;z-index:2;
+  height:100vh;
+  display:-webkit-flex;display:flex;
+  -webkit-flex-direction:column;flex-direction:column;
+  -webkit-align-items:center;align-items:center;
+  -webkit-justify-content:center;justify-content:center;
+  padding:32px 20px 48px;
+  overflow:hidden; /* konten TIDAK scroll — layout fix di tengah */
+}
+
+/* Panel edit lobby — fixed bottom sheet, scroll internal */
+#lobby-edit-panel {
+  position:fixed !important;
+  left:0;right:0;bottom:0;
+  z-index:10010;
+  max-height:80vh;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  border-radius:24px 24px 0 0 !important;
+  padding:24px 20px 40px !important;
+  box-shadow:0 -8px 40px rgba(3,4,94,.25) !important;
+}
 
 /* FASE 1: LOGIN */
 #lobby-phase-login { width:100%;max-width:400px; }
@@ -1945,25 +1966,110 @@ button:focus:not(:focus-visible) { outline: none; }
 .lobby-user-name { color:#03045E;font-weight:600 }
 .lobby-logout-small { background:none;border:none;color:#ff7b7b;font-family:'Space Grotesk',sans-serif;font-size:12px;cursor:pointer;padding:0 }
 
-/* Edit Lobby FAB */
-.lobby-edit-fab { position:fixed;bottom:20px;right:20px;z-index:10010;background:linear-gradient(135deg,#f5c842,#e6a000);color:#1a1916;border:none;border-radius:14px;width:48px;height:48px;font-size:20px;cursor:pointer;box-shadow:0 4px 20px rgba(245,200,66,.45);display:none;align-items:center;justify-content:center;-webkit-appearance:none;transition:transform .2s,box-shadow .2s }
-.lobby-edit-fab:hover { transform:scale(1.08);box-shadow:0 6px 28px rgba(245,200,66,.55) }
-.lobby-edit-panel { position:fixed;bottom:0;right:0;top:0;z-index:10010;background:#18171b;border-left:1px solid #2e2c28;padding:18px 16px 24px;width:310px;max-width:100vw;overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:-8px 0 40px rgba(0,0,0,.6);display:none;font-family:'Space Grotesk',sans-serif;scrollbar-width:none }
-.lobby-edit-panel.open { display:block;animation:lobbyPanelSlide .22s cubic-bezier(.34,1.1,.64,1) both }
-@keyframes lobbyPanelSlide { from{transform:translateX(100%);opacity:0} to{transform:translateX(0);opacity:1} }
-.lobby-edit-title { font-size:14px;font-weight:800;color:#f0ede8;margin-bottom:0;letter-spacing:-.02em }
-.lobby-edit-label { font-size:10px;font-weight:700;color:#6e6b64;letter-spacing:.06em;margin-bottom:5px;display:block;text-transform:uppercase }
-.lobby-edit-inp { width:100%;box-sizing:border-box;background:rgba(255,255,255,.05);border:1.5px solid #2e2c28;color:#f0ede8;font-family:'Space Grotesk',sans-serif;font-size:13px;padding:9px 11px;border-radius:9px;outline:none;margin-bottom:10px;-webkit-appearance:none;transition:border-color .2s }
-.lobby-edit-inp:focus { border-color:#f5c842;background:rgba(245,200,66,.04) }
-.lobby-edit-save { width:100%;padding:11px;background:linear-gradient(135deg,#f5c842,#e6a000);color:#1a1916;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:800;border:none;border-radius:10px;cursor:pointer;-webkit-appearance:none;box-shadow:0 4px 14px rgba(245,200,66,.35) }
-.lobby-color-grid { display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:10px }
-.lobby-color-swatch { width:100%;aspect-ratio:1;border-radius:8px;border:2px solid transparent;cursor:pointer;transition:transform .15s,border-color .15s }
-.lobby-color-swatch.sel { border-color:#f5c842;transform:scale(1.12);box-shadow:0 0 8px rgba(245,200,66,.4) }
+/* Edit Lobby Button (pembina only) */
+#lobby-edit-bar {
+  display:none;
+  margin-bottom:14px;
+  animation:lobbyFadeIn .3s ease both;
+}
+#lobby-edit-toggle-btn {
+  width:100%;padding:11px 14px;
+  background:rgba(245,200,66,.12);
+  border:1.5px dashed rgba(245,200,66,.55);
+  border-radius:14px;
+  color:#c9980a;
+  font-family:'Plus Jakarta Sans','Space Grotesk',sans-serif;
+  font-size:13px;font-weight:700;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  transition:background .2s,border-color .2s;
+  -webkit-appearance:none;
+}
+#lobby-edit-toggle-btn:hover { background:rgba(245,200,66,.2);border-color:rgba(245,200,66,.75); }
+
+/* Panel Edit Lobby */
+#lobby-edit-panel {
+  display:none;
+  background:rgba(255,255,255,.22);
+  -webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);
+  border:1.5px solid rgba(245,200,66,.4);
+  border-radius:18px;
+  padding:18px;
+  margin-bottom:16px;
+  animation:lobbyFadeIn .3s ease both;
+  position:relative;
+}
+#lobby-edit-panel::before {
+  content:'✏️ Edit Tampilan Lobby';
+  position:absolute;top:-11px;left:16px;
+  background:linear-gradient(135deg,#c9980a,#e8774a);
+  color:#fff;font-size:10px;font-weight:700;
+  padding:2px 10px;border-radius:20px;
+  letter-spacing:.05em;font-family:'Space Grotesk',sans-serif;
+}
+.lep-label {
+  font-size:10px;font-weight:700;color:#0077B6;
+  text-transform:uppercase;letter-spacing:.07em;
+  display:block;margin-bottom:5px;
+}
+.lep-inp {
+  width:100%;box-sizing:border-box;
+  background:rgba(255,255,255,.5);
+  border:1.5px solid rgba(0,119,182,.25);
+  color:#03045E;
+  font-family:'Plus Jakarta Sans','Space Grotesk',sans-serif;
+  font-size:13px;padding:10px 13px;border-radius:10px;
+  outline:none;-webkit-appearance:none;margin-bottom:10px;
+  transition:border .2s;
+}
+.lep-inp:focus { border-color:rgba(0,119,182,.55);box-shadow:0 0 0 3px rgba(0,119,182,.1); }
+.lep-upload-wrap {
+  display:flex;align-items:center;gap:10px;margin-bottom:10px;
+}
+.lep-upload-btn {
+  flex:1;padding:10px 12px;
+  background:rgba(255,255,255,.35);
+  border:1.5px dashed rgba(0,119,182,.35);
+  border-radius:10px;
+  color:#0077B6;font-family:'Space Grotesk',sans-serif;
+  font-size:12px;font-weight:600;cursor:pointer;
+  text-align:center;transition:background .2s;
+  overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
+}
+.lep-upload-btn:hover { background:rgba(0,119,182,.08); }
+.lep-preview {
+  width:44px;height:44px;border-radius:10px;
+  background:rgba(0,119,182,.08);
+  border:1.5px solid rgba(0,119,182,.2);
+  overflow:hidden;display:flex;align-items:center;justify-content:center;
+  font-size:20px;flex-shrink:0;
+}
+.lep-preview img { width:100%;height:100%;object-fit:cover; }
+.lep-save-btn {
+  width:100%;padding:12px;margin-top:6px;
+  background:linear-gradient(135deg,#c9980a,#e8774a);
+  color:#fff;font-family:'Plus Jakarta Sans','Space Grotesk',sans-serif;
+  font-size:13px;font-weight:800;border:none;border-radius:12px;
+  cursor:pointer;letter-spacing:-.01em;
+  box-shadow:0 4px 16px rgba(201,152,10,.35);
+  transition:opacity .2s,transform .15s;-webkit-appearance:none;
+}
+.lep-save-btn:active { opacity:.85;transform:scale(.98); }
+.lep-reset-btn {
+  width:100%;padding:8px;margin-top:6px;
+  background:transparent;border:none;
+  color:#aaa;font-family:'Space Grotesk',sans-serif;
+  font-size:11px;cursor:pointer;
+}
 </style>
 
 <!-- ══ LOBBY SCREEN v2 ══ -->
+<!-- Background fixed (tidak ikut scroll) -->
+<div id="lobby-screen-bg" style="display:none"></div>
+<!-- Dim overlay saat panel edit terbuka -->
+<div id="lobby-edit-dim" onclick="lobbyToggleEditPanel()" style="display:none;position:fixed;inset:0;z-index:10009;background:rgba(0,0,0,.45);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)"></div>
+
 <div id="lobby-screen" style="position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;">
-  <div class="lobby-bg-layer" id="lobby-bg-layer" style="background:linear-gradient(135deg,#0b0918 0%,#0f0e1f 40%,#150b24 70%,#080d1a 100%)"></div>
   <!-- Animated gradient blobs -->
   <div style="position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden">
     <div style="position:absolute;width:500px;height:500px;background:radial-gradient(circle,rgba(255,255,255,.5) 0%,transparent 70%);border-radius:50%;top:-100px;left:-100px;animation:gzFloat1 8s ease-in-out infinite"></div>
@@ -2032,10 +2138,9 @@ button:focus:not(:focus-visible) { outline: none; }
         <div class="lobby-divider"></div>
       </div>
 
-      <!-- Info user yang login -->
-      <div class="lobby-user-bar" id="lobby-user-bar">
+      <!-- Info user (nama saja, tanpa tombol logout) -->
+      <div class="lobby-user-bar" id="lobby-user-bar" style="margin-bottom:16px">
         <span class="lobby-user-name" id="lobby-user-bar-name">—</span>
-        <button type="button" class="lobby-logout-small" onclick="lobbyHandleLogout()">🚪 Logout</button>
       </div>
 
       <!-- 2 Kartu Ruangan -->
@@ -2053,111 +2158,81 @@ button:focus:not(:focus-visible) { outline: none; }
           <div class="lobby-room-label">MASUK →</div>
         </button>
       </div>
+
+      <!-- Action bar 1 baris: Logout + Edit (Edit hanya muncul saat pembina) -->
+      <div id="lobby-edit-bar" style="
+        display:none;margin-top:12px;
+        display:flex;gap:8px;align-items:center;
+      ">
+        <button type="button" onclick="lobbyHandleLogout()" style="
+          flex:1;padding:11px 10px;
+          background:rgba(255,255,255,.18);
+          -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+          border:1.5px solid rgba(255,255,255,.4);
+          border-radius:14px;
+          color:#ff8080;font-family:'Plus Jakarta Sans','Space Grotesk',sans-serif;
+          font-size:13px;font-weight:700;cursor:pointer;
+          display:flex;align-items:center;justify-content:center;gap:6px;
+          transition:background .2s;-webkit-appearance:none;
+        ">&#x1F6AA; Logout</button>
+        <button type="button" id="lobby-edit-toggle-btn" onclick="lobbyToggleEditPanel()" style="
+          flex:1;padding:11px 10px;
+          background:rgba(245,200,66,.14);
+          -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+          border:1.5px dashed rgba(245,200,66,.6);
+          border-radius:14px;
+          color:#c9980a;font-family:'Plus Jakarta Sans','Space Grotesk',sans-serif;
+          font-size:13px;font-weight:700;cursor:pointer;
+          display:flex;align-items:center;justify-content:center;gap:6px;
+          transition:background .2s;-webkit-appearance:none;
+        ">&#x270F;&#xFE0F; Edit</button>
+      </div>
+
     </div>
 
   </div><!-- end scroll-inner -->
 </div>
 
-<!-- ══ LOBBY EDIT FAB & PANEL (Pembina Only) ══ -->
-<button id="lobby-edit-fab" class="lobby-edit-fab" type="button" onclick="lobbyToggleEditPanel()" title="Edit Tampilan Lobby">✏️</button>
-
-<div id="lobby-edit-panel" class="lobby-edit-panel">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-    <div class="lobby-edit-title" style="margin-bottom:0">🎨 Edit Tampilan Lobby</div>
-    <button type="button" onclick="document.getElementById('lobby-edit-panel').classList.remove('open')" style="background:none;border:none;color:#6e6b64;font-size:18px;cursor:pointer;line-height:1;padding:0">✕</button>
+<!-- Panel Edit Lobby — Fixed Bottom Sheet (di luar lobby-screen) -->
+<div id="lobby-edit-panel" style="display:none;
+  position:fixed;left:0;right:0;bottom:0;z-index:10010;
+  max-height:80vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  background:rgba(202,240,248,.96);-webkit-backdrop-filter:blur(32px) saturate(180%);backdrop-filter:blur(32px) saturate(180%);
+  border:1.5px solid rgba(255,255,255,.55);border-radius:24px 24px 0 0;
+  padding:0 20px 40px;box-shadow:0 -8px 40px rgba(3,4,94,.25);">
+  <!-- Drag handle -->
+  <div style="display:flex;align-items:center;justify-content:center;padding:12px 0 4px">
+    <div style="width:36px;height:4px;background:rgba(0,119,182,.3);border-radius:2px"></div>
   </div>
-
-  <!-- Nama & Sub -->
-  <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:12px;margin-bottom:10px;border:1px solid #2e2c28">
-    <div style="font-size:10px;font-weight:700;color:#f5c842;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">📝 Teks Lobby</div>
-    <label class="lobby-edit-label">Nama Ekskul</label>
-    <input type="text" id="ledit-appname" class="lobby-edit-inp" placeholder="Contoh: DKV" maxlength="40">
-    <label class="lobby-edit-label">Sub Judul</label>
-    <input type="text" id="ledit-appsub" class="lobby-edit-inp" placeholder="Contoh: SMPN 1 Sumenep" maxlength="60">
+  <!-- Label judul panel -->
+  <div style="font-size:13px;font-weight:800;color:#03045E;letter-spacing:-.01em;margin-bottom:16px;padding-top:4px">&#x270F;&#xFE0F; Edit Tampilan Lobby</div>
+  <div style="margin-bottom:4px">
+    <label class="lep-label" for="lep-nama">Nama Lobby</label>
+    <input class="lep-inp" id="lep-nama" type="text" placeholder="cth: Quest Board DKV" maxlength="60">
   </div>
-
-  <!-- Logo -->
-  <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:12px;margin-bottom:10px;border:1px solid #2e2c28">
-    <div style="font-size:10px;font-weight:700;color:#f5c842;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">🖼️ Logo</div>
-    <!-- Preview logo -->
-    <div id="ledit-logo-preview" style="width:56px;height:56px;border-radius:14px;overflow:hidden;border:2px solid #3a3836;background:#1a1917;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 10px"></div>
-    <label class="lobby-edit-label">Upload Logo</label>
-    <label style="display:block;width:100%;box-sizing:border-box;padding:9px 10px;background:rgba(255,255,255,.06);border:1.5px dashed #4a4846;color:#d0cdc8;font-family:'Space Grotesk',sans-serif;font-size:12px;border-radius:9px;cursor:pointer;text-align:center;margin-bottom:8px">
-      📁 Pilih Gambar Logo
-      <input type="file" accept="image/*" onchange="lobbyHandleLogoUpload(this)" style="display:none">
-    </label>
-    <label class="lobby-edit-label">Atau URL Logo</label>
-    <input type="url" id="ledit-logourl" class="lobby-edit-inp" placeholder="https://..." oninput="lobbyPreviewLogoUrl(this.value)">
-    <label class="lobby-edit-label" style="margin-top:4px">Atau Emoji Logo</label>
-    <input type="text" id="ledit-logoemoji" class="lobby-edit-inp" placeholder="Contoh: 🎨" maxlength="4" oninput="lobbyPreviewEmoji(this.value)">
-    <button type="button" onclick="lobbyResetLogo()" style="background:transparent;border:1px solid #4a4846;color:#888;font-family:'Space Grotesk',sans-serif;font-size:11px;padding:5px 10px;border-radius:7px;cursor:pointer;width:100%;margin-top:4px">Reset ke Default 🎨</button>
+  <div style="margin-bottom:4px">
+    <label class="lep-label" for="lep-sub">Sub Judul / Instansi</label>
+    <input class="lep-inp" id="lep-sub" type="text" placeholder="cth: SMPN 1 Sumenep" maxlength="80">
   </div>
-
-  <!-- Background -->
-  <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:12px;margin-bottom:10px;border:1px solid #2e2c28">
-    <div style="font-size:10px;font-weight:700;color:#f5c842;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">🌄 Background</div>
-
-    <!-- Tab BG -->
-    <div style="display:flex;border-radius:9px;overflow:hidden;background:rgba(255,255,255,.05);border:1px solid #3a3836;margin-bottom:10px">
-      <button type="button" id="ledit-bg-tab-color" onclick="lobbyBgTab('color')" style="flex:1;padding:7px 0;font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;border:none;background:linear-gradient(135deg,#f5c842,#e6a000);color:#1a1916;cursor:pointer">🎨 Warna</button>
-      <button type="button" id="ledit-bg-tab-img" onclick="lobbyBgTab('img')" style="flex:1;padding:7px 0;font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;border:none;background:transparent;color:#6e6b64;cursor:pointer">🖼 Gambar</button>
-      <button type="button" id="ledit-bg-tab-gradient" onclick="lobbyBgTab('gradient')" style="flex:1;padding:7px 0;font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;border:none;background:transparent;color:#6e6b64;cursor:pointer">🌈 Gradien</button>
-    </div>
-
-    <!-- Warna solid -->
-    <div id="ledit-bg-panel-color">
-      <label class="lobby-edit-label">Pilih Warna</label>
-      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
-        <input type="color" id="ledit-bgcolor-picker" value="#02023a" oninput="lobbyPickBgColor(this.value)" style="width:44px;height:36px;border-radius:8px;border:2px solid #3a3836;background:none;cursor:pointer;padding:2px">
-        <input type="text" id="ledit-bgcolor-hex" class="lobby-edit-inp" placeholder="#02023a" maxlength="7" style="flex:1;margin-bottom:0" oninput="lobbyBgHexInput(this.value)">
-      </div>
-      <label class="lobby-edit-label">Preset Warna</label>
-      <div id="ledit-color-grid" class="lobby-color-grid"></div>
-    </div>
-
-    <!-- Gambar -->
-    <div id="ledit-bg-panel-img" style="display:none">
-      <label style="display:block;width:100%;box-sizing:border-box;padding:9px 10px;background:rgba(255,255,255,.06);border:1.5px dashed #4a4846;color:#d0cdc8;font-family:'Space Grotesk',sans-serif;font-size:12px;border-radius:9px;cursor:pointer;text-align:center;margin-bottom:8px">
-        📁 Upload Gambar BG
-        <input type="file" accept="image/*" onchange="lobbyHandleBgUpload(this)" style="display:none">
-      </label>
-      <label class="lobby-edit-label">Atau URL Gambar</label>
-      <input type="url" id="ledit-bgurl" class="lobby-edit-inp" placeholder="https://..." oninput="lobbyPreviewBgUrl(this.value)">
-      <div style="display:flex;gap:6px;margin-top:4px">
-        <label class="lobby-edit-label" style="margin-bottom:0;display:flex;align-items:center;gap:5px;cursor:pointer">
-          <input type="checkbox" id="ledit-bg-dim" onchange="lobbyBgDimChange(this.checked)" style="accent-color:#f5c842"> Redup (overlay gelap)
-        </label>
-      </div>
-    </div>
-
-    <!-- Gradien -->
-    <div id="ledit-bg-panel-gradient" style="display:none">
-      <label class="lobby-edit-label">Warna Awal</label>
-      <div style="display:flex;gap:6px;margin-bottom:6px">
-        <input type="color" id="ledit-grad-c1" value="#02023a" oninput="lobbyPreviewGradient()" style="width:44px;height:36px;border-radius:8px;border:2px solid #3a3836;cursor:pointer;padding:2px">
-        <input type="text" id="ledit-grad-c1-hex" class="lobby-edit-inp" style="flex:1;margin-bottom:0" placeholder="#02023a" oninput="lobbyGradHex('c1',this.value)">
-      </div>
-      <label class="lobby-edit-label">Warna Akhir</label>
-      <div style="display:flex;gap:6px;margin-bottom:6px">
-        <input type="color" id="ledit-grad-c2" value="#0f0e1f" oninput="lobbyPreviewGradient()" style="width:44px;height:border-radius:8px;border:2px solid #3a3836;cursor:pointer;padding:2px;height:36px">
-        <input type="text" id="ledit-grad-c2-hex" class="lobby-edit-inp" style="flex:1;margin-bottom:0" placeholder="#0f0e1f" oninput="lobbyGradHex('c2',this.value)">
-      </div>
-      <label class="lobby-edit-label">Arah Gradien</label>
-      <select id="ledit-grad-dir" class="lobby-edit-inp" onchange="lobbyPreviewGradient()" style="margin-bottom:6px">
-        <option value="135deg">↘ Diagonal</option>
-        <option value="180deg">↓ Bawah</option>
-        <option value="90deg">→ Kanan</option>
-        <option value="45deg">↗ Serong</option>
-      </select>
-      <div id="ledit-grad-preview" style="height:36px;border-radius:8px;border:1px solid #3a3836;margin-bottom:4px;background:linear-gradient(135deg,#02023a,#0f0e1f)"></div>
-      <label class="lobby-edit-label">Preset Gradien</label>
-      <div id="ledit-grad-presets" style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:4px"></div>
+  <div>
+    <label class="lep-label">Logo Lobby</label>
+    <div class="lep-upload-wrap">
+      <button type="button" class="lep-upload-btn" id="lep-logo-btn" onclick="document.getElementById('lep-logo-file').click()">Pilih Logo...</button>
+      <div class="lep-preview" id="lep-logo-preview">&#x1F3A8;</div>
+      <input type="file" id="lep-logo-file" accept="image/*" style="display:none" onchange="lobbyHandleLogoUpload(this)">
     </div>
   </div>
-
-  <!-- Tombol Aksi -->
-  <button class="lobby-edit-save" type="button" onclick="lobbySaveEdit()" style="margin-bottom:7px">💾 Simpan Perubahan</button>
-  <button type="button" onclick="lobbyResetEdit()" style="width:100%;padding:8px;background:transparent;border:1px solid #3a3836;color:#888;font-family:'Space Grotesk',sans-serif;font-size:12px;border-radius:9px;cursor:pointer">🔄 Reset ke Default</button>
+  <div>
+    <label class="lep-label">Background Lobby</label>
+    <div class="lep-upload-wrap">
+      <button type="button" class="lep-upload-btn" id="lep-bg-btn" onclick="document.getElementById('lep-bg-file').click()">Pilih Background...</button>
+      <div class="lep-preview" id="lep-bg-preview" style="font-size:14px">&#x1F30A;</div>
+      <input type="file" id="lep-bg-file" accept="image/*" style="display:none" onchange="lobbyHandleBgUpload(this)">
+    </div>
+    <div style="font-size:10px;color:#0077B6;margin-top:-6px;margin-bottom:10px;opacity:.7">Rekomendasi: ukuran minimal 800x600 px</div>
+  </div>
+  <button type="button" class="lep-save-btn" onclick="lobbySaveAppearance()">Simpan Perubahan</button>
+  <button type="button" class="lep-reset-btn" onclick="lobbyResetAppearance()">Reset ke Default</button>
 </div>
 
 <script>
@@ -2181,10 +2256,6 @@ button:focus:not(:focus-visible) { outline: none; }
       if(animate){ p1.classList.remove('lobby-fadein'); void p1.offsetWidth; p1.classList.add('lobby-fadein'); }
       else { p1.classList.remove('lobby-fadein'); }
     }
-    var fab = document.getElementById('lobby-edit-fab');
-    if(fab) fab.style.display='none';
-    var ep = document.getElementById('lobby-edit-panel');
-    if(ep) ep.classList.remove('open');
   }
 
   function showPhaseRooms(animate){
@@ -2207,19 +2278,6 @@ button:focus:not(:focus-visible) { outline: none; }
         var s = (window.siswaList||[]).find(function(x){return x.id===window.loggedInStudentId;});
         bar.innerHTML = '<span style="color:#7dd87d">🎮 '+(s?s.name:window.loggedInStudentId)+'</span>';
       }
-    }
-    // Sync nama di header fase 2
-    var s2 = getLobbySettings();
-    var n2 = document.getElementById('lobby-app-name-display-2');
-    if(n2 && s2.appName) n2.textContent = s2.appName;
-    var l2 = document.getElementById('lobby-logo-display-2');
-    if(l2 && s2.logoUrl){ l2.innerHTML='<div class="lobby-logo-wrap" style="width:52px;height:52px;margin-bottom:8px"><img src="'+s2.logoUrl+'" alt="logo"></div>'; }
-    // Tampilkan FAB edit HANYA jika lobby-screen aktif dan pembina login
-    var fab = document.getElementById('lobby-edit-fab');
-    if(fab){
-      var ls = document.getElementById('lobby-screen');
-      var lobbyActive = ls && ls.style.display !== 'none';
-      fab.style.display = (window.pembina && lobbyActive) ? 'flex' : 'none';
     }
   }
 
@@ -2329,356 +2387,253 @@ button:focus:not(:focus-visible) { outline: none; }
     }, 80);
   };
 
-  // Apply lobby settings ke tampilan
-  function getLobbySettings(){
-    try{ return JSON.parse(localStorage.getItem('dkv_lobby_settings')||'{}'); } catch(e){ return {}; }
+  // ── EDIT LOBBY PANEL ────────────────────────────────
+  var _lepLogoData = null;   // base64 logo baru
+  var _lepBgData   = null;   // base64 bg baru
+
+  // Tampilkan/sembunyikan bar aksi sesuai role
+  function _updateLobbyEditBar(){
+    var bar = document.getElementById('lobby-edit-bar');
+    var editBtn = document.getElementById('lobby-edit-toggle-btn');
+    if(!bar) return;
+    // Bar selalu tampil setelah login (ada logout button)
+    bar.style.display = (window.pembina || window.loggedInStudentId) ? 'flex' : 'none';
+    // Tombol Edit hanya untuk pembina
+    if(editBtn) editBtn.style.display = window.pembina ? 'flex' : 'none';
   }
 
-  function applyLobbyLogo(url){
-    ['lobby-logo-display','lobby-logo-display-2'].forEach(function(id){
-      var el=document.getElementById(id); if(!el) return;
-      var sz = id==='lobby-logo-display-2'?'52px':'68px';
-      var fsz = id==='lobby-logo-display-2'?'26px':'32px';
-      el.innerHTML='<div class="lobby-logo-wrap" style="width:'+sz+';height:'+sz+';margin-bottom:'+(id==='lobby-logo-display-2'?'8':'12')+'px"><img src="'+url+'" alt="logo" onerror="this.parentNode.innerHTML=\'🎨\'"></div>';
-    });
+  // Toggle panel edit
+  window.lobbyToggleEditPanel = function(){
+    var panel = document.getElementById('lobby-edit-panel');
+    var dim   = document.getElementById('lobby-edit-dim');
+    if(!panel) return;
+    var isOpen = panel.style.display === 'block';
+    panel.style.display = isOpen ? 'none' : 'block';
+    if(dim) dim.style.display = isOpen ? 'none' : 'block';
+    if(!isOpen) _lepLoadCurrentValues();
+  };
+
+  // Isi nilai saat ini ke form
+  function _lepLoadCurrentValues(){
+    var n = document.getElementById('lep-nama');
+    var s = document.getElementById('lep-sub');
+    if(n) n.value = document.getElementById('lobby-app-name-display') ? (document.getElementById('lobby-app-name-display').textContent||'') : '';
+    if(s) s.value = document.getElementById('lobby-app-sub-display') ? (document.getElementById('lobby-app-sub-display').textContent||'') : '';
+    _lepLogoData = null;
+    _lepBgData   = null;
   }
 
-  window.lobbyApplySettings = function(){
-    var s=getLobbySettings();
-    if(s.appName){
-      ['lobby-app-name-display','lobby-app-name-display-2'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=s.appName;});
+  // Handle upload logo
+  window.lobbyHandleLogoUpload = function(input){
+    var file = input.files && input.files[0];
+    if(!file) return;
+    if(file.size > 2 * 1024 * 1024){
+      if(typeof showToast==='function') showToast('Logo terlalu besar. Maks 2 MB.');
+      input.value=''; return;
     }
-    if(s.appSub){ var el=document.getElementById('lobby-app-sub-display'); if(el)el.textContent=s.appSub; }
-    if(s.logoUrl) applyLobbyLogo(s.logoUrl);
-    else if(s.logoEmoji){
+    var reader = new FileReader();
+    reader.onload = function(e){
+      _lepLogoData = e.target.result;
+      var btn = document.getElementById('lep-logo-btn');
+      var prev = document.getElementById('lep-logo-preview');
+      if(btn) btn.textContent = file.name;
+      if(prev){ prev.innerHTML = '<img src="'+_lepLogoData+'" alt="logo">'; }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Handle upload background
+  window.lobbyHandleBgUpload = function(input){
+    var file = input.files && input.files[0];
+    if(!file) return;
+    if(file.size > 5 * 1024 * 1024){
+      if(typeof showToast==='function') showToast('Background terlalu besar. Maks 5 MB.');
+      input.value=''; return;
+    }
+    var reader = new FileReader();
+    reader.onload = function(e){
+      _lepBgData = e.target.result;
+      var btn = document.getElementById('lep-bg-btn');
+      var prev = document.getElementById('lep-bg-preview');
+      if(btn) btn.textContent = file.name;
+      if(prev){ prev.innerHTML = '<img src="'+_lepBgData+'" alt="bg" style="width:100%;height:100%;object-fit:cover;border-radius:8px">'; }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Terapkan tampilan ke lobby
+  function _applyLobbyAppearance(cfg){
+    if(!cfg) return;
+    // Nama
+    if(cfg.nama){
+      ['lobby-app-name-display','lobby-app-name-display-2'].forEach(function(id){
+        var el = document.getElementById(id); if(el) el.textContent = cfg.nama;
+      });
+      document.title = cfg.nama;
+    }
+    // Sub
+    if(cfg.sub !== undefined){
+      var sub = document.getElementById('lobby-app-sub-display');
+      if(sub) sub.textContent = cfg.sub;
+    }
+    // Logo
+    if(cfg.logo){
+      var imgHtml = '<img src="'+cfg.logo+'" alt="logo" style="width:100%;height:100%;object-fit:cover">';
+      var wrapHtml = '<div class="lobby-logo-wrap" style="width:72px;height:72px;border-radius:22px;overflow:hidden;margin:0 auto 12px;border:2px solid rgba(0,119,182,.35);box-shadow:0 0 0 6px rgba(0,119,182,.08),0 12px 32px rgba(0,119,182,.2)">'+imgHtml+'</div>';
       ['lobby-logo-display','lobby-logo-display-2'].forEach(function(id){
-        var el=document.getElementById(id); if(!el) return;
-        var sz=id==='lobby-logo-display-2'?'52px':'68px', fsz=id==='lobby-logo-display-2'?'26px':'32px', mb=id==='lobby-logo-display-2'?'8':'12';
-        el.innerHTML='<div class="lobby-logo-emoji" style="width:'+sz+';height:'+sz+';font-size:'+fsz+';margin-bottom:'+mb+'px">'+s.logoEmoji+'</div>';
+        var el = document.getElementById(id); if(el) el.innerHTML = wrapHtml;
       });
     }
-    var bgLayer=document.getElementById('lobby-bg-layer');
-    if(bgLayer){
-      if(s.bgImg){
-        bgLayer.style.background='#02023a';
-        bgLayer.style.backgroundImage='url('+s.bgImg+')';
-        bgLayer.style.backgroundSize='cover';
-        bgLayer.style.backgroundPosition='center';
-        bgLayer.style.filter=s.bgDim?'brightness(0.45)':'';
-      } else if(s.bgGradient){
-        bgLayer.style.background=s.bgGradient;
-        bgLayer.style.backgroundImage='none';
-        bgLayer.style.filter='';
-      } else if(s.bgColor){
-        bgLayer.style.background=s.bgColor;
-        bgLayer.style.backgroundImage='none';
-        bgLayer.style.filter='';
+    // Background
+    if(cfg.bg){
+      var bgDiv = document.getElementById('lobby-screen-bg');
+      var screen = document.getElementById('lobby-screen');
+      if(bgDiv){
+        bgDiv.style.backgroundImage = 'url('+cfg.bg+')';
+        bgDiv.style.backgroundSize = 'cover';
+        bgDiv.style.backgroundPosition = 'center';
+        bgDiv.style.display = 'block';
       }
-    }
-  };
-
-  window.lobbyHandleLogoUpload = function(input){
-    var file=input.files[0]; if(!file) return;
-    var r=new FileReader();
-    r.onload=function(e){
-      var data=e.target.result;
-      var ui=document.getElementById('ledit-logourl'); if(ui)ui.value=data;
-      var ei=document.getElementById('ledit-logoemoji'); if(ei)ei.value='';
-      applyLobbyLogo(data);
-      lobbyUpdateLogoPreview(data,'img');
-    };
-    r.readAsDataURL(file);
-  };
-
-  window.lobbyHandleBgUpload = function(input){
-    var file=input.files[0]; if(!file) return;
-    var r=new FileReader();
-    r.onload=function(e){
-      var data=e.target.result;
-      var bi=document.getElementById('ledit-bgurl'); if(bi)bi.value=data;
-      var bg=document.getElementById('lobby-bg-layer');
-      if(bg){ bg.style.backgroundImage='url('+data+')'; bg.style.backgroundSize='cover'; bg.style.backgroundPosition='center'; }
-      window._lobbyTempBgImg=data; window._lobbyTempBgColor='';
-    };
-    r.readAsDataURL(file);
-  };
-
-  // ── Logo Preview Helper ────────────────────────────
-  function lobbyUpdateLogoPreview(val, type){
-    var prev=document.getElementById('ledit-logo-preview'); if(!prev) return;
-    if(type==='emoji'&&val){
-      prev.innerHTML=''; prev.style.fontSize='30px'; prev.textContent=val;
-    } else if(type==='img'&&val){
-      prev.style.fontSize=''; prev.innerHTML='<img src="'+val+'" style="width:100%;height:100%;object-fit:cover;border-radius:12px" onerror="this.parentNode.textContent=\'❌\'">';
-    } else {
-      prev.style.fontSize='26px'; prev.textContent='🎨';
+      if(screen){
+        screen.style.backgroundImage = 'url('+cfg.bg+')';
+        screen.style.backgroundSize = 'cover';
+        screen.style.backgroundPosition = 'center';
+      }
     }
   }
 
-  window.lobbyPreviewLogoUrl = function(v){
-    if(!v){ lobbyUpdateLogoPreview('',''); return; }
-    applyLobbyLogo(v);
-    lobbyUpdateLogoPreview(v,'img');
-    var ei=document.getElementById('ledit-logoemoji'); if(ei)ei.value='';
-  };
+  // Simpan ke Firebase
+  window.lobbySaveAppearance = function(){
+    var nama = (document.getElementById('lep-nama').value||'').trim();
+    var sub  = (document.getElementById('lep-sub').value||'').trim();
+    if(!nama){ if(typeof showToast==='function') showToast('Nama lobby tidak boleh kosong.'); return; }
 
-  window.lobbyPreviewEmoji = function(v){
-    if(!v){ lobbyUpdateLogoPreview('',''); return; }
-    // Apply emoji to lobby
-    ['lobby-logo-display','lobby-logo-display-2'].forEach(function(id){
-      var el=document.getElementById(id); if(!el) return;
-      var sz=id==='lobby-logo-display-2'?'52px':'68px', fsz=id==='lobby-logo-display-2'?'26px':'32px', mb=id==='lobby-logo-display-2'?'8':'12';
-      el.innerHTML='<div class="lobby-logo-emoji" style="width:'+sz+';height:'+sz+';font-size:'+fsz+';margin-bottom:'+mb+'px">'+v+'</div>';
-    });
-    lobbyUpdateLogoPreview(v,'emoji');
-    var li=document.getElementById('ledit-logourl'); if(li)li.value='';
-  };
+    var cfg = { nama: nama, sub: sub };
+    if(_lepLogoData) cfg.logo = _lepLogoData;
+    if(_lepBgData)   cfg.bg   = _lepBgData;
 
-  window.lobbyResetLogo = function(){
-    ['lobby-logo-display','lobby-logo-display-2'].forEach(function(id){
-      var el=document.getElementById(id); if(!el) return;
-      var sz=id==='lobby-logo-display-2'?'52px':'68px', fsz=id==='lobby-logo-display-2'?'26px':'32px', mb=id==='lobby-logo-display-2'?'8':'12';
-      el.innerHTML='<div class="lobby-logo-emoji" style="width:'+sz+';height:'+sz+';font-size:'+fsz+';margin-bottom:'+mb+'px">🎨</div>';
-    });
-    var li=document.getElementById('ledit-logourl'); if(li)li.value='';
-    var ei=document.getElementById('ledit-logoemoji'); if(ei)ei.value='';
-    lobbyUpdateLogoPreview('','');
-  };
+    // Terapkan live
+    _applyLobbyAppearance(cfg);
 
-  // ── Background Tab Switch ──────────────────────────
-  window.lobbyBgTab = function(tab){
-    ['color','img','gradient'].forEach(function(t){
-      var panel=document.getElementById('ledit-bg-panel-'+t);
-      var btn=document.getElementById('ledit-bg-tab-'+t);
-      if(panel) panel.style.display=(t===tab)?'block':'none';
-      if(btn){
-        if(t===tab){
-          btn.style.background='linear-gradient(135deg,#f5c842,#e6a000)';
-          btn.style.color='#1a1916';
-        } else {
-          btn.style.background='transparent';
-          btn.style.color='#6e6b64';
-        }
+    // Simpan ke Firebase jika tersedia
+    try{
+      if(window.firebase && window.firebase.database){
+        var db = window.firebase.database();
+        var ref = db.ref('lobbyConfig');
+        // Jika ada logo/bg baru, merge; jika tidak, jangan overwrite
+        ref.once('value').then(function(snap){
+          var existing = snap.val() || {};
+          var toSave = { nama: cfg.nama, sub: cfg.sub };
+          if(cfg.logo) toSave.logo = cfg.logo; else if(existing.logo) toSave.logo = existing.logo;
+          if(cfg.bg)   toSave.bg   = cfg.bg;   else if(existing.bg)   toSave.bg   = existing.bg;
+          ref.set(toSave).then(function(){
+            if(typeof showToast==='function') showToast('Tampilan lobby disimpan! ✨');
+            document.getElementById('lobby-edit-panel').style.display='none';
+          }).catch(function(e){
+            if(typeof showToast==='function') showToast('Gagal simpan ke server: '+e.message);
+          });
+        });
+      } else {
+        // Fallback: simpan ke localStorage
+        var toSave = { nama: cfg.nama, sub: cfg.sub };
+        if(cfg.logo) toSave.logo = cfg.logo;
+        if(cfg.bg)   toSave.bg   = cfg.bg;
+        try{ localStorage.setItem('dkv_lobbyConfig', JSON.stringify(toSave)); } catch(e2){}
+        if(typeof showToast==='function') showToast('Disimpan lokal! (Firebase belum siap) ✨');
+        document.getElementById('lobby-edit-panel').style.display='none';
       }
-    });
-    window._lobbyBgTabActive = tab;
-  };
-
-  // ── BG Color picker sync ──────────────────────────
-  window.lobbyBgHexInput = function(v){
-    if(/^#[0-9a-fA-F]{6}$/.test(v)){
-      var pk=document.getElementById('ledit-bgcolor-picker');
-      if(pk) pk.value=v;
-      lobbyPickBgColor(v);
+    } catch(e){
+      if(typeof showToast==='function') showToast('Error: '+e.message);
     }
   };
 
-  window.lobbyPreviewBgUrl = function(v){
-    if(!v) return;
-    var bg=document.getElementById('lobby-bg-layer');
-    if(bg){ bg.style.backgroundImage='url('+v+')'; bg.style.backgroundSize='cover'; bg.style.backgroundPosition='center'; }
-    window._lobbyTempBgImg=v; window._lobbyTempBgColor='';
-  };
-
-  window.lobbyBgDimChange = function(checked){
-    window._lobbyBgDim = checked;
-    var bg=document.getElementById('lobby-bg-layer');
-    if(bg) bg.style.filter = checked ? 'brightness(0.45)' : '';
-  };
-
-  // ── Gradient ──────────────────────────────────────
-  var _gradPresets=[
-    {c1:'#02023a',c2:'#0f0e1f',d:'135deg'},
-    {c1:'#0a1628',c2:'#0d3b2b',d:'135deg'},
-    {c1:'#1a0028',c2:'#3a0a4a',d:'135deg'},
-    {c1:'#0a0a0a',c2:'#1a1a2e',d:'180deg'},
-    {c1:'#0d1b2a',c2:'#1b4332',d:'135deg'},
-    {c1:'#1a0a0a',c2:'#2d1b1b',d:'135deg'},
-    {c1:'#03045E',c2:'#0077B6',d:'135deg'},
-    {c1:'#0b3d0b',c2:'#1a5c1a',d:'135deg'},
-  ];
-
-  function renderGradPresets(){
-    var el=document.getElementById('ledit-grad-presets'); if(!el) return;
-    el.innerHTML=_gradPresets.map(function(g,i){
-      return '<div onclick="lobbyApplyGradPreset('+i+')" style="height:32px;border-radius:7px;cursor:pointer;border:2px solid transparent;background:linear-gradient('+g.d+','+g.c1+','+g.c2+')" title="Preset '+(i+1)+'"></div>';
-    }).join('');
-  }
-
-  window.lobbyApplyGradPreset = function(i){
-    var g=_gradPresets[i]; if(!g) return;
-    var c1=document.getElementById('ledit-grad-c1'), c2=document.getElementById('ledit-grad-c2');
-    var c1h=document.getElementById('ledit-grad-c1-hex'), c2h=document.getElementById('ledit-grad-c2-hex');
-    var d=document.getElementById('ledit-grad-dir');
-    if(c1){c1.value=g.c1;} if(c2){c2.value=g.c2;} if(d){d.value=g.d;}
-    if(c1h)c1h.value=g.c1; if(c2h)c2h.value=g.c2;
-    lobbyPreviewGradient();
-  };
-
-  window.lobbyGradHex = function(which, v){
-    if(/^#[0-9a-fA-F]{6}$/.test(v)){
-      var pk=document.getElementById('ledit-grad-'+which); if(pk) pk.value=v;
-      lobbyPreviewGradient();
-    }
-  };
-
-  window.lobbyPreviewGradient = function(){
-    var c1=document.getElementById('ledit-grad-c1'), c2=document.getElementById('ledit-grad-c2');
-    var d=document.getElementById('ledit-grad-dir');
-    if(!c1||!c2||!d) return;
-    var c1h=document.getElementById('ledit-grad-c1-hex'), c2h=document.getElementById('ledit-grad-c2-hex');
-    if(c1h)c1h.value=c1.value; if(c2h)c2h.value=c2.value;
-    var grad='linear-gradient('+d.value+','+c1.value+','+c2.value+')';
-    var prev=document.getElementById('ledit-grad-preview'); if(prev) prev.style.background=grad;
-    var bg=document.getElementById('lobby-bg-layer');
-    if(bg){ bg.style.background=grad; bg.style.backgroundImage='none'; }
-    window._lobbyTempBgGradient=grad; window._lobbyTempBgColor=''; window._lobbyTempBgImg='';
-  };
-
-  var _lobbyBgColors=['#02023a','#0e1a0e','#0e1219','#1a0e14','#1a1411','#141d2e','#2a1a0e','#0e1a1a','#1a0e1a','#1d1a0e','#0a0a14','#14000e','#001a14','#14100a','#0e0e0e'];
-
-  function renderLobbyColorGrid(){
-    var grid=document.getElementById('ledit-color-grid'); if(!grid) return;
-    var s=getLobbySettings(); var cur=s.bgColor||'#02023a';
-    grid.innerHTML=_lobbyBgColors.map(function(c){
-      return '<div class="lobby-color-swatch'+(c===cur?' sel':'')+'" style="background:'+c+'" onclick="lobbyPickBgColor(\''+c+'\')" title="'+c+'"></div>';
-    }).join('');
-  }
-
-  window.lobbyPickBgColor = function(c){
-    var bg=document.getElementById('lobby-bg-layer');
-    if(bg){ bg.style.background=c; bg.style.backgroundImage='none'; bg.style.filter=''; }
-    var bi=document.getElementById('ledit-bgurl'); if(bi)bi.value='';
-    var pk=document.getElementById('ledit-bgcolor-picker'); if(pk)pk.value=c.length===7?c:'#02023a';
-    var hx=document.getElementById('ledit-bgcolor-hex'); if(hx)hx.value=c;
-    window._lobbyTempBgColor=c; window._lobbyTempBgImg=''; window._lobbyTempBgGradient='';
-    Array.from(document.querySelectorAll('.lobby-color-swatch')).forEach(function(el){
-      el.classList.toggle('sel', el.getAttribute('title')===c);
-    });
-  };
-
-  window.lobbyToggleEditPanel = function(){
-    var panel=document.getElementById('lobby-edit-panel'); if(!panel) return;
-    if(!panel.classList.contains('open')){
-      var s=getLobbySettings();
-      var ai=document.getElementById('ledit-appname'); if(ai)ai.value=s.appName||'';
-      var si=document.getElementById('ledit-appsub'); if(si)si.value=s.appSub||'';
-      var li=document.getElementById('ledit-logourl'); if(li)li.value=s.logoUrl||'';
-      var ei=document.getElementById('ledit-logoemoji'); if(ei)ei.value=s.logoEmoji||'';
-      var bi=document.getElementById('ledit-bgurl'); if(bi)bi.value=s.bgImg||'';
-      var pk=document.getElementById('ledit-bgcolor-picker'); if(pk)pk.value=s.bgColor||'#02023a';
-      var hx=document.getElementById('ledit-bgcolor-hex'); if(hx)hx.value=s.bgColor||'#02023a';
-      // Update logo preview
-      if(s.logoUrl) lobbyUpdateLogoPreview(s.logoUrl,'img');
-      else if(s.logoEmoji) lobbyUpdateLogoPreview(s.logoEmoji,'emoji');
-      else lobbyUpdateLogoPreview('','');
-      // Gradient
-      if(s.bgGradient){
-        var c1=document.getElementById('ledit-grad-c1'), c2=document.getElementById('ledit-grad-c2');
-        var dv=document.getElementById('ledit-grad-dir');
-        if(s.bgGradC1&&c1){ c1.value=s.bgGradC1; var c1h=document.getElementById('ledit-grad-c1-hex'); if(c1h)c1h.value=s.bgGradC1; }
-        if(s.bgGradC2&&c2){ c2.value=s.bgGradC2; var c2h=document.getElementById('ledit-grad-c2-hex'); if(c2h)c2h.value=s.bgGradC2; }
-        if(s.bgGradDir&&dv) dv.value=s.bgGradDir;
-        var prev=document.getElementById('ledit-grad-preview');
-        if(prev) prev.style.background=s.bgGradient;
+  // Reset ke default
+  window.lobbyResetAppearance = function(){
+    try{
+      if(window.firebase && window.firebase.database){
+        window.firebase.database().ref('lobbyConfig').remove();
       }
-      renderLobbyColorGrid();
-      renderGradPresets();
-      // Determine active tab
-      var activeTab='color';
-      if(s.bgImg) activeTab='img';
-      else if(s.bgGradient) activeTab='gradient';
-      lobbyBgTab(activeTab);
-    }
-    panel.classList.toggle('open');
-  };
-
-  window.lobbySaveEdit = function(){
-    var s=getLobbySettings();
-    var an=document.getElementById('ledit-appname').value.trim();
-    var as_=document.getElementById('ledit-appsub').value.trim();
-    var lu=document.getElementById('ledit-logourl').value.trim();
-    var le=document.getElementById('ledit-logoemoji').value.trim();
-    var bu=document.getElementById('ledit-bgurl').value.trim();
-    var tab=window._lobbyBgTabActive||'color';
-    if(an) s.appName=an; else delete s.appName;
-    if(as_) s.appSub=as_; else delete s.appSub;
-    if(lu){ s.logoUrl=lu; delete s.logoEmoji; }
-    else if(le){ s.logoEmoji=le; delete s.logoUrl; }
-    if(tab==='img'){
-      if(bu){ s.bgImg=bu; delete s.bgColor; delete s.bgGradient; delete s.bgGradC1; delete s.bgGradC2; delete s.bgGradDir; }
-      s.bgDim=window._lobbyBgDim||false;
-    } else if(tab==='gradient'&&window._lobbyTempBgGradient){
-      var c1v=document.getElementById('ledit-grad-c1').value;
-      var c2v=document.getElementById('ledit-grad-c2').value;
-      var dv=document.getElementById('ledit-grad-dir').value;
-      s.bgGradient=window._lobbyTempBgGradient;
-      s.bgGradC1=c1v; s.bgGradC2=c2v; s.bgGradDir=dv;
-      delete s.bgImg; delete s.bgColor; delete s.bgDim;
-    } else if(tab==='color'&&window._lobbyTempBgColor){
-      s.bgColor=window._lobbyTempBgColor;
-      delete s.bgImg; delete s.bgGradient; delete s.bgGradC1; delete s.bgGradC2; delete s.bgGradDir;
-    }
-    localStorage.setItem('dkv_lobby_settings',JSON.stringify(s));
-    window.lobbyApplySettings();
-    window._lobbyTempBgColor=null; window._lobbyTempBgImg=null; window._lobbyTempBgGradient=null;
-    if(typeof showToast==='function') showToast('Tampilan lobby disimpan! ✨');
-    document.getElementById('lobby-edit-panel').classList.remove('open');
-  };
-
-  window.lobbyResetEdit = function(){
-    if(typeof showConfirm==='function'){
-      showConfirm('Reset semua pengaturan lobby ke default?', function(){
-        _doLobbyReset();
-      }); return;
-    }
-    _doLobbyReset();
-  };
-
-  function _doLobbyReset(){
-    localStorage.removeItem('dkv_lobby_settings');
-    window._lobbyTempBgColor=null; window._lobbyTempBgGradient=null; window._lobbyTempBgImg=null;
-    ['lobby-app-name-display','lobby-app-name-display-2'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent='DKV';});
-    var sub=document.getElementById('lobby-app-sub-display'); if(sub) sub.textContent='SMPN 1 Sumenep';
-    ['lobby-logo-display','lobby-logo-display-2'].forEach(function(id){
-      var el=document.getElementById(id); if(!el) return;
-      var sz=id==='lobby-logo-display-2'?'52px':'68px', fsz=id==='lobby-logo-display-2'?'26px':'32px', mb=id==='lobby-logo-display-2'?'8':'12';
-      el.innerHTML='<div class="lobby-logo-emoji" style="width:'+sz+';height:'+sz+';font-size:'+fsz+';margin-bottom:'+mb+'px">🎨</div>';
+      localStorage.removeItem('dkv_lobbyConfig');
+    } catch(e){}
+    // Reset tampilan
+    ['lobby-app-name-display','lobby-app-name-display-2'].forEach(function(id){
+      var el = document.getElementById(id); if(el) el.textContent = 'DKV';
     });
-    var bgLayer=document.getElementById('lobby-bg-layer');
-    if(bgLayer){ bgLayer.style.background='linear-gradient(135deg,#0b0918 0%,#0f0e1f 40%,#150b24 70%,#080d1a 100%)'; bgLayer.style.backgroundImage='none'; bgLayer.style.filter=''; }
+    var sub = document.getElementById('lobby-app-sub-display');
+    if(sub) sub.textContent = 'SMPN 1 Sumenep';
+    var screen = document.getElementById('lobby-screen');
+    if(screen){ screen.style.backgroundImage=''; }
+    var bgDiv = document.getElementById('lobby-screen-bg');
+    if(bgDiv){ bgDiv.style.backgroundImage=''; bgDiv.style.display='none'; }
+    ['lobby-logo-display','lobby-logo-display-2'].forEach(function(id){
+      var el = document.getElementById(id);
+      if(el) el.innerHTML = '<div class="lobby-logo-emoji">&#x1F3A8;</div>';
+    });
+    document.title = 'Ekskul DKV SMPN 1 Sumenep \u2014 Quest Board';
     if(typeof showToast==='function') showToast('Tampilan lobby direset ke default.');
-    document.getElementById('lobby-edit-panel').classList.remove('open');
+    document.getElementById('lobby-edit-panel').style.display='none';
+  };
+
+  // Load lobbyConfig dari Firebase saat awal
+  function _loadLobbyConfig(){
+    var _tryLocal = function(){
+      try{
+        var raw = localStorage.getItem('dkv_lobbyConfig');
+        if(raw){ var c=JSON.parse(raw); _applyLobbyAppearance(c); }
+      }catch(e){}
+    };
+    if(window.firebase && window.firebase.database){
+      try{
+        window.firebase.database().ref('lobbyConfig').once('value').then(function(snap){
+          var c = snap.val();
+          if(c) _applyLobbyAppearance(c);
+          else _tryLocal();
+        }).catch(_tryLocal);
+      }catch(e){ _tryLocal(); }
+    } else {
+      // Coba lagi setelah Firebase siap
+      var _retryCount = 0;
+      var _retryTimer = setInterval(function(){
+        _retryCount++;
+        if(window.firebase && window.firebase.database){
+          clearInterval(_retryTimer);
+          try{
+            window.firebase.database().ref('lobbyConfig').once('value').then(function(snap){
+              var c = snap.val(); if(c) _applyLobbyAppearance(c); else _tryLocal();
+            }).catch(_tryLocal);
+          }catch(e){ _tryLocal(); }
+        } else if(_retryCount > 20){ clearInterval(_retryTimer); _tryLocal(); }
+      }, 500);
+    }
   }
 
-  // ── Init saat DOM siap ──────────────────────────────
+  // Patch showPhaseRooms agar update bar edit
+  var _origShowPhaseRooms = showPhaseRooms;
+  showPhaseRooms = function(animate){
+    _origShowPhaseRooms(animate);
+    _updateLobbyEditBar();
+  };
+  // Patch showPhaseLogin agar sembunyikan bar+panel edit
+  var _origShowPhaseLogin = showPhaseLogin;
+  showPhaseLogin = function(animate){
+    _origShowPhaseLogin(animate);
+    var bar   = document.getElementById('lobby-edit-bar');
+    var panel = document.getElementById('lobby-edit-panel');
+    var dim   = document.getElementById('lobby-edit-dim');
+    if(bar)   bar.style.display='none';
+    if(panel) panel.style.display='none';
+    if(dim)   dim.style.display='none';
+  };
+
+  // Init
   document.addEventListener('DOMContentLoaded', function(){
-    window.lobbyApplySettings();
+    // Load config tampilan lobby dari Firebase/localStorage
+    _loadLobbyConfig();
     // Init tanpa animasi (false = no animate)
     if(window.pembina || window.loggedInStudentId){
       showPhaseRooms(false);
     } else {
       showPhaseLogin(false);
-    }
-
-    // ── Swipe kiri untuk tutup lobby edit panel ──
-    var panel = document.getElementById('lobby-edit-panel');
-    if(panel){
-      var _tx=0, _sx=0, _dragging=false;
-      panel.addEventListener('touchstart', function(e){
-        if(e.touches[0].clientX > window.innerWidth - 280) return; // only from panel edge
-        _sx = e.touches[0].clientX; _dragging=true; _tx=0;
-      },{passive:true});
-      panel.addEventListener('touchmove', function(e){
-        if(!_dragging) return;
-        _tx = e.touches[0].clientX - _sx;
-        if(_tx > 0) panel.style.transform = 'translateX('+_tx+'px)';
-      },{passive:true});
-      panel.addEventListener('touchend', function(){
-        if(_tx > 80){ panel.classList.remove('open'); }
-        panel.style.transform = '';
-        _dragging=false; _tx=0;
-      },{passive:true});
     }
   });
 
@@ -8475,7 +8430,6 @@ function logoutStudent(){
   // Kembali ke lobby setelah logout siswa
   document.getElementById('lobby-screen').style.display = 'flex';
   document.getElementById('ujian-screen').style.display = 'none';
-  if(typeof lobbyApplySettings === 'function') lobbyApplySettings();
   showToast('Berhasil logout. Sampai jumpa! 👋');
 }
 // ═══════════════════════════════════════════════════════════════
@@ -8490,17 +8444,6 @@ function updateToolbarByRole(){
   var notifBell  = document.getElementById('notif-bell-wrap');
   var logoutBtn  = document.getElementById('global-logout-btn');
 
-  // FAB edit lobby HANYA muncul di lobby screen fase rooms (bukan fase login, bukan di ruang ekskul)
-  var lobbyFab   = document.getElementById('lobby-edit-fab');
-  var lobbyFabEp = document.getElementById('lobby-edit-panel');
-  var lobbyVisible = document.getElementById('lobby-screen') &&
-                     document.getElementById('lobby-screen').style.display !== 'none';
-  var lobbyPhaseRooms = document.getElementById('lobby-phase-rooms') &&
-                        document.getElementById('lobby-phase-rooms').style.display !== 'none';
-  if(lobbyFab){
-    lobbyFab.style.display = (window.pembina && lobbyVisible && lobbyPhaseRooms) ? 'flex' : 'none';
-  }
-  if(!lobbyVisible && lobbyFabEp) lobbyFabEp.classList.remove('open');
 
   if(window.pembina){
     // ── MODE PEMBINA ──
@@ -11182,11 +11125,6 @@ document.addEventListener('click', function(e){
   document.getElementById('back-to-lobby-btn').addEventListener('click',function(){
     document.getElementById('lobby-screen').style.display='flex';
     document.getElementById('ujian-screen').style.display='none';
-    // Kembalikan FAB edit lobby jika pembina sedang di fase rooms
-    var _rfab = document.getElementById('lobby-edit-fab');
-    var _rPhaseRooms = document.getElementById('lobby-phase-rooms') &&
-                       document.getElementById('lobby-phase-rooms').style.display !== 'none';
-    if(_rfab) _rfab.style.display = (window.pembina && _rPhaseRooms) ? 'flex' : 'none';
     if(typeof lobbyUpdateStatus==='function') setTimeout(lobbyUpdateStatus,30);
   });
 
@@ -11202,11 +11140,6 @@ document.addEventListener('click', function(e){
     }
     document.getElementById('lobby-screen').style.display='none';
     document.getElementById('ujian-screen').style.display='block';
-    // Sembunyikan FAB edit lobby saat masuk ruang ujian
-    var _ufab = document.getElementById('lobby-edit-fab');
-    if(_ufab) _ufab.style.display = 'none';
-    var _uep = document.getElementById('lobby-edit-panel');
-    if(_uep) _uep.classList.remove('open');
     initUjianRef();
     // Auto-carry sesi yang sudah aktif
     // PRIORITAS: siswa login > pembina — siswa tidak boleh masuk sebagai pembina
@@ -11237,11 +11170,6 @@ document.addEventListener('click', function(e){
     document.getElementById('ujian-screen').style.display='none';
     document.getElementById('lobby-screen').style.display='flex';
     // Kembalikan FAB edit lobby jika pembina sedang di fase rooms
-    var _rfab = document.getElementById('lobby-edit-fab');
-    var _rPhaseRooms2 = document.getElementById('lobby-phase-rooms') &&
-                        document.getElementById('lobby-phase-rooms').style.display !== 'none';
-    if(_rfab) _rfab.style.display = (window.pembina && _rPhaseRooms2) ? 'flex' : 'none';
-    if(typeof lobbyUpdateStatus==='function') setTimeout(lobbyUpdateStatus,30);
   });
 
   // ── GATE UJIAN — Tab & Helper ──────────────────────────────
@@ -12024,11 +11952,6 @@ document.addEventListener('click', function(e){
   function enterEkskul(){
     document.getElementById('lobby-screen').style.display = 'none';
     document.getElementById('ujian-screen').style.display = 'none';
-    // Sembunyikan FAB edit saat masuk ruangan
-    var fab = document.getElementById('lobby-edit-fab');
-    if(fab) fab.style.display = 'none';
-    var editPanel = document.getElementById('lobby-edit-panel');
-    if(editPanel) editPanel.classList.remove('open');
   }
 
   // ── Login siswa dari gate ──────────────────────────
@@ -12118,11 +12041,6 @@ document.addEventListener('click', function(e){
     _updateGatePembinaView();
     if(typeof updateToolbarByRole === 'function') updateToolbarByRole();
     if(typeof lobbyUpdateStatus === 'function') lobbyUpdateStatus();
-    // Sembunyikan FAB edit lobby
-    var fab = document.getElementById('lobby-edit-fab');
-    if(fab) fab.style.display = 'none';
-    var editPanel = document.getElementById('lobby-edit-panel');
-    if(editPanel) editPanel.classList.remove('open');
     if(typeof showToast === 'function') showToast('Pembina telah logout.');
   };
 
