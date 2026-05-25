@@ -126,7 +126,7 @@
 <div class="pending-panel-overlay" id="pending-panel-overlay"></div>
 <div class="pending-panel" id="pending-panel">
   <div class="pending-panel-head">
-    <div class="pending-panel-title">📬 Permintaan Bergabung</div>
+    <div class="pending-panel-title">🔔 Permintaan Bergabung</div>
     <button class="pending-panel-close" id="pending-panel-close" type="button">✕</button>
   </div>
   <div class="pending-list" id="pending-list"></div>
@@ -1817,7 +1817,7 @@ input:focus,select:focus,textarea:focus{
     font-size: 10px !important;
     padding: 4px 8px !important;
   }
-  #sync-label { display: none; }
+  #sync-label { display: inline; font-size: 11px !important; }
   /* Tombol back to lobby lebih kecil */
   #back-to-lobby-btn {
     font-size: 11px !important;
@@ -3150,7 +3150,7 @@ input:focus,select:focus,textarea:focus{
         <span class="notif-badge" id="notif-badge">0</span>
       </div>
       <div class="admin-bell-wrap" id="admin-bell-wrap" style="display:none">
-        <button class="admin-bell-btn" id="admin-bell-btn" type="button" title="Permintaan bergabung">📬</button>
+        <button class="admin-bell-btn" id="admin-bell-btn" type="button" title="Permintaan bergabung">🔔</button>
         <span class="admin-bell-badge" id="admin-bell-badge">0</span>
       </div>
 
@@ -3765,17 +3765,17 @@ function _applyFirebaseData(data){
   // Snapshot Firebase yang datang saat ini bisa berisi data LAMA (sebelum approve)
   // karena Firebase listener bisa menembak lebih cepat dari konfirmasi .then().
   if(!window._isSaving){
-    if(data.dkv_murid){
-      window.muridList = typeof data.dkv_murid === 'string' ? JSON.parse(data.dkv_murid) : data.dkv_murid;
+    if(data.dkv_siswa){
+      window.muridList = typeof data.dkv_siswa === 'string' ? JSON.parse(data.dkv_siswa) : data.dkv_siswa;
     }
     if(data.dkv_sdone){
       window.muridDone = typeof data.dkv_sdone === 'string' ? JSON.parse(data.dkv_sdone) : data.dkv_sdone;
     }
   } else {
-    // Tetap izinkan update dkv_murid dari Firebase HANYA jika snapshot sudah mengandung
+    // Tetap izinkan update dkv_siswa dari Firebase HANYA jika snapshot sudah mengandung
     // murid baru yang ditambahkan (deteksi: jumlah item >= jumlah lokal)
-    if(data.dkv_murid){
-      var incoming = typeof data.dkv_murid === 'string' ? JSON.parse(data.dkv_murid) : data.dkv_murid;
+    if(data.dkv_siswa){
+      var incoming = typeof data.dkv_siswa === 'string' ? JSON.parse(data.dkv_siswa) : data.dkv_siswa;
       if(incoming.length >= window.muridList.length){
         window.muridList = incoming;
       }
@@ -3896,7 +3896,7 @@ function _loadFromLocal(){
   window.worlds.forEach(function(w){ if(!w.gateQuests)w.gateQuests=[]; if(!w.finalQuest)w.finalQuest=''; });
   syncCatLabelsFromWorlds();
   window.done        = loadJSON('dkv_done', {});
-  window.muridList   = loadJSON('dkv_murid', []);
+  window.muridList   = loadJSON('dkv_siswa', []);
   window.muridDone   = loadJSON('dkv_sdone', {});
   window.badgeLevels = loadJSON('dkv_badge_levels', JSON.parse(JSON.stringify(DEFAULT_BADGE_LEVELS)));
   window.badgeLevels.sort(function(a,b){return (a.minXP||0)-(b.minXP||0);});
@@ -3913,7 +3913,7 @@ function _pushLocalToFirebase(){
   var localWorlds = loadJSON('dkv_worlds', null);
   if(!localWorlds) return; // tidak ada data lokal, biarkan kosong
   var payload = {};
-  var keys = ['dkv_worlds','dkv_done','dkv_murid','dkv_sdone','dkv_cfg','dkv_badge_levels','dkv_kelompok'];
+  var keys = ['dkv_worlds','dkv_done','dkv_siswa','dkv_sdone','dkv_cfg','dkv_badge_levels','dkv_kelompok'];
   keys.forEach(function(k){
     var v = loadJSON(k, null);
     if(v !== null) payload[k] = v;
@@ -3930,7 +3930,7 @@ function saveAll(){
   // 1. Selalu simpan ke localStorage (cache offline)
   saveJSON('dkv_worlds', window.worlds);
   saveJSON('dkv_done', window.done);
-  saveJSON('dkv_murid', window.muridList);
+  saveJSON('dkv_siswa', window.muridList);
   saveJSON('dkv_sdone', window.muridDone);
   if(window._appConfig) saveJSON('dkv_cfg', window._appConfig);
   saveJSON('dkv_badge_levels', window.badgeLevels);
@@ -3948,7 +3948,7 @@ function saveAll(){
     var payload = {
       dkv_worlds:       window.worlds,
       dkv_done:         window.done,
-      dkv_murid:        window.muridList,
+      dkv_siswa:        window.muridList,
       dkv_sdone:        window.muridDone,
       dkv_badge_levels: window.badgeLevels,
       dkv_kelompok:     window.kelompokList
@@ -3993,7 +3993,7 @@ function saveFast(keys){
   var keyMap = {
     dkv_done:    function(){ saveJSON('dkv_done', window.done); },
     dkv_sdone:   function(){ saveJSON('dkv_sdone', window.muridDone); },
-    dkv_murid:   function(){ saveJSON('dkv_murid', window.muridList); },
+    dkv_siswa:   function(){ saveJSON('dkv_siswa', window.muridList); },
     dkv_worlds:  function(){ saveJSON('dkv_worlds', window.worlds); },
     dkv_absensi:  function(){ saveJSON('dkv_absensi', window.absenSesi); },
     dkv_kelompok: function(){ saveJSON('dkv_kelompok', window.kelompokList); }
@@ -4008,7 +4008,7 @@ function saveFast(keys){
     (keys||[]).forEach(function(k){
       if(k==='dkv_done')    patch[k] = window.done;
       if(k==='dkv_sdone')   patch[k] = window.muridDone;
-      if(k==='dkv_murid')   patch[k] = window.muridList;
+      if(k==='dkv_siswa')   patch[k] = window.muridList;
       if(k==='dkv_worlds')  patch[k] = window.worlds;
       if(k==='dkv_absensi')  patch[k] = window.absenSesi;
       if(k==='dkv_kelompok') patch[k] = window.kelompokList;
@@ -4314,7 +4314,7 @@ var appConfig = { name: 'DKV', logoData: null, tagline: '', mainBgData: null };
 window.worlds      = loadJSON('dkv_worlds', JSON.parse(JSON.stringify(DEFAULT_WORLDS)));
 window.worlds.forEach(function(w){ if(!w.gateQuests)w.gateQuests=[]; if(!w.finalQuest)w.finalQuest=''; });
 window.done        = loadJSON('dkv_done', {});
-window.muridList   = loadJSON('dkv_murid', []);
+window.muridList   = loadJSON('dkv_siswa', []);
 window.muridDone   = loadJSON('dkv_sdone', {});
 window.badgeLevels = loadJSON('dkv_badge_levels', JSON.parse(JSON.stringify(DEFAULT_BADGE_LEVELS)));
 window.badgeLevels.sort(function(a,b){return (a.minXP||0)-(b.minXP||0);});
@@ -10814,13 +10814,13 @@ function renderPendingList(){
   var list = window.dkvPendingReg || [];
   if(list.length === 0){
     var titleEl = document.querySelector('.pending-panel-title');
-    if(titleEl) titleEl.textContent = '📬 Permintaan Bergabung';
+    if(titleEl) titleEl.textContent = '🔔 Permintaan Bergabung';
     el.innerHTML = '<div style="text-align:center;padding:32px 16px;color:#bbb;font-size:13px">Tidak ada pendaftaran menunggu.</div>';
     return;
   }
   // Update judul panel dengan jumlah
   var titleEl = document.querySelector('.pending-panel-title');
-  if(titleEl) titleEl.textContent = '📬 Permintaan Bergabung (' + list.length + ')';
+  if(titleEl) titleEl.textContent = '🔔 Permintaan Bergabung (' + list.length + ')';
   el.innerHTML = list.map(function(r){
     var date = new Date(r.submittedAt);
     var dateStr = date.toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'}) + ' ' + date.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
@@ -10887,7 +10887,7 @@ document.addEventListener('click', function(e){
     pushSystemNotif(newId, '🎉 Pendaftaran Disetujui!', 'Selamat '+reg.name+'! Akun kamu sudah aktif. Silakan login dengan username @'+reg.username+'.', 'editor');
 
     // Simpan ke localStorage sebagai cache offline terlebih dahulu
-    saveJSON('dkv_murid', window.muridList);
+    saveJSON('dkv_siswa', window.muridList);
     saveJSON('dkv_sdone', window.muridDone);
     saveJSON('dkv_accounts', window.muridAccounts);
     saveJSON('dkv_pending_reg', window.dkvPendingReg);
@@ -10901,7 +10901,7 @@ document.addEventListener('click', function(e){
 
     if(window._fbRef){
       window._fbRef.update({
-        dkv_murid:        window.muridList,
+        dkv_siswa:        window.muridList,
         dkv_sdone:        window.muridDone,
         dkv_accounts:     window.muridAccounts,
         dkv_pending_reg:  window.dkvPendingReg,
