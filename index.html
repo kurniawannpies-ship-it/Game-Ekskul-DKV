@@ -134,12 +134,12 @@
 </div>
 
 <script>
-// jsQR dimuat secara lazy saat pertama kali dibutuhkan
+// jsQR dimuat secara eager agar siap saat kamera diaktifkan
 window._jsQRReady = false;
 window._jsQRCallbacks = [];
 window._loadJsQR = function(cb) {
   if (window.jsQR) { if(cb) cb(); return; }
-  if (window._jsQRCallbacks) { if(cb) window._jsQRCallbacks.push(cb); }
+  if (cb) window._jsQRCallbacks.push(cb);
   if (window._jsQRLoading) return;
   window._jsQRLoading = true;
   var s = document.createElement('script');
@@ -150,11 +150,12 @@ window._loadJsQR = function(cb) {
     window._jsQRCallbacks = [];
   };
   s.onerror = function(){
-    // Fallback: inject inline jika CDN gagal
     window._jsQRLoading = false;
   };
   document.head.appendChild(s);
 };
+// Muat jsQR sekarang juga (eager) agar tidak delay saat kamera dibuka
+window._loadJsQR();
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -9928,7 +9929,11 @@ function prosesAbsen(barcode){
   var sesi=window.absenSesi.find(function(s){ return s.id===sesiId; });
   if(!sesi){ setAbsenStatus('❌ Sesi tidak ditemukan','#e24b4a','#fcebeb'); return; }
   var murid=cariMuridDariBarcodeCode(barcode);
-  if(!murid){ setAbsenStatus('❌ Murid tidak ditemukan — Kode: '+esc2(barcode),'#e24b4a','#fcebeb'); return; }
+  if(!murid){
+    var sid=barcodeToSid(barcode);
+    setAbsenStatus('❌ Murid tidak ditemukan — ID dicari: ['+esc2(sid)+'] dari QR: ['+esc2(barcode.trim().substring(0,40))+']','#e24b4a','#fcebeb');
+    return;
+  }
   if(!sesi.hadir) sesi.hadir={};
   if(sesi.hadir[murid.id]){
     setAbsenStatus('ℹ️ '+esc2(murid.name)+' sudah tercatat hadir','#4c35a8','#e8f4ff');
@@ -10095,6 +10100,12 @@ window.unduhAbsensiCSV=function(id){
 var _barcodeDetector = null;
 
 function initBarcodeDetector(cb){
+  // Helper: selalu resolve ke jsqr (autoscan), tunggu load jika perlu
+  function resolveJsQR(){
+    if(window.jsQR){ cb('jsqr'); return; }
+    setAbsenStatus('📥 Memuat library QR scan…','#4c35a8','#e8f4ff');
+    window._loadJsQR(function(){ cb('jsqr'); });
+  }
   if(window.BarcodeDetector){
     BarcodeDetector.getSupportedFormats().then(function(formats){
       if(formats && formats.length > 0){
@@ -10104,16 +10115,16 @@ function initBarcodeDetector(cb){
           });
           cb('barcode_api');
         } catch(e){
-          cb(window.jsQR ? 'jsqr' : 'manual_only');
+          resolveJsQR();
         }
       } else {
-        cb(window.jsQR ? 'jsqr' : 'manual_only');
+        resolveJsQR();
       }
     }).catch(function(){
-      cb(window.jsQR ? 'jsqr' : 'manual_only');
+      resolveJsQR();
     });
   } else {
-    cb(window.jsQR ? 'jsqr' : 'manual_only');
+    resolveJsQR();
   }
 }
 
@@ -10156,12 +10167,10 @@ function startAbsenCam(){
         if(mode === 'barcode_api'){
           setAbsenStatus('🎯 Scan otomatis aktif. Arahkan kamera ke QR Code SIM Card…','#639922','#f0fff0');
           startScanLoopAPI();
-        } else if(mode === 'jsqr'){
+        } else {
+          // jsqr — autoscan loop (tidak ada tombol Foto & Scan)
           setAbsenStatus('📷 Scan otomatis aktif. Arahkan kamera ke QR Code SIM Card…','#639922','#f0fff0');
           startJsQRLoop();
-        } else {
-          setAbsenStatus('📷 Kamera aktif. Tekan "📸 Foto & Scan" untuk scan, atau gunakan ✍️ Manual.','#BA7517','#fff8ec');
-          showFotoScanBtn();
         }
       })
       .catch(function(err){
@@ -10184,8 +10193,8 @@ function startAbsenCam(){
             document.getElementById('absen-start-cam').style.display = 'none';
             document.getElementById('absen-stop-cam').style.display = '';
             _absenScanPaused = false;
-            setAbsenStatus('📷 Kamera aktif (mode kompatibilitas). Tekan "📸 Foto & Scan".','#BA7517','#fff8ec');
-            showFotoScanBtn();
+            setAbsenStatus('📷 Scan otomatis aktif (mode kompatibilitas). Arahkan kamera ke QR…','#639922','#f0fff0');
+            startJsQRLoop();
           }).catch(function(){
             setAbsenStatus('❌ Kamera tidak dapat diakses. Gunakan tombol ✍️ Manual.','#e24b4a','#fcebeb');
           });
