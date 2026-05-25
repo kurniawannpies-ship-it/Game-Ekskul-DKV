@@ -222,9 +222,13 @@ input,select,textarea{font-size:16px!important}
 /* Selection color */
 ::selection{background:rgba(0,180,216,.3);color:#03045E}
 
+html {
+  background: #90E0EF;
+}
+
 body{
   font-family:'Plus Jakarta Sans','Space Grotesk',sans-serif;
-  background: #90E0EF;
+  background: transparent;
   color:var(--text-main);
   min-height:100vh;
   padding:20px 14px 80px;
@@ -1819,7 +1823,7 @@ button:focus:not(:focus-visible) { outline: none; }
           background:linear-gradient(135deg,#f5c842,#e8774a);color:#02023a;
           font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer
         ">Masuk + Edit Mode →</button>
-        <button type="button" onclick="document.getElementById('lobby-screen').style.display='flex';var _c=document.querySelector('.container');if(_c)_c.style.visibility='hidden';if(typeof lobbyUpdateStatus==='function')lobbyUpdateStatus();" style="
+        <button type="button" onclick="if(typeof _showLobby==='function')_showLobby();else document.getElementById('lobby-screen').style.display='flex';if(typeof lobbyUpdateStatus==='function')lobbyUpdateStatus();" style="
           margin-top:8px;width:100%;padding:9px;border-radius:11px;border:none;
           background:transparent;color:#888;font-family:'Space Grotesk',sans-serif;
           font-size:12px;cursor:pointer
@@ -1868,6 +1872,8 @@ button:focus:not(:focus-visible) { outline: none; }
   justify-content: center;
   font-family:'Space Grotesk',sans-serif;
   overflow: hidden;
+  touch-action: none;
+  overscroll-behavior: none;
   background-color: #90E0EF;
   background-size: cover;
   background-position: center;
@@ -1882,7 +1888,7 @@ button:focus:not(:focus-visible) { outline: none; }
   -webkit-align-items:center;align-items:center;
   -webkit-justify-content:center;justify-content:center;
   padding:32px 20px 48px;
-  overflow-y:auto;
+  overflow:hidden;
   max-height:100vh;
 }
 
@@ -3185,7 +3191,7 @@ button:focus:not(:focus-visible) { outline: none; }
   </div><!-- end .char-modal-box -->
 </div>
 
-<div class="container" style="visibility:hidden;">
+<div class="container" style="display:none">
 
   <div class="top-bar">
     <div class="top-title-wrap">
@@ -7232,11 +7238,11 @@ function applyAppConfig(){
 
   // ── Background halaman utama
   if(appConfig.mainBgData){
-    document.body.style.background = 'url("'+appConfig.mainBgData+'") center/cover no-repeat';
-    document.body.style.backgroundAttachment = 'local';
+    document.documentElement.style.background = 'url("'+appConfig.mainBgData+'") center/cover no-repeat';
+    document.documentElement.style.backgroundAttachment = 'local';
   } else {
-    document.body.style.background = '#90E0EF';
-    document.body.style.backgroundAttachment = '';
+    document.documentElement.style.background = '#90E0EF';
+    document.documentElement.style.backgroundAttachment = '';
   }
 
   // ── Update cfg panel inputs (if open)
@@ -7320,7 +7326,7 @@ window.clearAppLogo = function(){
 // ─── Clear background
 window.clearMainBg = function(){
   appConfig.mainBgData = null;
-  document.body.style.background = '#90E0EF';
+  document.documentElement.style.background = '#90E0EF';
   var bgWrap = document.getElementById('cfg-bg-preview-wrap');
   var bgClearBtn = document.getElementById('cfg-bg-clear-btn');
   var bgStatus = document.getElementById('cfg-bg-status');
@@ -7991,6 +7997,10 @@ window.toggleEditMode = function(){
 };
 
 // ─── INIT — render dari localStorage dulu, lalu sambungkan Firebase ───
+// Lock body scroll karena lobby aktif saat pertama load
+document.body.style.overflow = 'hidden';
+document.body.style.position = 'fixed';
+document.body.style.width = '100%';
 applyAppConfig();
 render();
 renderSiswa();
@@ -8404,9 +8414,8 @@ function logoutStudent(){
   if(typeof updateToolbarByRole === 'function') updateToolbarByRole();
   if(typeof lobbyUpdateStatus === 'function') setTimeout(lobbyUpdateStatus, 50);
   // Kembali ke lobby setelah logout siswa
-  document.getElementById('lobby-screen').style.display = 'flex';
-  document.getElementById('ujian-screen').style.display = 'none';
-  var _c = document.querySelector('.container'); if(_c) _c.style.visibility = 'hidden';
+  if(typeof _showLobby === 'function') _showLobby();
+  else { document.getElementById('lobby-screen').style.display = 'flex'; document.getElementById('ujian-screen').style.display = 'none'; }
   showToast('Berhasil logout. Sampai jumpa! 👋');
 }
 // ═══════════════════════════════════════════════════════════════
@@ -8456,9 +8465,8 @@ function doGlobalLogout(){
     // Satu kali logout pembina
     if(typeof gateDoLogoutPembina === 'function') gateDoLogoutPembina();
     // Kembali ke lobby
-    document.getElementById('lobby-screen').style.display = 'flex';
-    document.getElementById('ujian-screen').style.display = 'none';
-    var _c = document.querySelector('.container'); if(_c) _c.style.visibility = 'hidden';
+    if(typeof _showLobby === 'function') _showLobby();
+    else { document.getElementById('lobby-screen').style.display = 'flex'; document.getElementById('ujian-screen').style.display = 'none'; }
   } else if(window.loggedInStudentId){
     // Reset state ujian siswa juga
     if(window._ujianState){ window._ujianState.loggedIn=false; window._ujianState.siswaId=null; }
@@ -11084,9 +11092,8 @@ document.addEventListener('click', function(e){
 
   // ── LOBBY ──────────────────────────────────────────────────
   document.getElementById('lobby-ekskul-btn').addEventListener('click',function(){
-    // Jika sudah login via lobby form, langsung masuk
     if(window.pembina || window.loggedInStudentId || sessionStorage.getItem('dkv_student_sess')){
-      if(typeof enterEkskul === 'function'){ enterEkskul(); }
+      if(typeof window.enterEkskul === 'function'){ window.enterEkskul(); }
       else { document.getElementById('lobby-screen').style.display='none'; }
     } else {
       // Belum login — highlight form login
@@ -11101,10 +11108,9 @@ document.addEventListener('click', function(e){
 
   // Tombol Kembali ke Lobby dari Ruang Ekskul (TANPA logout)
   document.getElementById('back-to-lobby-btn').addEventListener('click',function(){
-    var ls = document.getElementById('lobby-screen');
-    ls.style.display='flex';
     document.getElementById('ujian-screen').style.display='none';
-    var _c = document.querySelector('.container'); if(_c) _c.style.visibility = 'hidden';
+    if(typeof _showLobby === 'function') _showLobby();
+    else document.getElementById('lobby-screen').style.display='flex';
     if(typeof lobbyUpdateStatus==='function') setTimeout(lobbyUpdateStatus,30);
   });
 
@@ -11148,8 +11154,8 @@ document.addEventListener('click', function(e){
     if(_ujianState.timer){ clearInterval(_ujianState.timer); _ujianState.timer=null; }
     document.getElementById('ujian-timer-badge').style.display='none';
     document.getElementById('ujian-screen').style.display='none';
-    document.getElementById('lobby-screen').style.display='flex';
-    var _c = document.querySelector('.container'); if(_c) _c.style.visibility = 'hidden';
+    if(typeof _showLobby === 'function') _showLobby();
+    else document.getElementById('lobby-screen').style.display='flex';
     // Kembalikan FAB edit lobby jika pembina sedang di fase rooms
   });
 
@@ -11932,25 +11938,33 @@ document.addEventListener('click', function(e){
   }
 
   // ── Helper: masuk ruang ekskul (sembunyikan lobby) ──
-  function enterEkskul(){
+  window.enterEkskul = function enterEkskul(){
     document.getElementById('lobby-screen').style.display = 'none';
     document.getElementById('ujian-screen').style.display = 'none';
-    // Sembunyikan elemen fixed lobby yang bisa menghalangi
     var dim = document.getElementById('lobby-edit-dim');
     var pan = document.getElementById('lobby-edit-panel');
     var bar = document.getElementById('lobby-edit-bar');
     if(dim) dim.style.display = 'none';
     if(pan) pan.style.display = 'none';
     if(bar) bar.style.display = 'none';
-    // Tampilkan konten ekskul
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.width = '';
     var c = document.querySelector('.container');
-    if(c) c.style.visibility = 'visible';
-  }
+    if(c) c.style.display = '';
+  };
+  // alias lokal
+  var enterEkskul = window.enterEkskul;
 
-  function _hideLobbyContainer(){
+  window._showLobby = function _showLobby(){
+    document.getElementById('lobby-screen').style.display = 'flex';
     var c = document.querySelector('.container');
-    if(c) c.style.visibility = 'hidden';
-  }
+    if(c) c.style.display = 'none';
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
+  };
+  var _showLobby = window._showLobby;
 
   // ── Login siswa dari gate ──────────────────────────
   window.gateEnterAsSiswa = function(){
