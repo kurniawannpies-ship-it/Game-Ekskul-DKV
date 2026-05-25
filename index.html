@@ -3,10 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#0077B6">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="mobile-web-app-capable" content="yes">
 <title>Ekskul DKV SMPN 1 Sumenep — Quest Board</title>
 <!-- Preconnect: percepat koneksi awal ke domain eksternal -->
 <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
@@ -19,12 +15,15 @@
 <!-- ══ SKELETON LOADING SCREEN ══ -->
 <div id="app-skeleton" style="
   position:fixed;inset:0;z-index:99999;
-  background:#ffffff;
+  background:linear-gradient(180deg,#e8f9fd 0%,#CAF0F8 20%,#90E0EF 55%,#00B4D8 85%,#0077B6 100%);
   display:flex;flex-direction:column;align-items:center;
   justify-content:center;gap:18px;
   transition:opacity 0.5s ease;
   font-family:'Space Grotesk',sans-serif;
 ">
+  <!-- Animated glowing blob background -->
+  <div style="position:absolute;width:300px;height:300px;background:radial-gradient(circle,rgba(0,119,182,.18) 0%,transparent 70%);border-radius:50%;top:50%;left:50%;transform:translate(-50%,-60%);animation:_skblob 3s ease-in-out infinite alternate;pointer-events:none"></div>
+
   <!-- Logo container -->
   <div style="
     width:76px;height:76px;border-radius:22px;
@@ -59,6 +58,7 @@
 </div>
 <style>
   @keyframes _skbar{from{width:15%}to{width:85%}}
+  @keyframes _skblob{from{transform:translate(-50%,-60%) scale(1)}to{transform:translate(-50%,-50%) scale(1.2)}}
   @keyframes _skpop{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:scale(1)}}
   @keyframes _skfade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
   @keyframes _skdot{from{opacity:.3;transform:scaleY(.5)}to{opacity:1;transform:scaleY(1.5)}}
@@ -222,19 +222,14 @@ input,select,textarea{font-size:16px!important}
 /* Selection color */
 ::selection{background:rgba(0,180,216,.3);color:#03045E}
 
-html {
-  background: #ffffff;
-}
-
 body{
   font-family:'Plus Jakarta Sans','Space Grotesk',sans-serif;
-  background: transparent;
+  background: linear-gradient(180deg, #e8f9fd 0%, #CAF0F8 20%, #90E0EF 55%, #00B4D8 85%, #0077B6 100%);
+  background-attachment:fixed;
   color:var(--text-main);
   min-height:100vh;
   padding:20px 14px 80px;
   -webkit-text-size-adjust:100%;
-  overscroll-behavior-y: contain;
-  -webkit-overflow-scrolling: touch;
 }
 .container{max-width:720px;margin:0 auto}
 
@@ -468,10 +463,17 @@ body{
    BLUE OCEAN GLASSMORPHISM — Extra Styles
 ════════════════════════════════════════ */
 
-/* body::before blobs removed */
+/* Animated background blobs */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(255,255,255,.7) 0%, transparent 40%),
+    radial-gradient(ellipse at 80% 90%, rgba(0,180,216,.2) 0%, transparent 40%);
+}
 .container { position: relative; z-index: 1; }
 
-/* World card — referensi utama glass */
+/* World card — deeper glass */
 .world-card {
   background: rgba(255,255,255,.18) !important;
   backdrop-filter: blur(20px) saturate(160%) !important;
@@ -481,27 +483,27 @@ body{
   transition: all .3s cubic-bezier(.34,1.2,.64,1) !important;
 }
 .world-card:hover {
-  background: rgba(255,255,255,.26) !important;
-  box-shadow: 0 10px 36px rgba(0,119,182,.22), 0 2px 8px rgba(3,4,94,.08), inset 0 1px 0 rgba(255,255,255,.6) !important;
-  transform: translateY(-2px) !important;
+  background: rgba(255,255,255,.28) !important;
+  box-shadow: 0 12px 40px rgba(0,119,182,.3), 0 4px 12px rgba(3,4,94,.1), inset 0 1px 0 rgba(255,255,255,.65) !important;
+  transform: translateY(-3px) !important;
 }
 
-/* HUD — sama dengan world-card */
+/* HUD glass */
 .hud {
-  background: rgba(255,255,255,.18) !important;
-  backdrop-filter: blur(20px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
-  border: 1.5px solid rgba(255,255,255,.4) !important;
-  box-shadow: 0 4px 24px rgba(0,119,182,.15), inset 0 1px 0 rgba(255,255,255,.5) !important;
+  background: rgba(255,255,255,.22) !important;
+  backdrop-filter: blur(28px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(200%) !important;
+  border: 1.5px solid rgba(255,255,255,.5) !important;
+  box-shadow: 0 4px 24px rgba(0,119,182,.12), inset 0 1px 0 rgba(255,255,255,.65) !important;
 }
 
-/* Tab bar — sama */
+/* Tab bar glass */
 .tab-bar {
-  background: rgba(255,255,255,.18) !important;
-  backdrop-filter: blur(20px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
-  border: 1.5px solid rgba(255,255,255,.4) !important;
-  box-shadow: 0 4px 24px rgba(0,119,182,.15), inset 0 1px 0 rgba(255,255,255,.5) !important;
+  background: rgba(255,255,255,.2) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1.5px solid rgba(255,255,255,.45) !important;
+  box-shadow: 0 4px 20px rgba(0,119,182,.1), inset 0 1px 0 rgba(255,255,255,.5) !important;
 }
 
 /* Active tab button */
@@ -511,26 +513,25 @@ body{
   box-shadow: 0 4px 16px rgba(3,4,94,.5), 0 0 12px rgba(0,119,182,.3) !important;
 }
 
-/* Siswa cards — sama */
+/* Siswa cards glass */
 .siswa-card {
-  background: rgba(255,255,255,.18) !important;
-  backdrop-filter: blur(20px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+  background: rgba(255,255,255,.2) !important;
+  backdrop-filter: blur(16px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(160%) !important;
   border: 1.5px solid rgba(255,255,255,.4) !important;
-  box-shadow: 0 4px 24px rgba(0,119,182,.15), inset 0 1px 0 rgba(255,255,255,.5) !important;
+  box-shadow: 0 4px 20px rgba(0,119,182,.12), inset 0 1px 0 rgba(255,255,255,.5) !important;
 }
 .siswa-card:hover {
-  background: rgba(255,255,255,.26) !important;
-  box-shadow: 0 10px 36px rgba(0,119,182,.22), inset 0 1px 0 rgba(255,255,255,.6) !important;
+  box-shadow: 0 8px 32px rgba(0,119,182,.25), inset 0 1px 0 rgba(255,255,255,.65) !important;
 }
 
-/* Modal box — sedikit lebih solid karena layered di atas konten */
+/* Modal box glass */
 .modal-box {
-  background: rgba(255,255,255,.22) !important;
-  backdrop-filter: blur(20px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
-  border: 1.5px solid rgba(255,255,255,.4) !important;
-  box-shadow: 0 20px 60px rgba(3,4,94,.2), inset 0 1px 0 rgba(255,255,255,.55) !important;
+  background: rgba(202,240,248,.35) !important;
+  backdrop-filter: blur(32px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(200%) !important;
+  border: 1.5px solid rgba(255,255,255,.55) !important;
+  box-shadow: 0 20px 60px rgba(3,4,94,.25), inset 0 1px 0 rgba(255,255,255,.7) !important;
 }
 .modal-title { color: #03045E !important; }
 .modal-sub { color: #0077B6 !important; }
@@ -559,7 +560,7 @@ body{
   transform: translateY(-2px) !important;
 }
 
-/* Top title */
+/* Top title color = #03045E per user request */
 .top-title {
   background: none !important;
   -webkit-background-clip: unset !important;
@@ -576,65 +577,69 @@ body{
   box-shadow: 0 0 12px rgba(0,180,216,.7) !important;
 }
 
-/* Student dashboard bar — sama dengan world-card */
+/* Student dashboard bar glass */
 .student-dashboard-bar {
-  background: rgba(255,255,255,.18) !important;
-  backdrop-filter: blur(20px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
-  border: 1.5px solid rgba(255,255,255,.4) !important;
-  box-shadow: 0 4px 24px rgba(0,119,182,.15), inset 0 1px 0 rgba(255,255,255,.5) !important;
+  background: rgba(255,255,255,.22) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1.5px solid rgba(255,255,255,.45) !important;
   color: #03045E !important;
 }
 
-/* Notif & pending panel */
+/* Notif panel glass */
 .notif-panel {
-  background: rgba(255,255,255,.22) !important;
-  backdrop-filter: blur(20px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+  background: rgba(202,240,248,.85) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
 }
+
+/* Pending panel glass */
 .pending-panel {
-  background: rgba(255,255,255,.22) !important;
-  backdrop-filter: blur(20px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+  background: rgba(202,240,248,.9) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
 }
 
 /* Edit panel */
 .edit-panel {
-  background: rgba(255,255,255,.18) !important;
-  backdrop-filter: blur(20px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
-  border: 2px solid rgba(255,255,255,.4) !important;
+  background: rgba(144,224,239,.2) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 2px solid rgba(0,119,182,.3) !important;
 }
 
-/* Skill filter chips — sama */
+/* Skill filter chips */
 .skill-filter-btn {
-  background: rgba(255,255,255,.18) !important;
-  backdrop-filter: blur(20px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
-  border: 1.5px solid rgba(255,255,255,.4) !important;
+  background: rgba(255,255,255,.25) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1.5px solid rgba(255,255,255,.45) !important;
   color: #03045E !important;
   box-shadow: inset 0 1px 0 rgba(255,255,255,.5) !important;
 }
 .skill-filter-btn:hover {
-  background: rgba(255,255,255,.3) !important;
-  transform: translateY(-1px) !important;
-  box-shadow: 0 4px 16px rgba(0,119,182,.15), inset 0 1px 0 rgba(255,255,255,.6) !important;
+  background: rgba(255,255,255,.4) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 16px rgba(0,119,182,.2), inset 0 1px 0 rgba(255,255,255,.6) !important;
 }
 .skill-filter-btn.active {
   box-shadow: 0 4px 16px rgba(3,4,94,.35), inset 0 1px 0 rgba(255,255,255,.3) !important;
 }
 
-/* Quest items hover */
+/* Quest items */
 .quest-item:hover {
-  background: rgba(255,255,255,.2) !important;
+  background: rgba(255,255,255,.25) !important;
   border-color: rgba(255,255,255,.4) !important;
+  backdrop-filter: blur(8px) !important;
 }
 
 /* XP pill */
 .xp-pill {
-  background: rgba(255,255,255,.25) !important;
+  background: rgba(255,255,255,.3) !important;
   color: #03045E !important;
-  border: 1px solid rgba(255,255,255,.45) !important;
+  border: 1px solid rgba(255,255,255,.5) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
 }
 
 /* Quest done check */
@@ -1397,6 +1402,13 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;}
 
 /* ══ GEN Z EXTRA UPGRADES ══ */
 
+/* Animated gradient background pulse for lobby */
+@keyframes gzBgShift{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
 /* Haptic-style press animation for all buttons */
 button:active{transform:scale(.96)!important;transition:transform .1s!important}
 
@@ -1476,6 +1488,12 @@ input:focus,select:focus,textarea:focus{
 .sc2-name{font-size:16px;font-weight:800;color:var(--text-main);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sc2-xp-pill{font-size:10px;font-weight:700;padding:3px 10px;border-radius:99px;white-space:nowrap;background:linear-gradient(135deg,rgba(0,119,182,.12),rgba(0,180,216,.1));color:var(--genz-purple);border:1px solid rgba(0,119,182,.2)}
 
+/* Floating particles decoration for lobby - purely visual */
+@keyframes gzFloat{
+  0%,100%{transform:translateY(0) rotate(0deg);opacity:.4}
+  50%{transform:translateY(-20px) rotate(180deg);opacity:.8}
+}
+
 /* Neon glow on active elements */
 .world-card.active .mini-bar-fill{
   box-shadow:0 0 6px var(--wc,rgba(0,119,182,.5));
@@ -1523,203 +1541,14 @@ input:focus,select:focus,textarea:focus{
 }
 .pers-btn.active{border-color:#90E0EF;background:linear-gradient(135deg,#90E0EF,#f0a0d4);color:#fff;box-shadow:0 3px 10px rgba(0,180,216,.3)}
 
-/* ══════════════════════════════════════════════
-   📱 MOBILE OPTIMIZATION — Comprehensive
-══════════════════════════════════════════════ */
-
-/* ── Safe area & base ── */
-body {
-  padding-bottom: calc(80px + env(safe-area-inset-bottom));
-  padding-top: env(safe-area-inset-top);
-  padding-left: max(14px, env(safe-area-inset-left));
-  padding-right: max(14px, env(safe-area-inset-right));
-}
-
-/* ── Touch targets minimum 44px ── */
-.tab-btn,
-.skill-filter-btn,
-.notif-bell-btn,
-.edit-btn,
-.btn-save,
-.btn-cancel,
-.btn-danger,
-.quest-check {
-  min-height: 44px;
-}
-.tab-btn { padding: 10px 12px; }
-.skill-filter-btn { padding: 10px 16px; min-height: 40px; }
-.notif-bell-btn, .admin-bell-btn { width: 40px; height: 40px; border-radius: 12px; }
-.quest-check { width: 26px; height: 26px; border-radius: 8px; }
-
-/* ── Top bar: wrap gracefully on small screens ── */
-.top-bar { gap: 6px; margin-bottom: 12px; }
-.top-title { font-size: 18px; line-height: 1.1; }
-.top-title-wrap { gap: 8px; }
-.app-logo, .app-logo-placeholder { width: 32px; height: 32px; }
-.top-actions { gap: 6px; }
-.sync-badge { font-size: 10px; padding: 4px 8px; }
-
-/* ── HUD stats: 3-column on mobile ── */
-.hud { padding: 12px 14px; border-radius: 16px; margin-bottom: 14px; }
-.hud-stat { padding: 7px 10px; min-width: 52px; border-radius: 10px; }
-.hud-stat-num { font-size: 16px; }
-.hud-stat-lbl { font-size: 8px; letter-spacing: .04em; }
-
-/* ── Tab bar: static (tidak sticky) ── */
-.tab-bar {
-  position: static;
-  top: unset;
-  z-index: auto;
-  margin-bottom: 14px;
-  gap: 3px;
-  padding: 4px;
-}
-.tab-btn { font-size: 11px; padding: 9px 8px; border-radius: 10px; }
-
-/* ── Skill filter: horizontal scroll, no wrap ── */
-.skill-filter {
-  flex-wrap: nowrap !important;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  padding-bottom: 4px;
-  margin-bottom: 14px;
-  gap: 5px;
-}
-.skill-filter::-webkit-scrollbar { display: none; }
-.skill-filter-btn { flex-shrink: 0; white-space: nowrap; font-size: 11px; padding: 8px 13px; }
-
-/* ── World cards: more compact ── */
-.world-card { border-radius: 16px; }
-.world-header { padding: 12px 14px; gap: 10px; }
-.world-icon { width: 40px; height: 40px; border-radius: 12px; font-size: 19px; }
-.world-name { font-size: 13px; }
-.world-sub { font-size: 10px; }
-.world-badge { font-size: 8px; padding: 2px 8px; }
-.mini-bar-bg { width: 44px; }
-.worlds { gap: 10px; }
-
-/* ── Quest items: larger tap area ── */
-.quest-item { padding: 11px 12px; margin-bottom: 6px; border-radius: 12px; gap: 11px; }
-.qt { font-size: 12.5px; line-height: 1.45; }
-.qd { font-size: 10.5px; }
-.xp-pill { font-size: 9px; padding: 3px 8px; }
-
-/* ── Student dashboard bar ── */
-.student-dashboard-bar { padding: 11px 13px; border-radius: 14px; margin-bottom: 12px; }
-.sdb-char { width: 44px; height: 44px; }
-.sdb-name { font-size: 13px; }
-
-/* ── Toast: above safe area ── */
-.toast { bottom: calc(28px + env(safe-area-inset-bottom)); font-size: 12px; padding: 10px 18px; max-width: 88vw; }
-
-/* ── Back to lobby button ── */
-#back-to-lobby-btn {
-  font-size: 11px !important;
-  padding: 7px 12px !important;
-  min-height: 36px;
-  display: flex;
-  align-items: center;
-}
-
-/* ── Modals: full bottom sheet on mobile ── */
-.modal-box {
-  border-radius: 24px 24px 0 0 !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  margin: 0 !important;
-  padding: 20px 16px 28px !important;
-  padding-bottom: calc(20px + env(safe-area-inset-bottom)) !important;
-}
-.modal-overlay {
-  align-items: flex-end !important;
-}
-
-/* ── Ujian screen: mobile layout ── */
-#ujian-screen > div[style*="max-width"] {
-  padding: 16px 14px !important;
-}
-
-/* ── Lobby edit panel: full width on mobile ── */
-
-/* ── Rank tabs: horizontal scroll ── */
-#rank-cat-tabs {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  flex-wrap: nowrap !important;
-}
-#rank-cat-tabs::-webkit-scrollbar { display: none; }
-#rank-cat-tabs button { flex-shrink: 0; white-space: nowrap; min-height: 38px; font-size: 11px; }
-
-/* ── Char modal ── */
-.char-modal-box { max-height: 92vh; }
-.char-stage { padding: 16px 14px; }
-.char-tab-btn { font-size: 12px; padding: 9px 6px; min-height: 40px; }
-.char-body-section { padding: 12px 14px; }
-
-/* ── Siswa cat stats: 2 col grid ── */
-.siswa-cat-stat { min-width: 72px; padding: 8px; font-size: 11px; }
-
-/* ── HUD level badge ── */
-.hud-lvl {
-  min-width: 36px;
-  height: 36px;
-  font-size: 16px;
-  border-radius: 12px;
-}
-
-/* ── Active states for touch (replaces :hover) ── */
-.world-card:active { transform: scale(0.98) !important; }
-.tab-btn:active { opacity: 0.8; }
-.skill-filter-btn:active { transform: translateY(0) scale(0.96); }
-.quest-item:active { background: rgba(0,119,182,.08) !important; }
-.btn-save:active, .btn-cancel:active { transform: scale(0.97); }
-
-/* ── Quests container padding ── */
-.quests { padding: 0 10px 10px; }
-
-/* ── Ujian overlay: full screen, no margin ── */
-#ujian-screen {
-  padding: env(safe-area-inset-top) 0 0 !important;
-}
-
-/* ── Large screen override ── */
-@media (min-width: 480px) {
-  .tab-btn { font-size: 12px; padding: 9px 10px; }
-  .skill-filter-btn { font-size: 12px; padding: 8px 15px; }
-  .top-title { font-size: 20px; }
-  .world-icon { width: 42px; height: 42px; }
-  .hud-stat-num { font-size: 18px; }
-  .hud-stat-lbl { font-size: 9px; }
-    .modal-box {
-    border-radius: 24px !important;
-    width: 90% !important;
-    max-width: 480px !important;
-  }
-  .modal-overlay { align-items: center !important; }
-}
-
-@media (min-width: 640px) {
-  .top-title { font-size: 22px; }
-  .quest-item { padding: 12px 14px; }
-  .world-header { padding: 14px 16px; }
-}
-
-/* ── Focus visible (accessibility) ── */
-button:focus-visible, input:focus-visible, select:focus-visible {
-  outline: 2px solid rgba(0,180,216,.7);
-  outline-offset: 2px;
-}
-button:focus:not(:focus-visible) { outline: none; }
+</style>
 </head>
 <body>
 
 <!-- ═══════ EKSKUL LOGIN GATE MODAL ═══════ -->
 <div id="ekskul-gate-overlay" style="
   display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:10500;
-  background:#90E0EF;backdrop-filter:none;-webkit-backdrop-filter:none;
-  overflow:hidden;
+  background:linear-gradient(180deg,#e8f9fd 0%,#CAF0F8 20%,#90E0EF 55%,#00B4D8 85%,#0077B6 100%);backdrop-filter:none;-webkit-backdrop-filter:none;
   -webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;font-family:'Space Grotesk',sans-serif;
 ">
   <div style="
@@ -1823,7 +1652,7 @@ button:focus:not(:focus-visible) { outline: none; }
           background:linear-gradient(135deg,#f5c842,#e8774a);color:#02023a;
           font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer
         ">Masuk + Edit Mode →</button>
-        <button type="button" onclick="if(typeof _showLobby==='function')_showLobby();else document.getElementById('lobby-screen').style.display='flex';if(typeof lobbyUpdateStatus==='function')lobbyUpdateStatus();" style="
+        <button type="button" onclick="document.getElementById('lobby-screen').style.display='flex';if(typeof lobbyUpdateStatus==='function')lobbyUpdateStatus();" style="
           margin-top:8px;width:100%;padding:9px;border-radius:11px;border:none;
           background:transparent;color:#888;font-family:'Space Grotesk',sans-serif;
           font-size:12px;cursor:pointer
@@ -1862,48 +1691,11 @@ button:focus:not(:focus-visible) { outline: none; }
 <!-- ═══════ LOBBY — PILIH RUANGAN ═══════ -->
 <style>
 /* ══ LOBBY v2 — LOGIN FIRST, THEN PICK ROOM ══ */
-#lobby-screen {
-  position: fixed;
-  inset: 0;
-  z-index: 10000;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-family:'Space Grotesk',sans-serif;
-  overflow: hidden;
-  touch-action: none;
-  overscroll-behavior: none;
-  background-color: #90E0EF;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-/* Background lobby — fixed, dikelola via JS */
-.lobby-scroll-inner {
-  position:relative;z-index:2;
-  width:100%;
-  display:-webkit-flex;display:flex;
-  -webkit-flex-direction:column;flex-direction:column;
-  -webkit-align-items:center;align-items:center;
-  -webkit-justify-content:center;justify-content:center;
-  padding:32px 20px 48px;
-  overflow:hidden;
-  max-height:100vh;
-}
-
-/* Panel edit lobby — fixed bottom sheet, scroll internal */
-#lobby-edit-panel {
-  position:fixed !important;
-  left:0;right:0;bottom:0;
-  z-index:10010;
-  max-height:80vh;
-  overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
-  border-radius:24px 24px 0 0 !important;
-  padding:24px 20px 40px !important;
-  box-shadow:0 -8px 40px rgba(3,4,94,.25) !important;
-}
+#lobby-screen { font-family:'Space Grotesk',sans-serif; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+.lobby-bg-layer { position:fixed;top:0;left:0;right:0;bottom:0;background-size:cover;background-position:center;z-index:0; }
+.lobby-bg-overlay { display:none; }
+.lobby-dot-pattern { display:none;pointer-events:none; }
+.lobby-scroll-inner { position:relative;z-index:2;min-height:100vh;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;padding:32px 20px 48px; }
 
 /* FASE 1: LOGIN */
 #lobby-phase-login { width:100%;max-width:400px; }
@@ -1924,18 +1716,18 @@ button:focus:not(:focus-visible) { outline: none; }
 .lobby-divider { width:36px;height:2px;background:linear-gradient(90deg,#03045E,#0077B6,#00B4D8);margin:10px auto 0;border-radius:99px }
 
 /* Tab login */
-.lobby-login-tabs { display:-webkit-flex;display:flex;border-radius:14px;overflow:hidden;background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.4);margin-bottom:14px;backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%) }
+.lobby-login-tabs { display:-webkit-flex;display:flex;border-radius:14px;overflow:hidden;background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.5);margin-bottom:14px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px) }
 .lobby-tab-btn { flex:1;padding:10px 0;font-family:'Plus Jakarta Sans','Space Grotesk',sans-serif;font-size:13px;font-weight:700;border:none;background:transparent;color:#03045E;cursor:pointer;transition:all .2s }
 .lobby-tab-btn.active { background:linear-gradient(135deg,#03045E,#0077B6,#00B4D8);color:#fff;box-shadow:0 2px 10px rgba(0,119,182,.4) }
 
 /* Form box */
-.lobby-form-wrap { background:rgba(255,255,255,.18);-webkit-backdrop-filter:blur(20px) saturate(160%);backdrop-filter:blur(20px) saturate(160%);border:1.5px solid rgba(255,255,255,.4);border-radius:20px;padding:22px 20px 20px;box-shadow:0 4px 24px rgba(0,119,182,.15),inset 0 1px 0 rgba(255,255,255,.5) }
+.lobby-form-wrap { background:rgba(255,255,255,.28);-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);border:1.5px solid rgba(255,255,255,.55);border-radius:20px;padding:22px 20px 20px;box-shadow:0 4px 24px rgba(0,119,182,.12),inset 0 1px 0 rgba(255,255,255,.6) }
 .lobby-inp { width:100%;box-sizing:border-box;background:rgba(255,255,255,.35);border:1.5px solid rgba(255,255,255,.6);color:#03045E;font-family:'Plus Jakarta Sans','Space Grotesk',sans-serif;font-size:14px;padding:11px 14px;border-radius:12px;outline:none;margin-bottom:10px;transition:border .2s,box-shadow .2s;-webkit-appearance:none }
 .lobby-inp:focus { border-color:rgba(0,119,182,.6);box-shadow:0 0 0 3px rgba(0,119,182,.15) }
 .lobby-inp::placeholder { color:rgba(3,4,94,.4) }
 .lobby-inp-row { position:relative;margin-bottom:10px }
 .lobby-inp-row .lobby-inp { margin-bottom:0;padding-right:42px }
-.lobby-eye-btn { position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:#0077B6;padding:4px }
+.lobby-eye-btn { position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:#6e6b64;padding:4px }
 .lobby-submit-btn { width:100%;padding:14px;background:linear-gradient(135deg,#03045E,#0077B6,#00B4D8);color:#fff;font-family:'Plus Jakarta Sans','Space Grotesk',sans-serif;font-size:14px;font-weight:800;border:none;border-radius:13px;cursor:pointer;margin-top:6px;transition:opacity .2s,transform .15s;-webkit-appearance:none;box-shadow:0 6px 20px rgba(0,119,182,.4);letter-spacing:-.01em }
 .lobby-submit-btn:active { opacity:.85;transform:scale(.98) }
 .lobby-err { color:#ff8080;font-size:12px;min-height:14px;margin:4px 0 6px;text-align:center;font-weight:600 }
@@ -1943,7 +1735,7 @@ button:focus:not(:focus-visible) { outline: none; }
 
 /* Room cards */
 .lobby-rooms-grid { display:-webkit-flex;display:flex;gap:12px;-webkit-flex-wrap:wrap;flex-wrap:wrap }
-.lobby-room-card { flex:1;min-width:150px;background:rgba(255,255,255,.18);-webkit-backdrop-filter:blur(20px) saturate(160%);backdrop-filter:blur(20px) saturate(160%);border:1.5px solid rgba(255,255,255,.4);border-radius:18px;padding:22px 16px 18px;cursor:pointer;text-align:left;transition:border-color .2s,transform .18s,box-shadow .2s;font-family:'Plus Jakarta Sans','Space Grotesk',sans-serif;position:relative;overflow:hidden;-webkit-appearance:none;box-shadow:0 4px 24px rgba(0,119,182,.15),inset 0 1px 0 rgba(255,255,255,.5) }
+.lobby-room-card { flex:1;min-width:150px;background:rgba(20,18,35,.85);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1.5px solid rgba(0,119,182,.15);border-radius:18px;padding:22px 16px 18px;cursor:pointer;text-align:left;transition:border-color .2s,transform .18s,box-shadow .2s;font-family:'Plus Jakarta Sans','Space Grotesk',sans-serif;position:relative;overflow:hidden;-webkit-appearance:none }
 .lobby-room-card:active { transform:scale(.97) }
 .lobby-room-card:hover { border-color:rgba(0,119,182,.5);transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,119,182,.2) }
 .lobby-room-card.ujian:hover { border-color:rgba(232,119,74,.5);box-shadow:0 12px 32px rgba(232,119,74,.15) }
@@ -1952,111 +1744,38 @@ button:focus:not(:focus-visible) { outline: none; }
 
 /* Logged-in info bar */
 .lobby-user-bar { display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:space-between;justify-content:space-between;background:rgba(0,119,182,.08);border:1px solid rgba(0,119,182,.15);border-radius:14px;padding:10px 14px;margin-bottom:16px;font-size:13px }
-.lobby-user-name { color:#03045E;font-weight:600 }
+.lobby-user-name { color:#f0ede8;font-weight:600 }
 .lobby-logout-small { background:none;border:none;color:#ff7b7b;font-family:'Space Grotesk',sans-serif;font-size:12px;cursor:pointer;padding:0 }
 
-/* Edit Lobby Button (pembina only) */
-#lobby-edit-bar {
-  display:none;
-  margin-bottom:14px;
-  animation:lobbyFadeIn .3s ease both;
-}
-#lobby-edit-toggle-btn {
-  width:100%;padding:11px 14px;
-  background:rgba(245,200,66,.12);
-  border:1.5px dashed rgba(245,200,66,.55);
-  border-radius:14px;
-  color:#c9980a;
-  font-family:'Plus Jakarta Sans','Space Grotesk',sans-serif;
-  font-size:13px;font-weight:700;
-  cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:7px;
-  transition:background .2s,border-color .2s;
-  -webkit-appearance:none;
-}
-#lobby-edit-toggle-btn:hover { background:rgba(245,200,66,.2);border-color:rgba(245,200,66,.75); }
-
-/* Panel Edit Lobby */
-#lobby-edit-panel {
-  display:none;
-  background:rgba(255,255,255,.22);
-  -webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);
-  border:1.5px solid rgba(245,200,66,.4);
-  border-radius:18px;
-  padding:18px;
-  margin-bottom:16px;
-  animation:lobbyFadeIn .3s ease both;
-  position:relative;
-}
-#lobby-edit-panel::before {
-  content:'✏️ Edit Tampilan Lobby';
-  position:absolute;top:-11px;left:16px;
-  background:linear-gradient(135deg,#c9980a,#e8774a);
-  color:#fff;font-size:10px;font-weight:700;
-  padding:2px 10px;border-radius:20px;
-  letter-spacing:.05em;font-family:'Space Grotesk',sans-serif;
-}
-.lep-label {
-  font-size:10px;font-weight:700;color:#0077B6;
-  text-transform:uppercase;letter-spacing:.07em;
-  display:block;margin-bottom:5px;
-}
-.lep-inp {
-  width:100%;box-sizing:border-box;
-  background:rgba(255,255,255,.5);
-  border:1.5px solid rgba(0,119,182,.25);
-  color:#03045E;
-  font-family:'Plus Jakarta Sans','Space Grotesk',sans-serif;
-  font-size:13px;padding:10px 13px;border-radius:10px;
-  outline:none;-webkit-appearance:none;margin-bottom:10px;
-  transition:border .2s;
-}
-.lep-inp:focus { border-color:rgba(0,119,182,.55);box-shadow:0 0 0 3px rgba(0,119,182,.1); }
-.lep-upload-wrap {
-  display:flex;align-items:center;gap:10px;margin-bottom:10px;
-}
-.lep-upload-btn {
-  flex:1;padding:10px 12px;
-  background:rgba(255,255,255,.35);
-  border:1.5px dashed rgba(0,119,182,.35);
-  border-radius:10px;
-  color:#0077B6;font-family:'Space Grotesk',sans-serif;
-  font-size:12px;font-weight:600;cursor:pointer;
-  text-align:center;transition:background .2s;
-  overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
-}
-.lep-upload-btn:hover { background:rgba(0,119,182,.08); }
-.lep-preview {
-  width:44px;height:44px;border-radius:10px;
-  background:rgba(0,119,182,.08);
-  border:1.5px solid rgba(0,119,182,.2);
-  overflow:hidden;display:flex;align-items:center;justify-content:center;
-  font-size:20px;flex-shrink:0;
-}
-.lep-preview img { width:100%;height:100%;object-fit:cover; }
-.lep-save-btn {
-  width:100%;padding:12px;margin-top:6px;
-  background:linear-gradient(135deg,#c9980a,#e8774a);
-  color:#fff;font-family:'Plus Jakarta Sans','Space Grotesk',sans-serif;
-  font-size:13px;font-weight:800;border:none;border-radius:12px;
-  cursor:pointer;letter-spacing:-.01em;
-  box-shadow:0 4px 16px rgba(201,152,10,.35);
-  transition:opacity .2s,transform .15s;-webkit-appearance:none;
-}
-.lep-save-btn:active { opacity:.85;transform:scale(.98); }
-.lep-reset-btn {
-  width:100%;padding:8px;margin-top:6px;
-  background:transparent;border:none;
-  color:#aaa;font-family:'Space Grotesk',sans-serif;
-  font-size:11px;cursor:pointer;
-}
+/* Edit Lobby FAB */
+.lobby-edit-fab { position:fixed;bottom:20px;right:20px;z-index:10010;background:#f5c842;color:#1a1916;border:none;border-radius:50%;width:46px;height:46px;font-size:19px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;-webkit-appearance:none }
+.lobby-edit-panel { position:fixed;bottom:76px;right:16px;z-index:10010;background:#1c1b18;border:1px solid #3a3836;border-radius:16px;padding:18px;width:270px;max-height:80vh;overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,.55);display:none;font-family:'Space Grotesk',sans-serif }
+.lobby-edit-panel.open { display:block;animation:lobbyFadeIn .2s ease both }
+.lobby-edit-title { font-size:13px;font-weight:700;color:#f0ede8;margin-bottom:12px }
+.lobby-edit-label { font-size:11px;font-weight:600;color:#6e6b64;letter-spacing:.05em;margin-bottom:4px;display:block }
+.lobby-edit-inp { width:100%;box-sizing:border-box;background:rgba(255,255,255,.05);border:1.5px solid #3a3836;color:#f0ede8;font-family:'Space Grotesk',sans-serif;font-size:13px;padding:8px 10px;border-radius:9px;outline:none;margin-bottom:10px;-webkit-appearance:none }
+.lobby-edit-inp:focus { border-color:#f5c842 }
+.lobby-edit-save { width:100%;padding:9px;background:#f5c842;color:#1a1916;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;border:none;border-radius:9px;cursor:pointer;-webkit-appearance:none }
+.lobby-color-grid { display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:10px }
+.lobby-color-swatch { width:100%;aspect-ratio:1;border-radius:7px;border:2px solid transparent;cursor:pointer;transition:transform .15s,border-color .15s }
+.lobby-color-swatch.sel { border-color:#f5c842;transform:scale(1.1) }
 </style>
 
 <!-- ══ LOBBY SCREEN v2 ══ -->
-<!-- Dim overlay saat panel edit terbuka -->
-<div id="lobby-edit-dim" onclick="lobbyToggleEditPanel()" style="display:none;position:fixed;inset:0;z-index:10009;background:rgba(0,0,0,.45);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)"></div>
-
-<div id="lobby-screen" style="display:flex;">
+<div id="lobby-screen" style="position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;">
+  <div class="lobby-bg-layer" id="lobby-bg-layer" style="background:linear-gradient(135deg,#0b0918 0%,#0f0e1f 40%,#150b24 70%,#080d1a 100%)"></div>
+  <!-- Animated gradient blobs -->
+  <div style="position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden">
+    <div style="position:absolute;width:500px;height:500px;background:radial-gradient(circle,rgba(255,255,255,.5) 0%,transparent 70%);border-radius:50%;top:-100px;left:-100px;animation:gzFloat1 8s ease-in-out infinite"></div>
+    <div style="position:absolute;width:400px;height:400px;background:radial-gradient(circle,rgba(255,255,255,.4) 0%,transparent 70%);border-radius:50%;bottom:-80px;right:-80px;animation:gzFloat2 10s ease-in-out infinite reverse"></div>
+    <div style="position:absolute;width:300px;height:300px;background:radial-gradient(circle,rgba(3,4,94,.08) 0%,transparent 70%);border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);animation:gzFloat1 12s ease-in-out infinite 2s"></div>
+  </div>
+  <style>
+    @keyframes gzFloat1{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-20px) scale(1.05)}66%{transform:translate(-20px,15px) scale(.95)}}
+    @keyframes gzFloat2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-25px,-15px) scale(1.08)}}
+  </style>
+  <div class="lobby-bg-overlay"></div>
+  <div class="lobby-dot-pattern"></div>
 
   <div class="lobby-scroll-inner">
 
@@ -2078,7 +1797,7 @@ button:focus:not(:focus-visible) { outline: none; }
 
       <!-- Form Siswa -->
       <div class="lobby-form-wrap" id="lobby-form-siswa">
-        <div style="font-size:12px;color:#0077B6;margin-bottom:12px;text-align:center">Masuk ke akun siswa kamu</div>
+        <div style="font-size:12px;color:#6e6b64;margin-bottom:12px;text-align:center">Masuk ke akun siswa kamu 🎒</div>
         <input type="text" id="lobby-sl-username" class="lobby-inp" placeholder="Username" autocomplete="off" autocapitalize="none"
           onkeydown="if(event.key==='Enter') document.getElementById('lobby-sl-password').focus()">
         <div class="lobby-inp-row">
@@ -2093,14 +1812,14 @@ button:focus:not(:focus-visible) { outline: none; }
 
       <!-- Form Pembina -->
       <div class="lobby-form-wrap" id="lobby-form-pembina" style="display:none">
-        <div style="font-size:12px;color:#0077B6;margin-bottom:12px;text-align:center">Login sebagai pembina / admin ⚙️</div>
+        <div style="font-size:12px;color:#6e6b64;margin-bottom:12px;text-align:center">Login sebagai pembina / admin ⚙️</div>
         <div class="lobby-inp-row">
           <input type="password" id="lobby-pw-input" class="lobby-inp" placeholder="Password pembina..."
             onkeydown="if(event.key==='Enter') lobbyDoAdminLogin()">
           <button type="button" class="lobby-eye-btn" id="lobby-pw-eye" onclick="lobbyToggleEye('lobby-pw-input','lobby-pw-eye')">👁</button>
         </div>
         <div class="lobby-err" id="lobby-pw-err"></div>
-        <button type="button" class="lobby-submit-btn" onclick="lobbyDoAdminLogin()">Masuk →</button>
+        <button type="button" class="lobby-submit-btn" onclick="lobbyDoAdminLogin()">Masuk sebagai Pembina →</button>
       </div>
     </div>
 
@@ -2113,102 +1832,33 @@ button:focus:not(:focus-visible) { outline: none; }
         <div class="lobby-divider"></div>
       </div>
 
-      <!-- Info user (nama saja, tanpa tombol logout) -->
-      <div class="lobby-user-bar" id="lobby-user-bar" style="margin-bottom:16px">
+      <!-- Info user yang login -->
+      <div class="lobby-user-bar" id="lobby-user-bar">
         <span class="lobby-user-name" id="lobby-user-bar-name">—</span>
+        <button type="button" class="lobby-logout-small" onclick="lobbyHandleLogout()">🚪 Logout</button>
       </div>
 
       <!-- 2 Kartu Ruangan -->
       <div class="lobby-rooms-grid">
         <button id="lobby-ekskul-btn" type="button" class="lobby-room-card">
           <div style="font-size:30px;margin-bottom:10px">🎮</div>
-          <div style="font-size:14px;font-weight:700;color:#03045E;margin-bottom:4px">Ruang Ekskul</div>
-          <div style="font-size:11px;color:#0077B6;line-height:1.5">Quest, profil,<br>absensi & materi</div>
+          <div style="font-size:14px;font-weight:700;color:#f0ede8;margin-bottom:4px">Ruang Ekskul</div>
+          <div style="font-size:11px;color:#6e6b64;line-height:1.5">Quest, profil,<br>absensi & materi</div>
           <div class="lobby-room-label">MASUK →</div>
         </button>
         <button id="lobby-ujian-btn" type="button" class="lobby-room-card ujian">
           <div style="font-size:30px;margin-bottom:10px">📝</div>
-          <div style="font-size:14px;font-weight:700;color:#03045E;margin-bottom:4px">Ruang Ujian</div>
-          <div style="font-size:11px;color:#0077B6;line-height:1.5">Kerjakan soal,<br>nilai & riwayat</div>
+          <div style="font-size:14px;font-weight:700;color:#f0ede8;margin-bottom:4px">Ruang Ujian</div>
+          <div style="font-size:11px;color:#6e6b64;line-height:1.5">Kerjakan soal,<br>nilai & riwayat</div>
           <div class="lobby-room-label">MASUK →</div>
         </button>
       </div>
-
-      <!-- Action bar 1 baris: Logout + Edit (Edit hanya muncul saat pembina) -->
-      <div id="lobby-edit-bar" style="
-        display:none;margin-top:12px;
-        gap:8px;align-items:center;
-      ">
-        <button type="button" onclick="lobbyHandleLogout()" style="
-          flex:1;padding:11px 10px;
-          background:rgba(255,255,255,.18);
-          -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
-          border:1.5px solid rgba(255,255,255,.4);
-          border-radius:14px;
-          color:#ff8080;font-family:'Plus Jakarta Sans','Space Grotesk',sans-serif;
-          font-size:13px;font-weight:700;cursor:pointer;
-          display:flex;align-items:center;justify-content:center;gap:6px;
-          transition:background .2s;-webkit-appearance:none;
-        ">&#x1F6AA; Logout</button>
-        <button type="button" id="lobby-edit-toggle-btn" onclick="lobbyToggleEditPanel()" style="
-          flex:1;padding:11px 10px;
-          background:rgba(245,200,66,.14);
-          -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
-          border:1.5px dashed rgba(245,200,66,.6);
-          border-radius:14px;
-          color:#c9980a;font-family:'Plus Jakarta Sans','Space Grotesk',sans-serif;
-          font-size:13px;font-weight:700;cursor:pointer;
-          display:flex;align-items:center;justify-content:center;gap:6px;
-          transition:background .2s;-webkit-appearance:none;
-        ">&#x270F;&#xFE0F; Edit</button>
-      </div>
-
     </div>
 
   </div><!-- end scroll-inner -->
 </div>
 
-<!-- Panel Edit Lobby — Fixed Bottom Sheet (di luar lobby-screen) -->
-<div id="lobby-edit-panel" style="display:none;
-  position:fixed;left:0;right:0;bottom:0;z-index:10010;
-  max-height:80vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
-  background:rgba(202,240,248,.96);-webkit-backdrop-filter:blur(32px) saturate(180%);backdrop-filter:blur(32px) saturate(180%);
-  border:1.5px solid rgba(255,255,255,.55);border-radius:24px 24px 0 0;
-  padding:0 20px 40px;box-shadow:0 -8px 40px rgba(3,4,94,.25);">
-  <!-- Drag handle -->
-  <div style="display:flex;align-items:center;justify-content:center;padding:12px 0 4px">
-    <div style="width:36px;height:4px;background:rgba(0,119,182,.3);border-radius:2px"></div>
-  </div>
-  <!-- Label judul panel -->
-  <div style="font-size:13px;font-weight:800;color:#03045E;letter-spacing:-.01em;margin-bottom:16px;padding-top:4px">&#x270F;&#xFE0F; Edit Tampilan Lobby</div>
-  <div style="margin-bottom:4px">
-    <label class="lep-label" for="lep-nama">Nama Lobby</label>
-    <input class="lep-inp" id="lep-nama" type="text" placeholder="cth: Quest Board DKV" maxlength="60">
-  </div>
-  <div style="margin-bottom:4px">
-    <label class="lep-label" for="lep-sub">Sub Judul / Instansi</label>
-    <input class="lep-inp" id="lep-sub" type="text" placeholder="cth: SMPN 1 Sumenep" maxlength="80">
-  </div>
-  <div>
-    <label class="lep-label">Logo Lobby</label>
-    <div class="lep-upload-wrap">
-      <button type="button" class="lep-upload-btn" id="lep-logo-btn" onclick="document.getElementById('lep-logo-file').click()">Pilih Logo...</button>
-      <div class="lep-preview" id="lep-logo-preview">&#x1F3A8;</div>
-      <input type="file" id="lep-logo-file" accept="image/*" style="display:none" onchange="lobbyHandleLogoUpload(this)">
-    </div>
-  </div>
-  <div>
-    <label class="lep-label">Background Lobby</label>
-    <div class="lep-upload-wrap">
-      <button type="button" class="lep-upload-btn" id="lep-bg-btn" onclick="document.getElementById('lep-bg-file').click()">Pilih Background...</button>
-      <div class="lep-preview" id="lep-bg-preview" style="font-size:14px">&#x1F30A;</div>
-      <input type="file" id="lep-bg-file" accept="image/*" style="display:none" onchange="lobbyHandleBgUpload(this)">
-    </div>
-    <div style="font-size:10px;color:#0077B6;margin-top:-6px;margin-bottom:10px;opacity:.7">Rekomendasi: ukuran minimal 800x600 px</div>
-  </div>
-  <button type="button" class="lep-save-btn" onclick="lobbySaveAppearance()">Simpan Perubahan</button>
-  <button type="button" class="lep-reset-btn" onclick="lobbyResetAppearance()">Reset ke Default</button>
-</div>
+<!-- Edit Lobby FAB (dihapus - tidak tampil di ruang ekskul) -->
 
 <script>
 // ══════════════════════════════════════════════════════
@@ -2231,6 +1881,10 @@ button:focus:not(:focus-visible) { outline: none; }
       if(animate){ p1.classList.remove('lobby-fadein'); void p1.offsetWidth; p1.classList.add('lobby-fadein'); }
       else { p1.classList.remove('lobby-fadein'); }
     }
+    var fab = document.getElementById('lobby-edit-fab');
+    if(fab) fab.style.display='none';
+    var ep = document.getElementById('lobby-edit-panel');
+    if(ep) ep.classList.remove('open');
   }
 
   function showPhaseRooms(animate){
@@ -2254,6 +1908,15 @@ button:focus:not(:focus-visible) { outline: none; }
         bar.innerHTML = '<span style="color:#7dd87d">🎮 '+(s?s.name:window.loggedInStudentId)+'</span>';
       }
     }
+    // Sync nama di header fase 2
+    var s2 = getLobbySettings();
+    var n2 = document.getElementById('lobby-app-name-display-2');
+    if(n2 && s2.appName) n2.textContent = s2.appName;
+    var l2 = document.getElementById('lobby-logo-display-2');
+    if(l2 && s2.logoUrl){ l2.innerHTML='<div class="lobby-logo-wrap" style="width:52px;height:52px;margin-bottom:8px"><img src="'+s2.logoUrl+'" alt="logo"></div>'; }
+    // Tampilkan FAB edit jika pembina
+    var fab = document.getElementById('lobby-edit-fab');
+    if(fab) fab.style.display = window.pembina ? 'flex' : 'none';
   }
 
   // ── Tab switch ──────────────────────────────────────
@@ -2362,254 +2025,126 @@ button:focus:not(:focus-visible) { outline: none; }
     }, 80);
   };
 
-  // ── EDIT LOBBY PANEL ────────────────────────────────
-  var _lepLogoData = null;   // base64 logo baru
-  var _lepBgData   = null;   // base64 bg baru
-
-  // Tampilkan/sembunyikan bar aksi sesuai role
-  function _updateLobbyEditBar(){
-    var bar = document.getElementById('lobby-edit-bar');
-    var editBtn = document.getElementById('lobby-edit-toggle-btn');
-    if(!bar) return;
-    // Bar selalu tampil setelah login (ada logout button)
-    bar.style.display = (window.pembina || window.loggedInStudentId) ? 'flex' : 'none';
-    // Tombol Edit hanya untuk pembina
-    if(editBtn) editBtn.style.display = window.pembina ? 'flex' : 'none';
+  // Apply lobby settings ke tampilan
+  function getLobbySettings(){
+    try{ return JSON.parse(localStorage.getItem('dkv_lobby_settings')||'{}'); } catch(e){ return {}; }
   }
 
-  // Toggle panel edit
-  window.lobbyToggleEditPanel = function(){
-    var panel = document.getElementById('lobby-edit-panel');
-    var dim   = document.getElementById('lobby-edit-dim');
-    if(!panel) return;
-    var isOpen = panel.style.display === 'block';
-    panel.style.display = isOpen ? 'none' : 'block';
-    if(dim) dim.style.display = isOpen ? 'none' : 'block';
-    if(!isOpen) _lepLoadCurrentValues();
-  };
-
-  // Isi nilai saat ini ke form
-  function _lepLoadCurrentValues(){
-    var n = document.getElementById('lep-nama');
-    var s = document.getElementById('lep-sub');
-    if(n) n.value = document.getElementById('lobby-app-name-display') ? (document.getElementById('lobby-app-name-display').textContent||'') : '';
-    if(s) s.value = document.getElementById('lobby-app-sub-display') ? (document.getElementById('lobby-app-sub-display').textContent||'') : '';
-    _lepLogoData = null;
-    _lepBgData   = null;
-  }
-
-  // Handle upload logo
-  window.lobbyHandleLogoUpload = function(input){
-    var file = input.files && input.files[0];
-    if(!file) return;
-    if(file.size > 2 * 1024 * 1024){
-      if(typeof showToast==='function') showToast('Logo terlalu besar. Maks 2 MB.');
-      input.value=''; return;
-    }
-    var reader = new FileReader();
-    reader.onload = function(e){
-      _lepLogoData = e.target.result;
-      var btn = document.getElementById('lep-logo-btn');
-      var prev = document.getElementById('lep-logo-preview');
-      if(btn) btn.textContent = file.name;
-      if(prev){ prev.innerHTML = '<img src="'+_lepLogoData+'" alt="logo">'; }
-    };
-    reader.readAsDataURL(file);
-  };
-
-  // Handle upload background
-  window.lobbyHandleBgUpload = function(input){
-    var file = input.files && input.files[0];
-    if(!file) return;
-    if(file.size > 5 * 1024 * 1024){
-      if(typeof showToast==='function') showToast('Background terlalu besar. Maks 5 MB.');
-      input.value=''; return;
-    }
-    var reader = new FileReader();
-    reader.onload = function(e){
-      _lepBgData = e.target.result;
-      var btn = document.getElementById('lep-bg-btn');
-      var prev = document.getElementById('lep-bg-preview');
-      if(btn) btn.textContent = file.name;
-      if(prev){ prev.innerHTML = '<img src="'+_lepBgData+'" alt="bg" style="width:100%;height:100%;object-fit:cover;border-radius:8px">'; }
-    };
-    reader.readAsDataURL(file);
-  };
-
-  // Terapkan tampilan ke lobby
-  function _applyLobbyAppearance(cfg){
-    if(!cfg) return;
-    // Nama
-    if(cfg.nama){
-      ['lobby-app-name-display','lobby-app-name-display-2'].forEach(function(id){
-        var el = document.getElementById(id); if(el) el.textContent = cfg.nama;
-      });
-      document.title = cfg.nama;
-    }
-    // Sub
-    if(cfg.sub !== undefined){
-      var sub = document.getElementById('lobby-app-sub-display');
-      if(sub) sub.textContent = cfg.sub;
-    }
-    // Logo
-    if(cfg.logo){
-      var imgHtml = '<img src="'+cfg.logo+'" alt="logo" style="width:100%;height:100%;object-fit:cover">';
-      var wrapHtml = '<div class="lobby-logo-wrap" style="width:72px;height:72px;border-radius:22px;overflow:hidden;margin:0 auto 12px;border:2px solid rgba(0,119,182,.35);box-shadow:0 0 0 6px rgba(0,119,182,.08),0 12px 32px rgba(0,119,182,.2)">'+imgHtml+'</div>';
-      ['lobby-logo-display','lobby-logo-display-2'].forEach(function(id){
-        var el = document.getElementById(id); if(el) el.innerHTML = wrapHtml;
-      });
-    }
-    // Background — preload dulu, baru swap (warna biru muda tetap tampil selagi loading)
-    if(cfg.bg){
-      var screen = document.getElementById('lobby-screen');
-      if(screen){
-        // Jika base64 (upload langsung), terapkan instan karena sudah ada di memori
-        if(cfg.bg.indexOf('data:') === 0){
-          screen.style.backgroundImage = 'url('+cfg.bg+')';
-          screen.style.backgroundSize = 'cover';
-          screen.style.backgroundPosition = 'center';
-          screen.style.backgroundRepeat = 'no-repeat';
-        } else {
-          // URL eksternal → preload dulu, background biru muda tetap tampil
-          var _img = new Image();
-          _img.onload = function(){
-            screen.style.transition = 'background-image .4s ease';
-            screen.style.backgroundImage = 'url('+cfg.bg+')';
-            screen.style.backgroundSize = 'cover';
-            screen.style.backgroundPosition = 'center';
-            screen.style.backgroundRepeat = 'no-repeat';
-          };
-          _img.src = cfg.bg;
-        }
-      }
-    }
-  }
-
-  // Simpan ke Firebase
-  window.lobbySaveAppearance = function(){
-    var nama = (document.getElementById('lep-nama').value||'').trim();
-    var sub  = (document.getElementById('lep-sub').value||'').trim();
-    if(!nama){ if(typeof showToast==='function') showToast('Nama lobby tidak boleh kosong.'); return; }
-
-    var cfg = { nama: nama, sub: sub };
-    if(_lepLogoData) cfg.logo = _lepLogoData;
-    if(_lepBgData)   cfg.bg   = _lepBgData;
-
-    // Terapkan live
-    _applyLobbyAppearance(cfg);
-
-    // Simpan ke Firebase jika tersedia
-    try{
-      if(window.firebase && window.firebase.database){
-        var db = window.firebase.database();
-        var ref = db.ref('lobbyConfig');
-        // Jika ada logo/bg baru, merge; jika tidak, jangan overwrite
-        ref.once('value').then(function(snap){
-          var existing = snap.val() || {};
-          var toSave = { nama: cfg.nama, sub: cfg.sub };
-          if(cfg.logo) toSave.logo = cfg.logo; else if(existing.logo) toSave.logo = existing.logo;
-          if(cfg.bg)   toSave.bg   = cfg.bg;   else if(existing.bg)   toSave.bg   = existing.bg;
-          ref.set(toSave).then(function(){
-            if(typeof showToast==='function') showToast('Tampilan lobby disimpan! ✨');
-            document.getElementById('lobby-edit-panel').style.display='none';
-          }).catch(function(e){
-            if(typeof showToast==='function') showToast('Gagal simpan ke server: '+e.message);
-          });
-        });
-      } else {
-        // Fallback: simpan ke localStorage
-        var toSave = { nama: cfg.nama, sub: cfg.sub };
-        if(cfg.logo) toSave.logo = cfg.logo;
-        if(cfg.bg)   toSave.bg   = cfg.bg;
-        try{ localStorage.setItem('dkv_lobbyConfig', JSON.stringify(toSave)); } catch(e2){}
-        if(typeof showToast==='function') showToast('Disimpan lokal! (Firebase belum siap) ✨');
-        document.getElementById('lobby-edit-panel').style.display='none';
-      }
-    } catch(e){
-      if(typeof showToast==='function') showToast('Error: '+e.message);
-    }
-  };
-
-  // Reset ke default
-  window.lobbyResetAppearance = function(){
-    try{
-      if(window.firebase && window.firebase.database){
-        window.firebase.database().ref('lobbyConfig').remove();
-      }
-      localStorage.removeItem('dkv_lobbyConfig');
-    } catch(e){}
-    // Reset tampilan
-    ['lobby-app-name-display','lobby-app-name-display-2'].forEach(function(id){
-      var el = document.getElementById(id); if(el) el.textContent = 'DKV';
-    });
-    var sub = document.getElementById('lobby-app-sub-display');
-    if(sub) sub.textContent = 'SMPN 1 Sumenep';
-    var screen = document.getElementById('lobby-screen');
-    if(screen){ screen.style.backgroundImage=''; screen.style.background='#90E0EF'; }
+  function applyLobbyLogo(url){
     ['lobby-logo-display','lobby-logo-display-2'].forEach(function(id){
-      var el = document.getElementById(id);
-      if(el) el.innerHTML = '<div class="lobby-logo-emoji">&#x1F3A8;</div>';
+      var el=document.getElementById(id); if(!el) return;
+      var sz = id==='lobby-logo-display-2'?'52px':'68px';
+      var fsz = id==='lobby-logo-display-2'?'26px':'32px';
+      el.innerHTML='<div class="lobby-logo-wrap" style="width:'+sz+';height:'+sz+';margin-bottom:'+(id==='lobby-logo-display-2'?'8':'12')+'px"><img src="'+url+'" alt="logo" onerror="this.parentNode.innerHTML=\'🎨\'"></div>';
     });
-    document.title = 'Ekskul DKV SMPN 1 Sumenep \u2014 Quest Board';
-    if(typeof showToast==='function') showToast('Tampilan lobby direset ke default.');
-    document.getElementById('lobby-edit-panel').style.display='none';
-  };
-
-  // Load lobbyConfig dari Firebase saat awal
-  function _loadLobbyConfig(){
-    var _tryLocal = function(){
-      try{
-        var raw = localStorage.getItem('dkv_lobbyConfig');
-        if(raw){ var c=JSON.parse(raw); _applyLobbyAppearance(c); }
-      }catch(e){}
-    };
-    if(window.firebase && window.firebase.database){
-      try{
-        window.firebase.database().ref('lobbyConfig').once('value').then(function(snap){
-          var c = snap.val();
-          if(c) _applyLobbyAppearance(c);
-          else _tryLocal();
-        }).catch(_tryLocal);
-      }catch(e){ _tryLocal(); }
-    } else {
-      // Coba lagi setelah Firebase siap
-      var _retryCount = 0;
-      var _retryTimer = setInterval(function(){
-        _retryCount++;
-        if(window.firebase && window.firebase.database){
-          clearInterval(_retryTimer);
-          try{
-            window.firebase.database().ref('lobbyConfig').once('value').then(function(snap){
-              var c = snap.val(); if(c) _applyLobbyAppearance(c); else _tryLocal();
-            }).catch(_tryLocal);
-          }catch(e){ _tryLocal(); }
-        } else if(_retryCount > 20){ clearInterval(_retryTimer); _tryLocal(); }
-      }, 500);
-    }
   }
 
-  // Patch showPhaseRooms agar update bar edit
-  var _origShowPhaseRooms = showPhaseRooms;
-  showPhaseRooms = function(animate){
-    _origShowPhaseRooms(animate);
-    _updateLobbyEditBar();
-  };
-  // Patch showPhaseLogin agar sembunyikan bar+panel edit
-  var _origShowPhaseLogin = showPhaseLogin;
-  showPhaseLogin = function(animate){
-    _origShowPhaseLogin(animate);
-    var bar   = document.getElementById('lobby-edit-bar');
-    var panel = document.getElementById('lobby-edit-panel');
-    var dim   = document.getElementById('lobby-edit-dim');
-    if(bar)   bar.style.display='none';
-    if(panel) panel.style.display='none';
-    if(dim)   dim.style.display='none';
+  window.lobbyApplySettings = function(){
+    var s=getLobbySettings();
+    if(s.appName){
+      ['lobby-app-name-display','lobby-app-name-display-2'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=s.appName;});
+    }
+    if(s.appSub){ var el=document.getElementById('lobby-app-sub-display'); if(el)el.textContent=s.appSub; }
+    if(s.logoUrl) applyLobbyLogo(s.logoUrl);
+    var bgLayer=document.getElementById('lobby-bg-layer');
+    if(bgLayer){
+      if(s.bgImg){ bgLayer.style.backgroundImage='url('+s.bgImg+')'; bgLayer.style.background='#02023a'; }
+      else if(s.bgColor){ bgLayer.style.background=s.bgColor; bgLayer.style.backgroundImage='none'; }
+    }
+    // Populate edit fields if open
+    var pan=document.getElementById('lobby-edit-panel');
+    if(pan&&pan.classList.contains('open')){
+      var ai=document.getElementById('ledit-appname'); if(ai)ai.value=s.appName||'';
+      var si=document.getElementById('ledit-appsub'); if(si)si.value=s.appSub||'';
+      var li=document.getElementById('ledit-logourl'); if(li)li.value=s.logoUrl||'';
+      var bi=document.getElementById('ledit-bgurl'); if(bi)bi.value=s.bgImg||'';
+    }
   };
 
-  // Init
+  window.lobbyHandleLogoUpload = function(input){
+    var file=input.files[0]; if(!file) return;
+    var r=new FileReader();
+    r.onload=function(e){ document.getElementById('ledit-logourl').value=e.target.result; applyLobbyLogo(e.target.result); };
+    r.readAsDataURL(file);
+  };
+
+  window.lobbyHandleBgUpload = function(input){
+    var file=input.files[0]; if(!file) return;
+    var r=new FileReader();
+    r.onload=function(e){
+      document.getElementById('ledit-bgurl').value=e.target.result;
+      var bg=document.getElementById('lobby-bg-layer');
+      if(bg) bg.style.backgroundImage='url('+e.target.result+')';
+    };
+    r.readAsDataURL(file);
+  };
+
+  var _lobbyBgColors=['#02023a','#0e1a0e','#0e1219','#1a0e14','#1a1411','#141d2e','#2a1a0e','#0e1a1a','#1a0e1a','#1d1a0e'];
+
+  function renderLobbyColorGrid(){
+    var grid=document.getElementById('ledit-color-grid'); if(!grid) return;
+    var cur=getLobbySettings().bgColor||'#02023a';
+    grid.innerHTML=_lobbyBgColors.map(function(c){
+      return '<div class="lobby-color-swatch'+(c===cur?' sel':'')+'" style="background:'+c+'" onclick="lobbyPickBgColor(\''+c+'\')" title="'+c+'"></div>';
+    }).join('');
+  }
+
+  window.lobbyPickBgColor = function(c){
+    var bg=document.getElementById('lobby-bg-layer');
+    if(bg){ bg.style.background=c; bg.style.backgroundImage='none'; }
+    document.getElementById('ledit-bgurl').value='';
+    window._lobbyTempBgColor=c; window._lobbyTempBgImg='';
+    Array.from(document.querySelectorAll('.lobby-color-swatch')).forEach(function(el){
+      el.classList.toggle('sel', el.getAttribute('title')===c);
+    });
+  };
+
+  window.lobbyToggleEditPanel = function(){
+    var panel=document.getElementById('lobby-edit-panel'); if(!panel) return;
+    if(!panel.classList.contains('open')){
+      var s=getLobbySettings();
+      var ai=document.getElementById('ledit-appname'); if(ai)ai.value=s.appName||'';
+      var si=document.getElementById('ledit-appsub'); if(si)si.value=s.appSub||'';
+      var li=document.getElementById('ledit-logourl'); if(li)li.value=s.logoUrl||'';
+      var bi=document.getElementById('ledit-bgurl'); if(bi)bi.value=s.bgImg||'';
+      renderLobbyColorGrid();
+    }
+    panel.classList.toggle('open');
+  };
+
+  window.lobbySaveEdit = function(){
+    var s=getLobbySettings();
+    var an=document.getElementById('ledit-appname').value.trim();
+    var as_=document.getElementById('ledit-appsub').value.trim();
+    var lu=document.getElementById('ledit-logourl').value.trim();
+    var bu=document.getElementById('ledit-bgurl').value.trim();
+    if(an) s.appName=an;
+    if(as_) s.appSub=as_;
+    if(lu) s.logoUrl=lu;
+    if(bu){ s.bgImg=bu; s.bgColor=''; }
+    else if(window._lobbyTempBgColor){ s.bgColor=window._lobbyTempBgColor; s.bgImg=''; }
+    localStorage.setItem('dkv_lobby_settings',JSON.stringify(s));
+    window.lobbyApplySettings();
+    window._lobbyTempBgColor=null;
+    if(typeof showToast==='function') showToast('Tampilan lobby disimpan! ✨');
+    document.getElementById('lobby-edit-panel').classList.remove('open');
+  };
+
+  window.lobbyResetEdit = function(){
+    localStorage.removeItem('dkv_lobby_settings');
+    window._lobbyTempBgColor=null;
+    document.getElementById('lobby-app-name-display').textContent='DKV';
+    document.getElementById('lobby-app-sub-display').textContent='SMPN 1 Sumenep';
+    document.getElementById('lobby-logo-display').innerHTML='<div class="lobby-logo-emoji">🎨</div>';
+    var bgLayer=document.getElementById('lobby-bg-layer');
+    if(bgLayer){ bgLayer.style.background='#02023a'; bgLayer.style.backgroundImage='none'; }
+    if(typeof showToast==='function') showToast('Tampilan lobby direset.');
+    document.getElementById('lobby-edit-panel').classList.remove('open');
+  };
+
+  // ── Init saat DOM siap ──────────────────────────────
   document.addEventListener('DOMContentLoaded', function(){
-    // Load config tampilan lobby dari Firebase/localStorage
-    _loadLobbyConfig();
+    window.lobbyApplySettings();
     // Init tanpa animasi (false = no animate)
     if(window.pembina || window.loggedInStudentId){
       showPhaseRooms(false);
@@ -2622,53 +2157,53 @@ button:focus:not(:focus-visible) { outline: none; }
 </script>
 
 <!-- ═══════ RUANG UJIAN OVERLAY ═══════ -->
-<div id="ujian-screen" style="display:none;position:fixed;inset:0;z-index:9998;background:#90E0EF;overflow-y:auto;font-family:'Space Grotesk',sans-serif">
+<div id="ujian-screen" style="display:none;position:fixed;inset:0;z-index:9998;background:#02023a;overflow-y:auto;font-family:'Space Grotesk',sans-serif">
 
   <!-- Header Ujian -->
-  <div style="position:sticky;top:0;z-index:10;background:rgba(255,255,255,0.25);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-bottom:1.5px solid rgba(255,255,255,0.4);padding:max(14px,env(safe-area-inset-top)) 20px 14px;display:flex;align-items:center;justify-content:space-between">
-    <div style="font-size:15px;font-weight:700;color:#03045E;font-weight:800">📝 Ruang Ujian</div>
+  <div style="position:sticky;top:0;z-index:10;background:rgba(15,14,20,.92);backdrop-filter:blur(10px);border-bottom:1px solid #2e2c29;padding:14px 20px;display:flex;align-items:center;justify-content:space-between">
+    <div style="font-size:15px;font-weight:700;color:#f0ede8">📝 Ruang Ujian</div>
     <div style="display:flex;align-items:center;gap:10px">
-      <div id="ujian-timer-badge" style="display:none;font-family:monospace;font-size:13px;padding:5px 12px;border-radius:99px;background:rgba(255,255,255,0.2);border:1.5px solid rgba(0,119,182,0.25);color:#03045E"></div>
-      <button id="ujian-back-btn" type="button" style="font-size:12px;font-weight:600;padding:7px 14px;border-radius:99px;border:1.5px solid rgba(0,119,182,0.3);background:rgba(255,255,255,0.2);color:#0077B6;cursor:pointer;font-family:'Space Grotesk',sans-serif;backdrop-filter:blur(8px);min-height:36px">← Kembali</button>
+      <div id="ujian-timer-badge" style="display:none;font-family:monospace;font-size:13px;padding:5px 12px;border-radius:99px;background:#1a1916;border:1px solid #2e2c29;color:#f0ede8"></div>
+      <button id="ujian-back-btn" type="button" style="font-size:12px;font-weight:600;padding:6px 14px;border-radius:99px;border:1px solid #2e2c29;background:transparent;color:#9e9b95;cursor:pointer;font-family:'Space Grotesk',sans-serif">← Kembali</button>
     </div>
   </div>
 
-  <div style="max-width:680px;margin:0 auto;padding:20px 14px calc(80px + env(safe-area-inset-bottom))">
+  <div style="max-width:680px;margin:0 auto;padding:28px 20px 80px">
 
     <!-- STATE: belum login -->
     <div id="ujian-login-state">
-      <div style="background:rgba(255,255,255,0.25);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1.5px solid rgba(255,255,255,0.5);border-radius:16px;padding:28px 24px;max-width:380px;margin:40px auto">
+      <div style="background:#1a1916;border:1.5px solid #2e2c29;border-radius:16px;padding:28px 24px;max-width:380px;margin:40px auto">
         <div style="text-align:center;margin-bottom:20px">
           <div style="font-size:28px;margin-bottom:8px">📝</div>
-          <div style="font-size:17px;font-weight:700;color:#03045E">Masuk ke Ruang Ujian</div>
-          <div style="font-size:12px;color:#0077B6;margin-top:4px">Pilih jenis akun untuk melanjutkan</div>
+          <div style="font-size:17px;font-weight:700;color:#f0ede8">Masuk ke Ruang Ujian</div>
+          <div style="font-size:12px;color:#6e6b64;margin-top:4px">Pilih jenis akun untuk melanjutkan</div>
         </div>
         <!-- Tab Siswa / Pembina -->
         <div id="ujian-gate-tab-row" style="display:flex;gap:8px;margin-bottom:20px">
-          <button id="ujian-gate-tab-siswa" type="button" onclick="ujianGateSetTab('siswa')" style="flex:1;padding:9px;border-radius:10px;border:1.5px solid #0077B6;background:linear-gradient(135deg,#03045E,#0077B6,#00B4D8);color:#fff;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 12px rgba(0,119,182,0.3)">Siswa</button>
-          <button id="ujian-gate-tab-pembina" type="button" onclick="ujianGateSetTab('pembina')" style="flex:1;padding:9px;border-radius:10px;border:1.5px solid rgba(0,119,182,0.25);background:transparent;color:#0077B6;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s">Pembina</button>
+          <button id="ujian-gate-tab-siswa" type="button" onclick="ujianGateSetTab('siswa')" style="flex:1;padding:9px;border-radius:10px;border:1.5px solid #e8774a;background:#e8774a;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s">Siswa</button>
+          <button id="ujian-gate-tab-pembina" type="button" onclick="ujianGateSetTab('pembina')" style="flex:1;padding:9px;border-radius:10px;border:1.5px solid #2e2c29;background:transparent;color:#9e9b95;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s">Pembina</button>
         </div>
 
         <!-- Form Siswa -->
         <div id="ujian-gate-form-siswa">
           <!-- Sudah login (carry-over dari ekskul) -->
           <div id="ujian-gate-siswa-logged" style="display:none;text-align:center;padding:8px 0 16px">
-            <div style="font-size:13px;color:#0077B6;font-weight:700;margin-bottom:4px">✅ Sudah login sebagai</div>
-            <div id="ujian-gate-siswa-logged-name" style="font-size:15px;font-weight:700;color:#03045E"></div>
-            <button type="button" onclick="ujianGateEnterAsSiswa()" style="margin-top:14px;width:100%;padding:12px;border-radius:11px;border:none;background:linear-gradient(135deg,#03045E,#0077B6,#00B4D8);color:#fff;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(0,119,182,0.4)">Masuk Sekarang →</button>
-            <button type="button" onclick="ujianGateDoLogoutSiswa()" style="margin-top:8px;width:100%;padding:9px;border-radius:11px;border:none;background:rgba(255,255,255,0.15);border-radius:11px;border:1px solid rgba(0,119,182,0.15);color:#0077B6;font-family:'Space Grotesk',sans-serif;font-size:12px;cursor:pointer">Ganti Akun</button>
+            <div style="font-size:13px;color:#e8774a;font-weight:700;margin-bottom:4px">✅ Sudah login sebagai</div>
+            <div id="ujian-gate-siswa-logged-name" style="font-size:15px;font-weight:700;color:#f0ede8"></div>
+            <button type="button" onclick="ujianGateEnterAsSiswa()" style="margin-top:14px;width:100%;padding:12px;border-radius:11px;border:none;background:#e8774a;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Masuk Sekarang →</button>
+            <button type="button" onclick="ujianGateDoLogoutSiswa()" style="margin-top:8px;width:100%;padding:9px;border-radius:11px;border:none;background:transparent;color:#888;font-family:'Space Grotesk',sans-serif;font-size:12px;cursor:pointer">Ganti Akun</button>
           </div>
           <!-- Form login siswa -->
           <div id="ujian-gate-siswa-form">
-            <label style="font-size:11px;font-weight:600;color:#0077B6;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;color:#0077B6">Username</label>
-            <input id="ujian-username" type="text" placeholder="Username kamu..." autocomplete="off" autocapitalize="none" style="width:100%;padding:10px 12px;border-radius:9px;border:1.5px solid rgba(0,119,182,0.25);background:rgba(255,255,255,0.6);color:#03045E;font-family:'Space Grotesk',sans-serif;font-size:14px;outline:none;box-sizing:border-box;margin-bottom:12px">
-            <label style="font-size:11px;font-weight:600;color:#0077B6;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;color:#0077B6">Password</label>
+            <label style="font-size:11px;font-weight:600;color:#9e9b95;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px">Username</label>
+            <input id="ujian-username" type="text" placeholder="Username kamu..." autocomplete="off" autocapitalize="none" style="width:100%;padding:10px 12px;border-radius:9px;border:1.5px solid #2e2c29;background:#02023a;color:#f0ede8;font-family:'Space Grotesk',sans-serif;font-size:14px;outline:none;box-sizing:border-box;margin-bottom:12px">
+            <label style="font-size:11px;font-weight:600;color:#9e9b95;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px">Password</label>
             <div style="position:relative;margin-bottom:6px">
-              <input id="ujian-password" type="password" placeholder="Password kamu..." autocomplete="current-password" style="width:100%;padding:10px 36px 10px 12px;border-radius:9px;border:1.5px solid rgba(0,119,182,0.25);background:rgba(255,255,255,0.6);color:#03045E;font-family:'Space Grotesk',sans-serif;font-size:14px;outline:none;box-sizing:border-box">
+              <input id="ujian-password" type="password" placeholder="Password kamu..." autocomplete="current-password" style="width:100%;padding:10px 36px 10px 12px;border-radius:9px;border:1.5px solid #2e2c29;background:#02023a;color:#f0ede8;font-family:'Space Grotesk',sans-serif;font-size:14px;outline:none;box-sizing:border-box">
               <button type="button" id="ujian-gate-sl-eye" onclick="ujianGateToggleEye('ujian-password','ujian-gate-sl-eye')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:14px">👁</button>
             </div>
             <div id="ujian-login-err" style="font-size:12px;color:#e05252;min-height:16px;margin-bottom:10px"></div>
-            <button id="ujian-login-btn" type="button" style="width:100%;padding:12px;border-radius:11px;border:none;background:linear-gradient(135deg,#03045E,#0077B6,#00B4D8);color:#fff;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(0,119,182,0.4)">Masuk →</button>
+            <button id="ujian-login-btn" type="button" style="width:100%;padding:12px;border-radius:11px;border:none;background:#e8774a;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Masuk →</button>
           </div>
         </div>
 
@@ -2677,18 +2212,18 @@ button:focus:not(:focus-visible) { outline: none; }
           <!-- Sudah login sebagai pembina -->
           <div id="ujian-gate-pembina-logged" style="display:none;text-align:center;padding:8px 0 16px">
             <div style="font-size:13px;color:#f5c842;font-weight:700;margin-bottom:4px">⚙️ Sudah login sebagai Pembina</div>
-            <button type="button" onclick="ujianGateEnterAsPembina()" style="margin-top:14px;width:100%;padding:12px;border-radius:11px;border:none;background:linear-gradient(135deg,#03045E,#0077B6,#00B4D8);color:#fff;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Masuk → Kelola Ujian</button>
-            <button type="button" onclick="ujianGateDoLogoutPembina()" style="margin-top:8px;width:100%;padding:9px;border-radius:11px;border:none;background:rgba(255,255,255,0.15);border-radius:11px;border:1px solid rgba(0,119,182,0.15);color:#0077B6;font-family:'Space Grotesk',sans-serif;font-size:12px;cursor:pointer">Logout Pembina</button>
+            <button type="button" onclick="ujianGateEnterAsPembina()" style="margin-top:14px;width:100%;padding:12px;border-radius:11px;border:none;background:linear-gradient(135deg,#f5c842,#e8774a);color:#02023a;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Masuk → Kelola Ujian</button>
+            <button type="button" onclick="ujianGateDoLogoutPembina()" style="margin-top:8px;width:100%;padding:9px;border-radius:11px;border:none;background:transparent;color:#888;font-family:'Space Grotesk',sans-serif;font-size:12px;cursor:pointer">Logout Pembina</button>
           </div>
           <!-- Form password pembina -->
           <div id="ujian-gate-pembina-form">
-            <label style="font-size:11px;font-weight:600;color:#0077B6;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;color:#0077B6">Password Pembina</label>
+            <label style="font-size:11px;font-weight:600;color:#9e9b95;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px">Password Pembina</label>
             <div style="position:relative;margin-bottom:6px">
-              <input id="ujian-gate-pw-input" type="password" placeholder="Password pembina..." autocomplete="current-password" style="width:100%;padding:10px 36px 10px 12px;border-radius:9px;border:1.5px solid rgba(0,119,182,0.25);background:rgba(255,255,255,0.6);color:#03045E;font-family:'Space Grotesk',sans-serif;font-size:14px;outline:none;box-sizing:border-box">
+              <input id="ujian-gate-pw-input" type="password" placeholder="Password pembina..." autocomplete="current-password" style="width:100%;padding:10px 36px 10px 12px;border-radius:9px;border:1.5px solid #2e2c29;background:#02023a;color:#f0ede8;font-family:'Space Grotesk',sans-serif;font-size:14px;outline:none;box-sizing:border-box">
               <button type="button" id="ujian-gate-pw-eye" onclick="ujianGateToggleEye('ujian-gate-pw-input','ujian-gate-pw-eye')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:14px">👁</button>
             </div>
             <div id="ujian-gate-pw-err" style="font-size:12px;color:#e05252;min-height:16px;margin-bottom:10px"></div>
-            <button id="ujian-gate-pw-submit" type="button" style="width:100%;padding:12px;border-radius:11px;border:none;background:linear-gradient(135deg,#03045E,#0077B6,#00B4D8);color:#fff;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Masuk →</button>
+            <button id="ujian-gate-pw-submit" type="button" style="width:100%;padding:12px;border-radius:11px;border:none;background:linear-gradient(135deg,#f5c842,#e8774a);color:#02023a;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Masuk →</button>
           </div>
         </div>
 
@@ -2698,11 +2233,11 @@ button:focus:not(:focus-visible) { outline: none; }
     <!-- STATE: sudah login — daftar ujian -->
     <div id="ujian-list-state" style="display:none">
       <div style="margin-bottom:20px">
-        <div style="font-size:20px;font-weight:700;color:#03045E" id="ujian-welcome-txt">Halo!</div>
-        <div style="font-size:13px;color:#0077B6;margin-top:4px">Pilih ujian yang ingin dikerjakan</div>
+        <div style="font-size:20px;font-weight:700;color:#f0ede8" id="ujian-welcome-txt">Halo!</div>
+        <div style="font-size:13px;color:#6e6b64;margin-top:4px">Pilih ujian yang ingin dikerjakan</div>
       </div>
       <div id="ujian-cards-wrap" style="display:flex;flex-direction:column;gap:12px"></div>
-      <div id="ujian-empty" style="display:none;text-align:center;padding:60px 0;color:#0077B6;font-size:14px">Belum ada ujian tersedia 📭</div>
+      <div id="ujian-empty" style="display:none;text-align:center;padding:60px 0;color:#3e3c38;font-size:14px">Belum ada ujian tersedia 📭</div>
 
     </div>
 
@@ -2710,19 +2245,19 @@ button:focus:not(:focus-visible) { outline: none; }
     <div id="ujian-kerja-state" style="display:none">
       <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
         <div>
-          <div style="font-size:18px;font-weight:700;color:#03045E" id="ujian-kerja-title"></div>
-          <div style="font-size:12px;color:#0077B6;margin-top:3px" id="ujian-kerja-meta"></div>
+          <div style="font-size:18px;font-weight:700;color:#f0ede8" id="ujian-kerja-title"></div>
+          <div style="font-size:12px;color:#6e6b64;margin-top:3px" id="ujian-kerja-meta"></div>
         </div>
-        <div id="ujian-progress-txt" style="font-size:12px;color:#0077B6"></div>
+        <div id="ujian-progress-txt" style="font-size:12px;color:#9e9b95"></div>
       </div>
       <!-- Progress bar -->
-      <div style="height:4px;background:rgba(0,119,182,0.15);border-radius:99px;margin-bottom:28px;overflow:hidden">
-        <div id="ujian-progress-bar" style="height:100%;background:linear-gradient(90deg,#03045E,#0077B6,#00B4D8);border-radius:99px;box-shadow:0 0 8px rgba(0,180,216,0.5);transition:width .3s;width:0%"></div>
+      <div style="height:4px;background:#2e2c29;border-radius:99px;margin-bottom:28px;overflow:hidden">
+        <div id="ujian-progress-bar" style="height:100%;background:#e8774a;border-radius:99px;transition:width .3s;width:0%"></div>
       </div>
       <div id="ujian-soal-wrap"></div>
       <div style="margin-top:28px;display:flex;gap:10px;flex-wrap:wrap">
-        <button id="ujian-prev-btn" type="button" style="padding:10px 20px;border-radius:8px;border:1.5px solid rgba(0,119,182,0.3);background:rgba(255,255,255,0.25);backdrop-filter:blur(8px);color:#0077B6;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;cursor:pointer">← Sebelumnya</button>
-        <button id="ujian-next-btn" type="button" style="padding:10px 20px;border-radius:8px;border:none;background:linear-gradient(135deg,#03045E,#0077B6,#00B4D8);color:#fff;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 3px 10px rgba(0,119,182,0.4)">Selanjutnya →</button>
+        <button id="ujian-prev-btn" type="button" style="padding:10px 20px;border-radius:8px;border:1.5px solid #2e2c29;background:transparent;color:#9e9b95;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;cursor:pointer">← Sebelumnya</button>
+        <button id="ujian-next-btn" type="button" style="padding:10px 20px;border-radius:8px;border:none;background:#e8774a;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer">Selanjutnya →</button>
         <button id="ujian-submit-btn" type="button" style="display:none;padding:10px 24px;border-radius:8px;border:none;background:#4caf7d;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer">✓ Kumpulkan</button>
       </div>
     </div>
@@ -2730,42 +2265,42 @@ button:focus:not(:focus-visible) { outline: none; }
     <!-- STATE: hasil ujian -->
     <div id="ujian-hasil-state" style="display:none;text-align:center;padding:40px 0">
       <div style="font-size:52px;margin-bottom:16px" id="ujian-hasil-emoji">🎉</div>
-      <div style="font-size:22px;font-weight:700;color:#03045E;margin-bottom:8px" id="ujian-hasil-nilai"></div>
-      <div style="font-size:13px;color:#0077B6;margin-bottom:28px" id="ujian-hasil-detail"></div>
-      <div style="background:rgba(255,255,255,0.2);border:1.5px solid rgba(0,119,182,0.2);border-radius:12px;padding:20px;max-width:360px;margin:0 auto 24px;text-align:left" id="ujian-hasil-breakdown"></div>
-      <button id="ujian-selesai-btn" type="button" style="padding:11px 28px;border-radius:8px;border:none;background:linear-gradient(135deg,#03045E,#0077B6,#00B4D8);color:#fff;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(0,119,182,0.4)">Kembali ke Daftar Ujian</button>
+      <div style="font-size:22px;font-weight:700;color:#f0ede8;margin-bottom:8px" id="ujian-hasil-nilai"></div>
+      <div style="font-size:13px;color:#6e6b64;margin-bottom:28px" id="ujian-hasil-detail"></div>
+      <div style="background:#1a1916;border:1px solid #2e2c29;border-radius:12px;padding:20px;max-width:360px;margin:0 auto 24px;text-align:left" id="ujian-hasil-breakdown"></div>
+      <button id="ujian-selesai-btn" type="button" style="padding:11px 28px;border-radius:8px;border:none;background:#e8774a;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Kembali ke Daftar Ujian</button>
     </div>
 
     <!-- STATE: Pembina — kelola ujian -->
     <div id="ujian-admin-state" style="display:none">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
         <div>
-          <div style="font-size:20px;font-weight:700;color:#03045E">Panel Pembina</div>
-          <div style="font-size:12px;color:#0077B6;margin-top:3px">Kelola ujian & lihat hasil siswa</div>
+          <div style="font-size:20px;font-weight:700;color:#f0ede8">Panel Pembina</div>
+          <div style="font-size:12px;color:#6e6b64;margin-top:3px">Kelola ujian & lihat hasil siswa</div>
         </div>
-        <button id="ujian-buat-btn" type="button" style="padding:9px 18px;border-radius:8px;border:none;background:linear-gradient(135deg,#03045E,#0077B6);color:#fff;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer">+ Buat Ujian</button>
+        <button id="ujian-buat-btn" type="button" style="padding:9px 18px;border-radius:8px;border:none;background:#f5c842;color:#0f0e0c;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer">+ Buat Ujian</button>
       </div>
 
       <!-- Form buat ujian -->
-      <div id="ujian-form-wrap" style="display:none;background:rgba(255,255,255,0.25);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1.5px solid rgba(255,255,255,0.45);border-radius:14px;padding:24px;margin-bottom:20px">
-        <div style="font-size:15px;font-weight:700;color:#03045E;margin-bottom:16px" id="ujian-form-title-label">Buat Ujian Baru</div>
-        <label style="font-size:11px;font-weight:600;color:#0077B6;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;color:#0077B6">Judul Ujian</label>
-        <input id="uf-judul" type="text" placeholder="cth: Ujian Teori DKV Semester 1" style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid rgba(0,119,182,0.25);background:rgba(255,255,255,0.6);color:#03045E;font-family:'Space Grotesk',sans-serif;font-size:13px;margin-bottom:12px">
-        <label style="font-size:11px;font-weight:600;color:#0077B6;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;color:#0077B6">Durasi (menit)</label>
-        <input id="uf-durasi" type="number" placeholder="cth: 60" min="1" max="300" style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid rgba(0,119,182,0.25);background:rgba(255,255,255,0.6);color:#03045E;font-family:'Space Grotesk',sans-serif;font-size:13px;margin-bottom:12px">
-        <label style="font-size:11px;font-weight:600;color:#0077B6;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;color:#0077B6">Deskripsi (opsional)</label>
-        <input id="uf-desc" type="text" placeholder="Keterangan tambahan..." style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid rgba(0,119,182,0.25);background:rgba(255,255,255,0.6);color:#03045E;font-family:'Space Grotesk',sans-serif;font-size:13px;margin-bottom:16px">
+      <div id="ujian-form-wrap" style="display:none;background:#1a1916;border:1.5px solid #2e2c29;border-radius:14px;padding:24px;margin-bottom:20px">
+        <div style="font-size:15px;font-weight:700;color:#f0ede8;margin-bottom:16px" id="ujian-form-title-label">Buat Ujian Baru</div>
+        <label style="font-size:11px;font-weight:600;color:#9e9b95;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px">Judul Ujian</label>
+        <input id="uf-judul" type="text" placeholder="cth: Ujian Teori DKV Semester 1" style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid #2e2c29;background:#242220;color:#f0ede8;font-family:'Space Grotesk',sans-serif;font-size:13px;margin-bottom:12px">
+        <label style="font-size:11px;font-weight:600;color:#9e9b95;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px">Durasi (menit)</label>
+        <input id="uf-durasi" type="number" placeholder="cth: 60" min="1" max="300" style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid #2e2c29;background:#242220;color:#f0ede8;font-family:'Space Grotesk',sans-serif;font-size:13px;margin-bottom:12px">
+        <label style="font-size:11px;font-weight:600;color:#9e9b95;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px">Deskripsi (opsional)</label>
+        <input id="uf-desc" type="text" placeholder="Keterangan tambahan..." style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid #2e2c29;background:#242220;color:#f0ede8;font-family:'Space Grotesk',sans-serif;font-size:13px;margin-bottom:16px">
 
         <!-- Soal builder -->
-        <div style="font-size:13px;font-weight:700;color:#03045E;margin-bottom:10px">Daftar Soal <span id="uf-soal-count" style="color:#0077B6;font-weight:400">(0 soal)</span></div>
+        <div style="font-size:13px;font-weight:700;color:#f0ede8;margin-bottom:10px">Daftar Soal <span id="uf-soal-count" style="color:#6e6b64;font-weight:400">(0 soal)</span></div>
         <div id="uf-soal-list" style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px"></div>
-        <button id="uf-add-pg" type="button" style="padding:7px 14px;border-radius:7px;border:1.5px dashed rgba(0,119,182,0.4);background:rgba(255,255,255,0.15);color:#0077B6;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;cursor:pointer;margin-right:8px">+ Pilihan Ganda</button>
-        <button id="uf-add-essay" type="button" style="padding:7px 14px;border-radius:7px;border:1.5px dashed rgba(0,119,182,0.4);background:rgba(255,255,255,0.15);color:#0077B6;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;cursor:pointer">+ Essay</button>
+        <button id="uf-add-pg" type="button" style="padding:7px 14px;border-radius:7px;border:1.5px dashed #2e2c29;background:transparent;color:#9e9b95;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;cursor:pointer;margin-right:8px">+ Pilihan Ganda</button>
+        <button id="uf-add-essay" type="button" style="padding:7px 14px;border-radius:7px;border:1.5px dashed #2e2c29;background:transparent;color:#9e9b95;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;cursor:pointer">+ Essay</button>
 
         <div id="uf-err" style="font-size:12px;color:#e05252;min-height:16px;margin-top:10px"></div>
         <div style="display:flex;gap:10px;margin-top:16px">
-          <button id="uf-save-btn" type="button" style="padding:10px 22px;border-radius:8px;border:none;background:linear-gradient(135deg,#03045E,#0077B6);color:#fff;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer">Simpan Ujian</button>
-          <button id="uf-cancel-btn" type="button" style="padding:10px 18px;border-radius:8px;border:1.5px solid rgba(0,119,182,0.3);background:rgba(255,255,255,0.2);color:#0077B6;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;cursor:pointer">Batal</button>
+          <button id="uf-save-btn" type="button" style="padding:10px 22px;border-radius:8px;border:none;background:#f5c842;color:#0f0e0c;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer">Simpan Ujian</button>
+          <button id="uf-cancel-btn" type="button" style="padding:10px 18px;border-radius:8px;border:1.5px solid #2e2c29;background:transparent;color:#9e9b95;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;cursor:pointer">Batal</button>
         </div>
       </div>
 
@@ -2773,10 +2308,10 @@ button:focus:not(:focus-visible) { outline: none; }
       <div id="ujian-admin-list" style="display:flex;flex-direction:column;gap:12px"></div>
 
       <!-- Panel nilai siswa -->
-      <div id="ujian-nilai-panel" style="display:none;margin-top:20px;background:rgba(255,255,255,0.25);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1.5px solid rgba(255,255,255,0.45);border-radius:14px;padding:20px">
+      <div id="ujian-nilai-panel" style="display:none;margin-top:20px;background:#1a1916;border:1.5px solid #2e2c29;border-radius:14px;padding:20px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-          <div style="font-size:14px;font-weight:700;color:#03045E" id="nilai-panel-title">Hasil Ujian</div>
-          <button id="nilai-panel-close" type="button" style="font-size:12px;color:#0077B6;background:none;border:none;cursor:pointer">✕ Tutup</button>
+          <div style="font-size:14px;font-weight:700;color:#f0ede8" id="nilai-panel-title">Hasil Ujian</div>
+          <button id="nilai-panel-close" type="button" style="font-size:12px;color:#6e6b64;background:none;border:none;cursor:pointer">✕ Tutup</button>
         </div>
         <div id="nilai-panel-table"></div>
       </div>
@@ -2787,8 +2322,6 @@ button:focus:not(:focus-visible) { outline: none; }
   </div><!-- end padding wrap -->
 </div>
 <!-- ═══════ END RUANG UJIAN ═══════ -->
-
-
 
 <!-- ═══════ NOTIFIKASI PANEL ═══════ -->
 <div class="notif-panel-overlay" id="notif-panel-overlay"></div>
@@ -3191,7 +2724,7 @@ button:focus:not(:focus-visible) { outline: none; }
   </div><!-- end .char-modal-box -->
 </div>
 
-<div class="container" style="display:none">
+<div class="container">
 
   <div class="top-bar">
     <div class="top-title-wrap">
@@ -6529,17 +6062,10 @@ function renderRanking(){
   // Build per-category rank sections (tab style)
   // Encode cat ID agar aman sebagai HTML id attribute
   function safeCatHtmlId(catId){ return 'rcat_'+catId.replace(/[^a-z0-9]/gi,'_'); }
-  // Helper: strip leading emoji/icon dari label kategori untuk rank
-  function stripCatIcon(lbl){
-    if(!lbl) return '';
-    // Remove leading non-ASCII characters (emoji, symbols) and trailing space
-    return lbl.replace(/^[^\x00-\x7F\w]+\s*/, '').trim() || lbl.trim();
-  }
-
   var tabsHtml='<div style="display:-webkit-flex;display:flex;gap:4px;background:#f0eeea;border-radius:12px;padding:4px;margin-bottom:14px" id="rank-cat-tabs">';
   cats.forEach(function(c,i){
     var col=getCatColor(c.id);
-    var lbl2=stripCatIcon(getCatLabel(c.id));
+    var lbl2=getCatLabel(c.id);
     var sid=safeCatHtmlId(c.id);
     tabsHtml+='<button type="button" onclick="switchRankTab(\''+c.id+'\')" id="rank-tab-btn-'+sid+'" style="-webkit-flex:1;flex:1;font-family:\'Space Grotesk\',sans-serif;font-size:12px;font-weight:700;padding:8px 6px;border-radius:8px;border:none;outline:none;-webkit-appearance:none;appearance:none;background:'+(i===0?'#fff':'transparent')+';color:'+(i===0?col:'#888')+';cursor:pointer;-webkit-transition:all .2s;transition:all .2s;box-shadow:'+(i===0?'0 1px 4px rgba(0,0,0,.1)':'none')+'">'+lbl2+'</button>';
   });
@@ -6548,7 +6074,7 @@ function renderRanking(){
   var panelsHtml='';
   cats.forEach(function(c,i){
     var col=getCatColor(c.id);
-    var lbl2=stripCatIcon(getCatLabel(c.id));
+    var lbl2=getCatLabel(c.id);
     var sid=safeCatHtmlId(c.id);
     // sort siswa by XP in this category
     var sortedByCat=window.siswaList.slice().map(function(s){
@@ -7238,11 +6764,10 @@ function applyAppConfig(){
 
   // ── Background halaman utama
   if(appConfig.mainBgData){
-    document.documentElement.style.background = 'url("'+appConfig.mainBgData+'") center/cover no-repeat';
-    document.documentElement.style.backgroundAttachment = 'local';
+    document.body.style.background = 'url("'+appConfig.mainBgData+'") center/cover fixed';
+    document.body.style.backgroundBlendMode = 'normal';
   } else {
-    document.documentElement.style.background = '#90E0EF';
-    document.documentElement.style.backgroundAttachment = '';
+    document.body.style.background = '#f8f7f4';
   }
 
   // ── Update cfg panel inputs (if open)
@@ -7326,7 +6851,7 @@ window.clearAppLogo = function(){
 // ─── Clear background
 window.clearMainBg = function(){
   appConfig.mainBgData = null;
-  document.documentElement.style.background = '#90E0EF';
+  document.body.style.background = '#f8f7f4';
   var bgWrap = document.getElementById('cfg-bg-preview-wrap');
   var bgClearBtn = document.getElementById('cfg-bg-clear-btn');
   var bgStatus = document.getElementById('cfg-bg-status');
@@ -7997,10 +7522,6 @@ window.toggleEditMode = function(){
 };
 
 // ─── INIT — render dari localStorage dulu, lalu sambungkan Firebase ───
-// Lock body scroll karena lobby aktif saat pertama load
-document.body.style.overflow = 'hidden';
-document.body.style.position = 'fixed';
-document.body.style.width = '100%';
 applyAppConfig();
 render();
 renderSiswa();
@@ -8414,8 +7935,9 @@ function logoutStudent(){
   if(typeof updateToolbarByRole === 'function') updateToolbarByRole();
   if(typeof lobbyUpdateStatus === 'function') setTimeout(lobbyUpdateStatus, 50);
   // Kembali ke lobby setelah logout siswa
-  if(typeof _showLobby === 'function') _showLobby();
-  else { document.getElementById('lobby-screen').style.display = 'flex'; document.getElementById('ujian-screen').style.display = 'none'; }
+  document.getElementById('lobby-screen').style.display = 'flex';
+  document.getElementById('ujian-screen').style.display = 'none';
+  if(typeof lobbyApplySettings === 'function') lobbyApplySettings();
   showToast('Berhasil logout. Sampai jumpa! 👋');
 }
 // ═══════════════════════════════════════════════════════════════
@@ -8429,7 +7951,6 @@ function updateToolbarByRole(){
   var adminBell  = document.getElementById('admin-bell-wrap');
   var notifBell  = document.getElementById('notif-bell-wrap');
   var logoutBtn  = document.getElementById('global-logout-btn');
-
 
   if(window.pembina){
     // ── MODE PEMBINA ──
@@ -8465,8 +7986,8 @@ function doGlobalLogout(){
     // Satu kali logout pembina
     if(typeof gateDoLogoutPembina === 'function') gateDoLogoutPembina();
     // Kembali ke lobby
-    if(typeof _showLobby === 'function') _showLobby();
-    else { document.getElementById('lobby-screen').style.display = 'flex'; document.getElementById('ujian-screen').style.display = 'none'; }
+    document.getElementById('lobby-screen').style.display = 'flex';
+    document.getElementById('ujian-screen').style.display = 'none';
   } else if(window.loggedInStudentId){
     // Reset state ujian siswa juga
     if(window._ujianState){ window._ujianState.loggedIn=false; window._ujianState.siswaId=null; }
@@ -11092,8 +10613,9 @@ document.addEventListener('click', function(e){
 
   // ── LOBBY ──────────────────────────────────────────────────
   document.getElementById('lobby-ekskul-btn').addEventListener('click',function(){
+    // Jika sudah login via lobby form, langsung masuk
     if(window.pembina || window.loggedInStudentId || sessionStorage.getItem('dkv_student_sess')){
-      if(typeof window.enterEkskul === 'function'){ window.enterEkskul(); }
+      if(typeof enterEkskul === 'function'){ enterEkskul(); }
       else { document.getElementById('lobby-screen').style.display='none'; }
     } else {
       // Belum login — highlight form login
@@ -11108,9 +10630,8 @@ document.addEventListener('click', function(e){
 
   // Tombol Kembali ke Lobby dari Ruang Ekskul (TANPA logout)
   document.getElementById('back-to-lobby-btn').addEventListener('click',function(){
+    document.getElementById('lobby-screen').style.display='flex';
     document.getElementById('ujian-screen').style.display='none';
-    if(typeof _showLobby === 'function') _showLobby();
-    else document.getElementById('lobby-screen').style.display='flex';
     if(typeof lobbyUpdateStatus==='function') setTimeout(lobbyUpdateStatus,30);
   });
 
@@ -11118,7 +10639,7 @@ document.addEventListener('click', function(e){
     if(!window.pembina && !window.loggedInStudentId && !sessionStorage.getItem('dkv_student_sess')){
       // Belum login — highlight form login
       var form = document.getElementById('lobby-form-siswa');
-      if(form){ form.style.boxShadow='0 0 0 2px #0077B6'; setTimeout(function(){ form.style.boxShadow=''; },1200); }
+      if(form){ form.style.boxShadow='0 0 0 2px #e8774a'; setTimeout(function(){ form.style.boxShadow=''; },1200); }
       var inp = document.getElementById('lobby-sl-username');
       if(inp) inp.focus();
       if(typeof showToast==='function') showToast('Login dulu untuk masuk ke ruangan 🔑');
@@ -11154,9 +10675,8 @@ document.addEventListener('click', function(e){
     if(_ujianState.timer){ clearInterval(_ujianState.timer); _ujianState.timer=null; }
     document.getElementById('ujian-timer-badge').style.display='none';
     document.getElementById('ujian-screen').style.display='none';
-    if(typeof _showLobby === 'function') _showLobby();
-    else document.getElementById('lobby-screen').style.display='flex';
-    // Kembalikan FAB edit lobby jika pembina sedang di fase rooms
+    document.getElementById('lobby-screen').style.display='flex';
+    if(typeof lobbyUpdateStatus==='function') setTimeout(lobbyUpdateStatus,30);
   });
 
   // ── GATE UJIAN — Tab & Helper ──────────────────────────────
@@ -11170,12 +10690,12 @@ document.addEventListener('click', function(e){
     var tPemb  = document.getElementById('ujian-gate-tab-pembina');
     if(tab==='siswa'){
       fSiswa.style.display=''; fPemb.style.display='none';
-      tSiswa.style.background='linear-gradient(135deg,#03045E,#0077B6,#00B4D8)'; tSiswa.style.borderColor='#0077B6'; tSiswa.style.color='#fff';
+      tSiswa.style.background='#e8774a'; tSiswa.style.borderColor='#e8774a'; tSiswa.style.color='#fff';
       tPemb.style.background='transparent'; tPemb.style.borderColor='#2e2c29'; tPemb.style.color='#9e9b95';
       _updateUjianGateSiswaView();
     } else {
       fSiswa.style.display='none'; fPemb.style.display='';
-      tPemb.style.background='linear-gradient(135deg,#03045E,#0077B6,#00B4D8)'; tPemb.style.borderColor='#0077B6'; tPemb.style.color='#fff';
+      tPemb.style.background='linear-gradient(135deg,#f5c842,#e8774a)'; tPemb.style.borderColor='#f5c842'; tPemb.style.color='#02023a';
       tSiswa.style.background='transparent'; tSiswa.style.borderColor='#2e2c29'; tSiswa.style.color='#9e9b95';
       _updateUjianGatePembinaView();
     }
@@ -11389,15 +10909,15 @@ document.addEventListener('click', function(e){
             nilaiTxt='Nilai PG: '+np+(ne!==null?' | Essay: '+ne:'');
           }
           var card=document.createElement('div');
-          card.style.cssText='background:rgba(255,255,255,0.2);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1.5px solid '+(sudah?'#4caf7d':'rgba(255,255,255,0.45)')+';border-radius:14px;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 4px 24px rgba(0,119,182,.12);';
+          card.style.cssText='background:#1a1916;border:1.5px solid '+(sudah?'#4caf7d':'#2e2c29')+';border-radius:14px;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;';
           card.innerHTML='<div>'+
-            '<div style="font-size:15px;font-weight:700;color:#03045E;margin-bottom:4px">'+esc(u.judul||'Ujian')+'</div>'+
+            '<div style="font-size:15px;font-weight:700;color:#f0ede8;margin-bottom:4px">'+esc(u.judul||'Ujian')+'</div>'+
             '<div style="font-size:12px;color:#6e6b64">'+totalSoal+' soal &bull; '+esc(u.durasi||60)+' menit'+(u.desc?' &bull; '+esc(u.desc):'')+'</div>'+
             (nilaiTxt?'<div style="font-size:11px;color:#4caf7d;margin-top:4px">'+esc(nilaiTxt)+'</div>':'')+
             '</div>'+
             (sudah
               ?'<div style="font-size:11px;font-weight:700;color:#4caf7d;white-space:nowrap">✓ Selesai</div>'
-              :'<button data-uid="'+uid+'" class="mulai-ujian-btn" type="button" style="padding:8px 16px;border-radius:8px;border:none;background:linear-gradient(135deg,#03045E,#0077B6,#00B4D8);color:#fff;font-family:\'Space Grotesk\',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:0 3px 10px rgba(0,119,182,.35)">Mulai →</button>'
+              :'<button data-uid="'+uid+'" class="mulai-ujian-btn" type="button" style="padding:8px 16px;border-radius:8px;border:none;background:#e8774a;color:#fff;font-family:\'Space Grotesk\',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">Mulai →</button>'
             );
           wrap.appendChild(card);
         });
@@ -11456,23 +10976,23 @@ document.addEventListener('click', function(e){
     var s=soal[idx];
     var wrap=document.getElementById('ujian-soal-wrap');
     var saved=_ujianState.jawaban[idx];
-    var html='<div style="background:rgba(255,255,255,0.25);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1.5px solid rgba(255,255,255,0.45);border-radius:14px;padding:22px;box-shadow:0 4px 24px rgba(0,119,182,.1)">';
+    var html='<div style="background:#1a1916;border:1.5px solid #2e2c29;border-radius:14px;padding:22px">';
     html+='<div style="font-size:11px;font-weight:600;color:#6e6b64;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">';
     html+=s.type==='pg'?'📋 Pilihan Ganda':'✏️ Essay';
     html+='</div>';
-    html+='<div style="font-size:15px;color:#03045E;font-weight:500;line-height:1.6;margin-bottom:18px">'+esc(s.pertanyaan)+'</div>';
+    html+='<div style="font-size:15px;color:#f0ede8;line-height:1.6;margin-bottom:18px">'+esc(s.pertanyaan)+'</div>';
     if(s.type==='pg'){
       var opsi=s.opsi||[];
       opsi.forEach(function(o,i){
         var huruf=String.fromCharCode(65+i);
         var checked=saved===huruf;
-        html+='<label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;border:1.5px solid '+(checked?'#0077B6':'rgba(0,119,182,0.2)')+';background:'+(checked?'rgba(0,119,182,.1)':'rgba(255,255,255,0.15)')+';cursor:pointer;margin-bottom:8px;transition:.15s">';
-        html+='<input type="radio" name="pg-soal" value="'+huruf+'" style="accent-color:#0077B6"'+(checked?' checked':'')+'>';
-        html+='<span style="font-size:13px;color:#03045E"><b style="color:#0077B6">'+huruf+'.</b> '+esc(o)+'</span>';
+        html+='<label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;border:1.5px solid '+(checked?'#e8774a':'#2e2c29')+';background:'+(checked?'rgba(232,119,74,.08)':'transparent')+';cursor:pointer;margin-bottom:8px;transition:.15s">';
+        html+='<input type="radio" name="pg-soal" value="'+huruf+'" style="accent-color:#e8774a"'+(checked?' checked':'')+'>';
+        html+='<span style="font-size:13px;color:#f0ede8"><b style="color:#e8774a">'+huruf+'.</b> '+esc(o)+'</span>';
         html+='</label>';
       });
     } else {
-      html+='<textarea id="essay-input" placeholder="Tulis jawabanmu di sini..." rows="5" style="width:100%;padding:10px 12px;border-radius:8px;border:1.5px solid rgba(0,119,182,0.25);background:rgba(255,255,255,0.6);color:#03045E;font-family:\'Space Grotesk\',sans-serif;font-size:13px;resize:vertical;line-height:1.6">'+esc(saved||'')+'</textarea>';
+      html+='<textarea id="essay-input" placeholder="Tulis jawabanmu di sini..." rows="5" style="width:100%;padding:10px 12px;border-radius:8px;border:1.5px solid #2e2c29;background:#242220;color:#f0ede8;font-family:\'Space Grotesk\',sans-serif;font-size:13px;resize:vertical;line-height:1.6">'+esc(saved||'')+'</textarea>';
     }
     html+='</div>';
     wrap.innerHTML=html;
@@ -11544,10 +11064,10 @@ document.addEventListener('click', function(e){
       nilaiPG!==null?'Nilai Pilihan Ganda: '+nilaiPG+'/100':'Ujian Selesai';
     document.getElementById('ujian-hasil-detail').textContent=
       habisWaktu?'Waktu habis — jawaban otomatis dikumpulkan.':'Jawaban berhasil dikumpulkan!';
-    var breakdown='<div style="font-size:12px;color:#0077B6;margin-bottom:8px;font-weight:600">Ringkasan</div>';
-    breakdown+='<div style="font-size:13px;color:#03045E;margin-bottom:4px">PG benar: '+pgBenar+' / '+pgTotal+'</div>';
+    var breakdown='<div style="font-size:12px;color:#9e9b95;margin-bottom:8px;font-weight:600">Ringkasan</div>';
+    breakdown+='<div style="font-size:13px;color:#f0ede8;margin-bottom:4px">PG benar: '+pgBenar+' / '+pgTotal+'</div>';
     if(Object.keys(essayJawaban).length){
-      breakdown+='<div style="font-size:13px;color:#0077B6">Essay: menunggu penilaian pembina</div>';
+      breakdown+='<div style="font-size:13px;color:#f0ede8">Essay: menunggu penilaian pembina</div>';
     }
     document.getElementById('ujian-hasil-breakdown').innerHTML=breakdown;
   }
@@ -11574,16 +11094,16 @@ document.addEventListener('click', function(e){
       keys.forEach(function(uid){
         var u=data[uid];
         var card=document.createElement('div');
-        card.style.cssText='background:rgba(255,255,255,0.2);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1.5px solid rgba(255,255,255,0.4);border-radius:14px;padding:18px 20px;box-shadow:0 4px 24px rgba(0,119,182,.1);';
+        card.style.cssText='background:#1a1916;border:1.5px solid #2e2c29;border-radius:14px;padding:18px 20px;';
         card.innerHTML=
           '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">'+
           '<div>'+
-            '<div style="font-size:15px;font-weight:700;color:#03045E;margin-bottom:3px">'+esc(u.judul||'Ujian')+'</div>'+
+            '<div style="font-size:15px;font-weight:700;color:#f0ede8;margin-bottom:3px">'+esc(u.judul||'Ujian')+'</div>'+
             '<div style="font-size:12px;color:#6e6b64">'+(u.soal||[]).length+' soal &bull; '+esc(u.durasi||60)+' menit</div>'+
           '</div>'+
           '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
-            '<button data-uid="'+uid+'" class="admin-lihat-nilai" type="button" style="padding:7px 13px;border-radius:7px;border:1.5px solid rgba(0,119,182,0.3);background:rgba(255,255,255,0.2);color:#0077B6;font-family:\'Space Grotesk\',sans-serif;font-size:12px;font-weight:600;cursor:pointer">📊 Nilai</button>'+
-            '<button data-uid="'+uid+'" data-judul="'+esc(u.judul)+'" class="admin-edit-ujian" type="button" style="padding:7px 13px;border-radius:7px;border:1.5px solid rgba(0,119,182,0.3);background:rgba(255,255,255,0.2);color:#0077B6;font-family:\'Space Grotesk\',sans-serif;font-size:12px;font-weight:600;cursor:pointer">✏️ Edit</button>'+
+            '<button data-uid="'+uid+'" class="admin-lihat-nilai" type="button" style="padding:7px 13px;border-radius:7px;border:1.5px solid #2e2c29;background:transparent;color:#9e9b95;font-family:\'Space Grotesk\',sans-serif;font-size:12px;font-weight:600;cursor:pointer">📊 Nilai</button>'+
+            '<button data-uid="'+uid+'" data-judul="'+esc(u.judul)+'" class="admin-edit-ujian" type="button" style="padding:7px 13px;border-radius:7px;border:1.5px solid #2e2c29;background:transparent;color:#9e9b95;font-family:\'Space Grotesk\',sans-serif;font-size:12px;font-weight:600;cursor:pointer">✏️ Edit</button>'+
             '<button data-uid="'+uid+'" class="admin-hapus-ujian" type="button" style="padding:7px 13px;border-radius:7px;border:1.5px solid #3e2020;background:transparent;color:#e05252;font-family:\'Space Grotesk\',sans-serif;font-size:12px;font-weight:600;cursor:pointer">🗑 Hapus</button>'+
           '</div>'+
           '</div>';
@@ -11625,13 +11145,13 @@ document.addEventListener('click', function(e){
         var npg=j.nilai_pg!==null&&j.nilai_pg!==undefined?j.nilai_pg:'—';
         var ne=j.nilai_essay!==null&&j.nilai_essay!==undefined?j.nilai_essay:'Belum dinilai';
         rows+='<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #2e2c29;gap:10px;flex-wrap:wrap">>';
-        rows+='<div><div style="font-size:13px;font-weight:600;color:#03045E">'+esc(s.name)+'</div>';
+        rows+='<div><div style="font-size:13px;font-weight:600;color:#f0ede8">'+esc(s.name)+'</div>';
         rows+='<div style="font-size:11px;color:#6e6b64">'+tgl+'</div></div>';
         rows+='<div style="display:flex;gap:10px;align-items:center">';
         rows+='<span style="font-size:12px;color:#4caf7d;font-weight:700">PG: '+npg+'</span>';
-        rows+='<span style="font-size:12px;color:#0077B6">Essay: ';
+        rows+='<span style="font-size:12px;color:#9e9b95">Essay: ';
         if(j.nilai_essay===null||j.nilai_essay===undefined){
-          rows+='<input type="number" min="0" max="100" placeholder="0-100" data-sid="'+s.id+'" data-uid="'+uid+'" class="essay-nilai-input" style="width:64px;padding:3px 7px;border-radius:6px;border:1px solid rgba(0,119,182,0.3);background:rgba(255,255,255,0.6);color:#03045E;font-size:12px;font-family:\'Space Grotesk\',sans-serif"> ';
+          rows+='<input type="number" min="0" max="100" placeholder="0-100" data-sid="'+s.id+'" data-uid="'+uid+'" class="essay-nilai-input" style="width:64px;padding:3px 7px;border-radius:6px;border:1px solid #2e2c29;background:#242220;color:#f0ede8;font-size:12px;font-family:\'Space Grotesk\',sans-serif"> ';
           rows+='<button data-sid="'+s.id+'" data-uid="'+uid+'" class="essay-nilai-save" style="padding:3px 9px;border-radius:6px;border:none;background:#f5c842;color:#0f0e0c;font-size:11px;font-weight:700;cursor:pointer;font-family:\'Space Grotesk\',sans-serif">Simpan</button>';
         } else {
           rows+=ne;
@@ -11700,19 +11220,19 @@ document.addEventListener('click', function(e){
     list.innerHTML='';
     _soalFormItems.forEach(function(s,i){
       var div=document.createElement('div');
-      div.style.cssText='background:rgba(255,255,255,0.2);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1.5px solid rgba(0,119,182,0.25);border-radius:10px;padding:14px;';
+      div.style.cssText='background:#242220;border:1.5px solid #2e2c29;border-radius:10px;padding:14px;';
       var html='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">';
-      html+='<span style="font-size:11px;font-weight:700;color:#0077B6;text-transform:uppercase;letter-spacing:.05em">Soal '+(i+1)+' — '+(s.type==='pg'?'Pilihan Ganda':'Essay')+'</span>';
+      html+='<span style="font-size:11px;font-weight:700;color:#9e9b95;text-transform:uppercase;letter-spacing:.05em">Soal '+(i+1)+' — '+(s.type==='pg'?'Pilihan Ganda':'Essay')+'</span>';
       html+='<button data-i="'+i+'" class="hapus-soal-btn" type="button" style="font-size:11px;color:#e05252;background:none;border:none;cursor:pointer">✕ Hapus</button>';
       html+='</div>';
-      html+='<textarea data-i="'+i+'" class="sf-pertanyaan" placeholder="Pertanyaan..." rows="2" style="width:100%;padding:8px 10px;border-radius:7px;border:1px solid rgba(0,119,182,0.25);background:rgba(255,255,255,0.6);color:#03045E;font-family:\'Space Grotesk\',sans-serif;font-size:12px;resize:vertical;margin-bottom:8px">'+esc(s.pertanyaan)+'</textarea>';
+      html+='<textarea data-i="'+i+'" class="sf-pertanyaan" placeholder="Pertanyaan..." rows="2" style="width:100%;padding:8px 10px;border-radius:7px;border:1px solid #3e3c38;background:#1a1916;color:#f0ede8;font-family:\'Space Grotesk\',sans-serif;font-size:12px;resize:vertical;margin-bottom:8px">'+esc(s.pertanyaan)+'</textarea>';
       if(s.type==='pg'){
         s.opsi.forEach(function(o,j){
           var huruf=String.fromCharCode(65+j);
           html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">';
-          html+='<span style="font-size:12px;font-weight:700;color:#0077B6;width:14px">'+huruf+'.</span>';
-          html+='<input type="text" data-i="'+i+'" data-j="'+j+'" class="sf-opsi" value="'+esc(o)+'" placeholder="Pilihan '+huruf+'..." style="flex:1;padding:7px 10px;border-radius:7px;border:1px solid rgba(0,119,182,0.2);background:rgba(255,255,255,0.6);color:#03045E;font-family:\'Space Grotesk\',sans-serif;font-size:12px">';
-          html+='<label style="font-size:11px;color:#0077B6;display:flex;align-items:center;gap:4px;cursor:pointer"><input type="radio" name="kunci-'+i+'" value="'+huruf+'"'+(s.kunci===huruf?' checked':'')+' style="accent-color:#4caf7d"> Kunci</label>';
+          html+='<span style="font-size:12px;font-weight:700;color:#e8774a;width:14px">'+huruf+'.</span>';
+          html+='<input type="text" data-i="'+i+'" data-j="'+j+'" class="sf-opsi" value="'+esc(o)+'" placeholder="Pilihan '+huruf+'..." style="flex:1;padding:7px 10px;border-radius:7px;border:1px solid #3e3c38;background:#1a1916;color:#f0ede8;font-family:\'Space Grotesk\',sans-serif;font-size:12px">';
+          html+='<label style="font-size:11px;color:#9e9b95;display:flex;align-items:center;gap:4px;cursor:pointer"><input type="radio" name="kunci-'+i+'" value="'+huruf+'"'+(s.kunci===huruf?' checked':'')+' style="accent-color:#4caf7d"> Kunci</label>';
           html+='</div>';
         });
       }
@@ -11856,7 +11376,6 @@ document.addEventListener('click', function(e){
     // Belum login sama sekali — tampilkan gate
     var overlay = document.getElementById('ekskul-gate-overlay');
     overlay.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
     gateSetTab('siswa');
     // Muat credentials tersimpan (jika ada)
     setTimeout(gateInitRememberUI, 50);
@@ -11864,7 +11383,6 @@ document.addEventListener('click', function(e){
 
   window.closeEkskulGate = function(){
     document.getElementById('ekskul-gate-overlay').style.display = 'none';
-    document.body.style.overflow = '';
     // Bersihkan field (kecuali jika remember aktif)
     if(!_gateRemember){
       document.getElementById('gate-sl-username').value = '';
@@ -11938,33 +11456,15 @@ document.addEventListener('click', function(e){
   }
 
   // ── Helper: masuk ruang ekskul (sembunyikan lobby) ──
-  window.enterEkskul = function enterEkskul(){
+  function enterEkskul(){
     document.getElementById('lobby-screen').style.display = 'none';
     document.getElementById('ujian-screen').style.display = 'none';
-    var dim = document.getElementById('lobby-edit-dim');
-    var pan = document.getElementById('lobby-edit-panel');
-    var bar = document.getElementById('lobby-edit-bar');
-    if(dim) dim.style.display = 'none';
-    if(pan) pan.style.display = 'none';
-    if(bar) bar.style.display = 'none';
-    document.body.style.overflow = '';
-    document.body.style.position = '';
-    document.body.style.width = '';
-    var c = document.querySelector('.container');
-    if(c) c.style.display = '';
-  };
-  // alias lokal
-  var enterEkskul = window.enterEkskul;
-
-  window._showLobby = function _showLobby(){
-    document.getElementById('lobby-screen').style.display = 'flex';
-    var c = document.querySelector('.container');
-    if(c) c.style.display = 'none';
-    document.body.style.overflow = 'hidden';
-    document.body.style.position = 'fixed';
-    document.body.style.width = '100%';
-  };
-  var _showLobby = window._showLobby;
+    // Sembunyikan FAB edit saat masuk ruangan
+    var fab = document.getElementById('lobby-edit-fab');
+    if(fab) fab.style.display = 'none';
+    var editPanel = document.getElementById('lobby-edit-panel');
+    if(editPanel) editPanel.classList.remove('open');
+  }
 
   // ── Login siswa dari gate ──────────────────────────
   window.gateEnterAsSiswa = function(){
@@ -12053,6 +11553,11 @@ document.addEventListener('click', function(e){
     _updateGatePembinaView();
     if(typeof updateToolbarByRole === 'function') updateToolbarByRole();
     if(typeof lobbyUpdateStatus === 'function') lobbyUpdateStatus();
+    // Sembunyikan FAB edit lobby
+    var fab = document.getElementById('lobby-edit-fab');
+    if(fab) fab.style.display = 'none';
+    var editPanel = document.getElementById('lobby-edit-panel');
+    if(editPanel) editPanel.classList.remove('open');
     if(typeof showToast === 'function') showToast('Pembina telah logout.');
   };
 
@@ -12083,9 +11588,9 @@ document.addEventListener('click', function(e){
         if(typeof updateToolbarByRole === 'function') updateToolbarByRole();
         // Buka panel konfigurasi langsung
         window.editMode = false;
+        if(typeof toggleEditMode === 'function') toggleEditMode();
         closeEkskulGate();
         enterEkskul();
-        if(typeof toggleEditMode === 'function') toggleEditMode();
         if(typeof showToast === 'function') showToast('Selamat datang, Pembina! 🎉');
       } else {
         _gateAdminAttempts++;
