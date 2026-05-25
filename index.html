@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Ekskul DKV SMPN 1 Sumenep — Quest Board</title>
-<!-- Preconnect: percepat koneksi awal ke domain eksternal -->
+
 <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
 <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://firebasestorage.googleapis.com" crossorigin>
@@ -12,7 +12,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-<!-- ══ SKELETON LOADING SCREEN ══ -->
 <div id="app-skeleton" style="
   position:fixed;inset:0;z-index:99999;
   background:linear-gradient(180deg,#f5f3ff 0%,#ede9fb 20%,#ddd6fe 55%,#c4b5fd 85%,#7c3aed 100%);
@@ -21,10 +20,10 @@
   transition:opacity 0.5s ease;
   font-family:'DM Sans','Sora',sans-serif;
 ">
-  <!-- Animated glowing blob background -->
+
   <div style="position:absolute;width:300px;height:300px;background:radial-gradient(circle,rgba(108,82,227,.18) 0%,transparent 70%);border-radius:50%;top:50%;left:50%;transform:translate(-50%,-60%);animation:_skblob 3s ease-in-out infinite alternate;pointer-events:none"></div>
 
-  <!-- Logo container -->
+
   <div style="
     width:76px;height:76px;border-radius:22px;
     background:linear-gradient(135deg,#2d1b69,#4c35a8,#6c52e3);
@@ -38,7 +37,7 @@
     <div style="font-size:12px;color:rgba(76,53,168,.6);margin-top:3px;letter-spacing:.06em;text-transform:uppercase">Loading your quest…</div>
   </div>
 
-  <!-- Progress bar with glow -->
+
   <div style="width:200px;height:4px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden;animation:_skfade .5s .3s ease both;opacity:0">
     <div style="
       height:100%;width:30%;
@@ -49,7 +48,7 @@
     "></div>
   </div>
 
-  <!-- Loading dots -->
+
   <div style="display:flex;gap:6px;animation:_skfade .5s .4s ease both;opacity:0">
     <div style="width:6px;height:6px;border-radius:50%;background:#2d1b69;animation:_skdot 1.2s .0s ease-in-out infinite alternate"></div>
     <div style="width:6px;height:6px;border-radius:50%;background:#4c35a8;animation:_skdot 1.2s .2s ease-in-out infinite alternate"></div>
@@ -72,10 +71,9 @@
   };
 </script>
 
-<!-- ══ MODAL PENDAFTARAN MANDIRI MURID ══ -->
 <div class="reg-modal-overlay" id="reg-modal">
   <div class="reg-modal-box">
-    <!-- Step 1: Form -->
+
     <div class="reg-step" id="reg-step-1">
       <div class="reg-title">📋 Daftar Ekskul DKV</div>
       <div class="reg-sub">Isi data kamu. Akun aktif setelah disetujui pembina.</div>
@@ -107,10 +105,10 @@
         <div class="reg-color-grid" id="reg-color-grid"></div>
       </div>
       <div class="reg-err" id="reg-err"></div>
-      <button class="reg-btn" id="reg-submit-btn" type="button">Kirim Pendaftaran 🚀</button>
+      <button class="reg-btn" id="reg-submit-btn" type="button">Kirim Pendaftaran</button>
       <button class="reg-btn-ghost" id="reg-cancel-btn" type="button">Batal</button>
     </div>
-    <!-- Step 2: Sukses -->
+
     <div class="reg-step" id="reg-step-2">
       <div class="reg-success-icon">✅</div>
       <div class="reg-title">Pendaftaran Terkirim!</div>
@@ -125,7 +123,6 @@
   </div>
 </div>
 
-<!-- ══ PANEL PENDING REGISTRASI (ADMIN) ══ -->
 <div class="pending-panel-overlay" id="pending-panel-overlay"></div>
 <div class="pending-panel" id="pending-panel">
   <div class="pending-panel-head">
@@ -134,7 +131,7 @@
   </div>
   <div class="pending-list" id="pending-list"></div>
 </div>
-<!-- jsQR: lazy-load, hanya dimuat saat fitur absensi QR dibuka -->
+
 <script>
 // jsQR dimuat secara lazy saat pertama kali dibutuhkan
 window._jsQRReady = false;
@@ -158,9 +155,9 @@ window._loadJsQR = function(cb) {
   document.head.appendChild(s);
 };
 </script>
-<!-- qrcode-generator: QR Code generator untuk SIM Card murid -->
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<!-- Firebase SDK v9 compat (CDN) — async agar tidak blocking render -->
+
 <script>
 // ── Tunggu Firebase SDK siap sebelum memanggil initFirebase ──
 window._fbSdkLoadCount = 0;
@@ -707,8 +704,8 @@ body::before {
 }
 
 /* Scrollbar glow */
-::-webkit-scrollbar-thumb { 
-  background: rgba(108,82,227,.5) !important; 
+::-webkit-scrollbar-thumb {
+  background: rgba(108,82,227,.5) !important;
   box-shadow: 0 0 6px rgba(108,82,227,.4) !important;
 }
 
@@ -1551,25 +1548,24 @@ input:focus,select:focus,textarea:focus{
 </head>
 <body>
 
-<!-- ═══════ EKSKUL LOGIN GATE MODAL ═══════ -->
 <div id="ekskul-gate-overlay" style="
   display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:10500;
   background:linear-gradient(160deg,#f5f3ff 0%,#ede9fb 35%,#ddd6fe 70%,#c4b5fd 100%);
   overflow-y:auto;-webkit-overflow-scrolling:touch;
   font-family:'DM Sans','Sora',sans-serif;
 ">
-  <!-- Soft decorative blobs (sama persis dengan lobby-screen) -->
+
   <div style="position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden">
     <div style="position:absolute;width:500px;height:500px;background:radial-gradient(circle,rgba(196,181,253,.45) 0%,transparent 70%);border-radius:50%;top:-120px;left:-100px;animation:gzFloat1 9s ease-in-out infinite"></div>
     <div style="position:absolute;width:400px;height:400px;background:radial-gradient(circle,rgba(167,139,250,.3) 0%,transparent 70%);border-radius:50%;bottom:-80px;right:-80px;animation:gzFloat2 11s ease-in-out infinite reverse"></div>
     <div style="position:absolute;width:280px;height:280px;background:radial-gradient(circle,rgba(109,40,217,.08) 0%,transparent 70%);border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);animation:gzFloat1 13s ease-in-out infinite 2s"></div>
   </div>
 
-  <!-- Konten terpusat -->
+
   <div style="position:relative;z-index:2;min-height:100vh;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;padding:32px 20px 48px">
     <div style="width:100%;max-width:400px">
 
-      <!-- Header (sama dengan lobby-header) -->
+
       <div style="text-align:center;margin-bottom:28px">
 
         <div style="font-size:22px;font-weight:800;color:#2d1b69;letter-spacing:-.03em;line-height:1.2">Ruang Ekskul</div>
@@ -1577,7 +1573,7 @@ input:focus,select:focus,textarea:focus{
         <div style="width:36px;height:2px;background:linear-gradient(90deg,#4c35a8,#6c52e3,#9b7ff5);margin:10px auto 0;border-radius:99px"></div>
       </div>
 
-      <!-- Tab Murid / Pembina (sama dengan lobby-login-tabs) -->
+
       <div id="gate-tab-row" style="display:-webkit-flex;display:flex;border-radius:14px;overflow:hidden;background:rgba(108,82,227,.08);border:1px solid rgba(108,82,227,.12);margin-bottom:14px">
         <button id="gate-tab-murid" type="button" onclick="gateSetTab('murid')" style="
           flex:1;padding:10px 0;font-family:'DM Sans','Sora',sans-serif;font-size:13px;font-weight:700;
@@ -1590,7 +1586,7 @@ input:focus,select:focus,textarea:focus{
         ">Pembina</button>
       </div>
 
-      <!-- Form Murid (sama dengan lobby-form-wrap) -->
+
       <div id="gate-form-murid">
         <div id="gate-murid-logged" style="display:none">
           <div style="background:rgba(255,255,255,.88);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);border:1.5px solid rgba(108,82,227,.12);border-radius:20px;padding:22px 20px 20px;box-shadow:0 4px 24px rgba(108,82,227,.1);text-align:center">
@@ -1611,7 +1607,7 @@ input:focus,select:focus,textarea:focus{
         </div>
         <div id="gate-murid-form">
           <div style="background:rgba(255,255,255,.88);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);border:1.5px solid rgba(108,82,227,.12);border-radius:20px;padding:22px 20px 20px;box-shadow:0 4px 24px rgba(108,82,227,.1)">
-            <div style="font-size:12px;color:#6b7280;margin-bottom:14px;text-align:center">Masuk ke akun murid kamu 🎒</div>
+            <div style="font-size:12px;color:#6b7280;margin-bottom:14px;text-align:center">Login Sebagai Murid</div>
             <input id="gate-sl-username" type="text" placeholder="Username" autocomplete="username" autocapitalize="none"
               onkeydown="if(event.key==='Enter') document.getElementById('gate-sl-password').focus()"
               style="width:100%;box-sizing:border-box;background:#f8f6ff;border:1.5px solid rgba(108,82,227,.18);color:#1e1b4b;font-family:'DM Sans','Sora',sans-serif;font-size:14px;padding:11px 14px;border-radius:12px;outline:none;margin-bottom:10px;-webkit-appearance:none;transition:border .2s,box-shadow .2s">
@@ -1622,7 +1618,7 @@ input:focus,select:focus,textarea:focus{
               <button id="gate-sl-eye" type="button" onclick="gateToggleEye('gate-sl-password','gate-sl-eye')"
                 style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:#9b7ff5;padding:4px">👁</button>
             </div>
-            <!-- Remember Me -->
+
             <div style="display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;gap:8px;margin:10px 0">
               <div id="gate-remember-toggle" onclick="gateToggleRemember()" style="
                 width:38px;height:22px;border-radius:11px;background:rgba(108,82,227,.15);
@@ -1645,7 +1641,7 @@ input:focus,select:focus,textarea:focus{
         </div>
       </div>
 
-      <!-- Form Pembina -->
+
       <div id="gate-form-pembina" style="display:none">
         <div id="gate-pembina-logged" style="display:none">
           <div style="background:rgba(255,255,255,.88);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);border:1.5px solid rgba(108,82,227,.12);border-radius:20px;padding:22px 20px 20px;box-shadow:0 4px 24px rgba(108,82,227,.1);text-align:center">
@@ -1664,7 +1660,7 @@ input:focus,select:focus,textarea:focus{
         </div>
         <div id="gate-pembina-form">
           <div style="background:rgba(255,255,255,.88);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);border:1.5px solid rgba(108,82,227,.12);border-radius:20px;padding:22px 20px 20px;box-shadow:0 4px 24px rgba(108,82,227,.1)">
-            <div style="font-size:12px;color:#6b7280;margin-bottom:14px;text-align:center">Login sebagai pembina / admin ⚙️</div>
+            <div style="font-size:12px;color:#6b7280;margin-bottom:14px;text-align:center">Login Sebagai Pembina</div>
             <div style="position:relative;margin-bottom:4px">
               <input id="gate-pw-input" type="password" placeholder="Password pembina..." autocomplete="current-password"
                 onkeydown="if(event.key==='Enter') document.getElementById('gate-pw-submit').click()"
@@ -1679,7 +1675,7 @@ input:focus,select:focus,textarea:focus{
         </div>
       </div>
 
-      <!-- Tutup -->
+
       <button type="button" onclick="closeEkskulGate()"
         style="background:none;border:none;color:#6c52e3;font-weight:600;font-family:'DM Sans','Sora',sans-serif;font-size:12px;cursor:pointer;padding:0;margin-top:16px;display:block;text-align:center;width:100%;opacity:.7">✕ Tutup / Kembali</button>
 
@@ -1687,7 +1683,6 @@ input:focus,select:focus,textarea:focus{
   </div>
 </div>
 
-<!-- ═══════ LOBBY — PILIH RUANGAN ═══════ -->
 <style>
 /* ══ LOBBY v2 — LOGIN FIRST, THEN PICK ROOM ══ */
 #lobby-screen { font-family:'DM Sans','Sora',sans-serif; overflow-y:auto; -webkit-overflow-scrolling:touch; }
@@ -2206,10 +2201,9 @@ input:focus,select:focus,textarea:focus{
 }
 </style>
 
-<!-- ══ LOBBY SCREEN v2 ══ -->
 <div id="lobby-screen" style="position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;">
   <div class="lobby-bg-layer" id="lobby-bg-layer" style="background:linear-gradient(160deg,#f5f3ff 0%,#ede9fb 35%,#ddd6fe 70%,#c4b5fd 100%)"></div>
-  <!-- Soft decorative blobs -->
+
   <div style="position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden">
     <div style="position:absolute;width:500px;height:500px;background:radial-gradient(circle,rgba(196,181,253,.45) 0%,transparent 70%);border-radius:50%;top:-120px;left:-100px;animation:gzFloat1 9s ease-in-out infinite"></div>
     <div style="position:absolute;width:400px;height:400px;background:radial-gradient(circle,rgba(167,139,250,.3) 0%,transparent 70%);border-radius:50%;bottom:-80px;right:-80px;animation:gzFloat2 11s ease-in-out infinite reverse"></div>
@@ -2224,24 +2218,24 @@ input:focus,select:focus,textarea:focus{
 
   <div class="lobby-scroll-inner">
 
-    <!-- ══ FASE 1: LOGIN ══ -->
+
     <div id="lobby-phase-login">
-      <!-- Header -->
+
       <div class="lobby-header">
         <div class="lobby-app-name" id="lobby-app-name-display">DKV</div>
         <div class="lobby-app-sub" id="lobby-app-sub-display">SMPN 1 Sumenep</div>
         <div class="lobby-divider"></div>
       </div>
 
-      <!-- Tab -->
+
       <div class="lobby-login-tabs">
         <button class="lobby-tab-btn active" id="lobby-tab-murid" type="button" onclick="lobbySetTab('murid')">Murid</button>
         <button class="lobby-tab-btn" id="lobby-tab-pembina" type="button" onclick="lobbySetTab('pembina')">Pembina</button>
       </div>
 
-      <!-- Form Murid -->
+
       <div class="lobby-form-wrap" id="lobby-form-murid">
-        <div style="font-size:12px;color:#6b7280;margin-bottom:12px;text-align:center">Masuk ke akun murid kamu 🎒</div>
+        <div style="font-size:12px;color:#6b7280;margin-bottom:12px;text-align:center">Login Sebagai Murid</div>
         <input type="text" id="lobby-sl-username" class="lobby-inp" placeholder="Username" autocomplete="off" autocapitalize="none"
           onkeydown="if(event.key==='Enter') document.getElementById('lobby-sl-password').focus()">
         <div class="lobby-inp-row">
@@ -2254,34 +2248,34 @@ input:focus,select:focus,textarea:focus{
         <button type="button" class="lobby-link-btn" onclick="if(typeof openRegModal==='function')openRegModal()">Belum punya akun? Daftar di sini</button>
       </div>
 
-      <!-- Form Pembina -->
+
       <div class="lobby-form-wrap" id="lobby-form-pembina" style="display:none">
-        <div style="font-size:12px;color:#6b7280;margin-bottom:12px;text-align:center">Login sebagai pembina / admin ⚙️</div>
+        <div style="font-size:12px;color:#6b7280;margin-bottom:12px;text-align:center">Login Sebagai Pembina</div>
         <div class="lobby-inp-row">
           <input type="password" id="lobby-pw-input" class="lobby-inp" placeholder="Password pembina..."
             onkeydown="if(event.key==='Enter') lobbyDoAdminLogin()">
           <button type="button" class="lobby-eye-btn" id="lobby-pw-eye" onclick="lobbyToggleEye('lobby-pw-input','lobby-pw-eye')">👁</button>
         </div>
         <div class="lobby-err" id="lobby-pw-err"></div>
-        <button type="button" class="lobby-submit-btn" onclick="lobbyDoAdminLogin()">Masuk sebagai Pembina →</button>
+        <button type="button" class="lobby-submit-btn" onclick="lobbyDoAdminLogin()">Masuk</button>
       </div>
     </div>
 
-    <!-- ══ FASE 2: PILIH RUANGAN (muncul setelah login) ══ -->
+
     <div id="lobby-phase-rooms" style="display:none">
-      <!-- Header kecil -->
+
       <div class="lobby-header" style="margin-bottom:20px">
         <div class="lobby-app-name" id="lobby-app-name-display-2" style="font-size:18px">DKV</div>
         <div class="lobby-divider"></div>
       </div>
 
-      <!-- Info user yang login -->
+
       <div class="lobby-user-bar" id="lobby-user-bar">
         <span class="lobby-user-name" id="lobby-user-bar-name">—</span>
         <button type="button" class="lobby-logout-small" onclick="lobbyHandleLogout()">🚪 Logout</button>
       </div>
 
-      <!-- 2 Kartu Ruangan -->
+
       <div class="lobby-rooms-grid">
         <button id="lobby-ekskul-btn" type="button" class="lobby-room-card">
           <div style="font-size:14px;font-weight:700;color:#1e1b4b;margin-bottom:4px">Ruang Ekskul</div>
@@ -2296,10 +2290,8 @@ input:focus,select:focus,textarea:focus{
       </div>
     </div>
 
-  </div><!-- end scroll-inner -->
+  </div>
 </div>
-
-<!-- Edit Lobby FAB (dihapus - tidak tampil di ruang ekskul) -->
 
 <script>
 // ══════════════════════════════════════════════════════
@@ -2469,7 +2461,6 @@ input:focus,select:focus,textarea:focus{
     try{ return JSON.parse(localStorage.getItem('dkv_lobby_settings')||'{}'); } catch(e){ return {}; }
   }
 
-
   window.lobbyApplySettings = function(){
     var s=getLobbySettings();
     if(s.appName){
@@ -2585,10 +2576,9 @@ input:focus,select:focus,textarea:focus{
 })();
 </script>
 
-<!-- ═══════ RUANG UJIAN OVERLAY ═══════ -->
 <div id="ujian-screen" style="display:none;position:fixed;inset:0;z-index:9998;background:linear-gradient(160deg,#f5f3ff 0%,#ede9fb 50%,#ddd6fe 100%);overflow-y:auto;font-family:'DM Sans','Sora',sans-serif">
 
-  <!-- Header Ujian -->
+
   <div style="position:sticky;top:0;z-index:10;background:rgba(255,255,255,.9);backdrop-filter:blur(16px);border-bottom:1px solid rgba(108,82,227,.12);padding:14px 20px;box-shadow:0 2px 12px rgba(108,82,227,.07);display:flex;align-items:center;justify-content:space-between">
     <div style="font-size:15px;font-weight:700;color:#1e1b4b">📝 Ruang Ujian</div>
     <div style="display:flex;align-items:center;gap:10px">
@@ -2599,7 +2589,7 @@ input:focus,select:focus,textarea:focus{
 
   <div style="max-width:680px;margin:0 auto;padding:28px 20px 80px">
 
-    <!-- STATE: belum login -->
+
     <div id="ujian-login-state">
       <div style="background:#ffffff;border:1.5px solid rgba(108,82,227,.15);border-radius:16px;padding:28px 24px;max-width:380px;margin:40px auto">
         <div style="text-align:center;margin-bottom:20px">
@@ -2607,22 +2597,22 @@ input:focus,select:focus,textarea:focus{
           <div style="font-size:17px;font-weight:700;color:#1e1b4b">Masuk ke Ruang Ujian</div>
           <div style="font-size:12px;color:#6b7280;margin-top:4px">Pilih jenis akun untuk melanjutkan</div>
         </div>
-        <!-- Tab Murid / Pembina -->
+
         <div id="ujian-gate-tab-row" style="display:flex;gap:8px;margin-bottom:20px">
           <button id="ujian-gate-tab-murid" type="button" onclick="ujianGateSetTab('murid')" style="flex:1;padding:9px;border-radius:10px;border:1.5px solid #4c35a8;background:linear-gradient(135deg,#4c35a8,#6c52e3);color:#fff;font-family:'DM Sans','Sora',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s">Murid</button>
           <button id="ujian-gate-tab-pembina" type="button" onclick="ujianGateSetTab('pembina')" style="flex:1;padding:9px;border-radius:10px;border:1.5px solid rgba(108,82,227,.15);background:transparent;color:#6b7280;font-family:'DM Sans','Sora',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s">Pembina</button>
         </div>
 
-        <!-- Form Murid -->
+
         <div id="ujian-gate-form-murid">
-          <!-- Sudah login (carry-over dari ekskul) -->
+
           <div id="ujian-gate-murid-logged" style="display:none;text-align:center;padding:8px 0 16px">
             <div style="font-size:13px;color:#4c35a8;font-weight:700;margin-bottom:4px">✅ Sudah login sebagai</div>
             <div id="ujian-gate-murid-logged-name" style="font-size:15px;font-weight:700;color:#1e1b4b"></div>
             <button type="button" onclick="ujianGateEnterAsMurid()" style="margin-top:14px;width:100%;padding:12px;border-radius:11px;border:none;background:linear-gradient(135deg,#4c35a8,#6c52e3);color:#fff;font-family:'DM Sans','Sora',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border-radius:11px;padding:12px">Masuk Sekarang →</button>
             <button type="button" onclick="ujianGateDoLogoutMurid()" style="margin-top:8px;width:100%;padding:9px;border-radius:11px;border:none;background:transparent;color:#888;font-family:'DM Sans','Sora',sans-serif;font-size:12px;cursor:pointer">Ganti Akun</button>
           </div>
-          <!-- Form login murid -->
+
           <div id="ujian-gate-murid-form">
             <label style="font-size:11px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px">Username</label>
             <input id="ujian-username" type="text" placeholder="Username kamu..." autocomplete="off" autocapitalize="none" style="width:100%;padding:10px 12px;border-radius:9px;border:1.5px solid rgba(108,82,227,.2);background:#f8f6ff;color:#1e1b4b;font-family:'DM Sans','Sora',sans-serif;font-size:14px;outline:none;box-sizing:border-box;margin-bottom:12px">
@@ -2636,15 +2626,15 @@ input:focus,select:focus,textarea:focus{
           </div>
         </div>
 
-        <!-- Form Pembina -->
+
         <div id="ujian-gate-form-pembina" style="display:none">
-          <!-- Sudah login sebagai pembina -->
+
           <div id="ujian-gate-pembina-logged" style="display:none;text-align:center;padding:8px 0 16px">
             <div style="font-size:13px;color:#4c35a8;font-weight:700;margin-bottom:4px">⚙️ Sudah login sebagai Pembina</div>
             <button type="button" onclick="ujianGateEnterAsPembina()" style="margin-top:14px;width:100%;padding:12px;border-radius:11px;border:none;background:linear-gradient(135deg,#4c35a8,#6c52e3);color:#fff;font-family:'DM Sans','Sora',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Masuk → Kelola Ujian</button>
             <button type="button" onclick="ujianGateDoLogoutPembina()" style="margin-top:8px;width:100%;padding:9px;border-radius:11px;border:none;background:transparent;color:#888;font-family:'DM Sans','Sora',sans-serif;font-size:12px;cursor:pointer">Logout Pembina</button>
           </div>
-          <!-- Form password pembina -->
+
           <div id="ujian-gate-pembina-form">
             <label style="font-size:11px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px">Password Pembina</label>
             <div style="position:relative;margin-bottom:6px">
@@ -2659,7 +2649,7 @@ input:focus,select:focus,textarea:focus{
       </div>
     </div>
 
-    <!-- STATE: sudah login — daftar ujian -->
+
     <div id="ujian-list-state" style="display:none">
       <div style="margin-bottom:20px">
         <div style="font-size:20px;font-weight:700;color:#1e1b4b" id="ujian-welcome-txt">Halo!</div>
@@ -2670,7 +2660,7 @@ input:focus,select:focus,textarea:focus{
 
     </div>
 
-    <!-- STATE: sedang mengerjakan ujian -->
+
     <div id="ujian-kerja-state" style="display:none">
       <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
         <div>
@@ -2679,7 +2669,7 @@ input:focus,select:focus,textarea:focus{
         </div>
         <div id="ujian-progress-txt" style="font-size:12px;color:#6b7280"></div>
       </div>
-      <!-- Progress bar -->
+
       <div style="height:4px;background:rgba(108,82,227,.15);border-radius:99px;margin-bottom:28px;overflow:hidden">
         <div id="ujian-progress-bar" style="height:100%;background:#6c52e3;border-radius:99px;transition:width .3s;width:0%"></div>
       </div>
@@ -2691,7 +2681,7 @@ input:focus,select:focus,textarea:focus{
       </div>
     </div>
 
-    <!-- STATE: hasil ujian -->
+
     <div id="ujian-hasil-state" style="display:none;text-align:center;padding:40px 0">
       <div style="font-size:52px;margin-bottom:16px" id="ujian-hasil-emoji">🎉</div>
       <div style="font-size:22px;font-weight:700;color:#1e1b4b;margin-bottom:8px" id="ujian-hasil-nilai"></div>
@@ -2700,7 +2690,7 @@ input:focus,select:focus,textarea:focus{
       <button id="ujian-selesai-btn" type="button" style="padding:11px 28px;border-radius:8px;border:none;background:#6c52e3;color:#fff;font-family:'DM Sans','Sora',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Kembali ke Daftar Ujian</button>
     </div>
 
-    <!-- STATE: Pembina — kelola ujian -->
+
     <div id="ujian-admin-state" style="display:none">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
         <div>
@@ -2710,7 +2700,7 @@ input:focus,select:focus,textarea:focus{
         <button id="ujian-buat-btn" type="button" style="padding:9px 18px;border-radius:8px;border:none;background:linear-gradient(135deg,#4c35a8,#6c52e3);color:#fff;font-family:'DM Sans','Sora',sans-serif;font-size:13px;font-weight:700;cursor:pointer">+ Buat Ujian</button>
       </div>
 
-      <!-- Form buat ujian -->
+
       <div id="ujian-form-wrap" style="display:none;background:#ffffff;border:1.5px solid rgba(108,82,227,.15);border-radius:14px;padding:24px;margin-bottom:20px">
         <div style="font-size:15px;font-weight:700;color:#1e1b4b;margin-bottom:16px" id="ujian-form-title-label">Buat Ujian Baru</div>
         <label style="font-size:11px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px">Judul Ujian</label>
@@ -2720,7 +2710,7 @@ input:focus,select:focus,textarea:focus{
         <label style="font-size:11px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px">Deskripsi (opsional)</label>
         <input id="uf-desc" type="text" placeholder="Keterangan tambahan..." style="width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid rgba(108,82,227,.15);background:#f8f6ff;color:#1e1b4b;font-family:'DM Sans','Sora',sans-serif;font-size:13px;margin-bottom:16px">
 
-        <!-- Soal builder -->
+
         <div style="font-size:13px;font-weight:700;color:#1e1b4b;margin-bottom:10px">Daftar Soal <span id="uf-soal-count" style="color:#6b7280;font-weight:400">(0 soal)</span></div>
         <div id="uf-soal-list" style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px"></div>
         <button id="uf-add-pg" type="button" style="padding:7px 14px;border-radius:7px;border:1.5px dashed rgba(108,82,227,.15);background:transparent;color:#6b7280;font-family:'DM Sans','Sora',sans-serif;font-size:12px;font-weight:600;cursor:pointer;margin-right:8px">+ Pilihan Ganda</button>
@@ -2733,10 +2723,10 @@ input:focus,select:focus,textarea:focus{
         </div>
       </div>
 
-      <!-- Daftar ujian yang ada -->
+
       <div id="ujian-admin-list" style="display:flex;flex-direction:column;gap:12px"></div>
 
-      <!-- Panel nilai murid -->
+
       <div id="ujian-nilai-panel" style="display:none;margin-top:20px;background:#fff;border:1.5px solid rgba(108,82,227,.1);border-radius:14px;padding:20px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
           <div style="font-size:14px;font-weight:700;color:#1e1b4b" id="nilai-panel-title">Hasil Ujian</div>
@@ -2745,14 +2735,11 @@ input:focus,select:focus,textarea:focus{
         <div id="nilai-panel-table"></div>
       </div>
 
-
     </div>
 
-  </div><!-- end padding wrap -->
+  </div>
 </div>
-<!-- ═══════ END RUANG UJIAN ═══════ -->
 
-<!-- ═══════ NOTIFIKASI PANEL ═══════ -->
 <div class="notif-panel-overlay" id="notif-panel-overlay"></div>
 <div class="notif-panel" id="notif-panel">
   <div class="notif-panel-head">
@@ -2769,7 +2756,6 @@ input:focus,select:focus,textarea:focus{
 
 <div class="toast" id="toast"></div>
 
-<!-- Confirm Dialog -->
 <div class="confirm-overlay" id="confirm-overlay">
   <div class="confirm-box">
     <div class="confirm-msg" id="confirm-msg">Yakin?</div>
@@ -2780,7 +2766,6 @@ input:focus,select:focus,textarea:focus{
   </div>
 </div>
 
-<!-- Public Profile Modal -->
 <div class="pubprof-overlay" id="pubprof-overlay">
   <div class="pubprof-box" id="pubprof-box">
     <div style="position:relative">
@@ -2791,7 +2776,6 @@ input:focus,select:focus,textarea:focus{
   </div>
 </div>
 
-<!-- Modal Password -->
 <div class="modal-overlay" id="pw-modal">
   <div class="modal-box">
     <div class="modal-icon">🔐</div>
@@ -2807,7 +2791,6 @@ input:focus,select:focus,textarea:focus{
   </div>
 </div>
 
-<!-- Modal Tambah/Edit Murid -->
 <div class="modal-overlay" id="murid-modal">
   <div class="modal-box">
     <div class="modal-icon" id="sm-icon">🎓</div>
@@ -2860,7 +2843,6 @@ input:focus,select:focus,textarea:focus{
   </div>
 </div>
 
-<!-- Kelompok Modal -->
 <div class="klp-modal-overlay" id="klp-modal">
   <div class="klp-modal-box">
     <div class="klp-modal-drag"></div>
@@ -2890,7 +2872,6 @@ input:focus,select:focus,textarea:focus{
   </div>
 </div>
 
-<!-- Kelompok Add Tugas Modal (standalone for existing group) -->
 <div class="klp-modal-overlay" id="klp-tugas-modal">
   <div class="klp-modal-box">
     <div class="klp-modal-drag"></div>
@@ -2914,7 +2895,6 @@ input:focus,select:focus,textarea:focus{
   </div>
 </div>
 
-<!-- PDF Modal (pengganti window.open) -->
 <div class="pdf-modal-overlay" id="pdf-modal">
   <div class="pdf-modal-box">
     <div class="pdf-modal-header">
@@ -2929,9 +2909,6 @@ input:focus,select:focus,textarea:focus{
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     MODAL LOGIN MURID
-══════════════════════════════════════════════ -->
 <div class="modal-overlay" id="student-login-modal">
   <div class="modal-box">
     <div class="modal-icon">🎮</div>
@@ -2954,35 +2931,32 @@ input:focus,select:focus,textarea:focus{
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     MODAL KARAKTER MURID — Redesigned (v29)
-══════════════════════════════════════════════ -->
 <div class="char-modal-overlay" id="char-modal">
   <div class="char-modal-box">
 
-    <!-- ══ HEADER: dark gradient ══ -->
+
     <div class="char-stage">
       <div class="char-stage-ground"></div>
       <div class="char-drag-handle"></div>
 
-      <!-- Row: foto/avatar (kiri) + nama/kelas (tengah) + badge (kanan) -->
+
       <div class="char-top-row">
-        <!-- Kiri: avatar + XP pill -->
+
         <div class="char-avatar-wrap">
           <div class="char-avatar-circle" id="spe-photo-wrap">
-            <!-- Rendered by JS -->
+
           </div>
           <input type="file" id="spe-photo-input" accept="image/*" style="display:none">
           <div class="char-xp-display">⭐ <span id="char-modal-xp">0</span> XP</div>
         </div>
 
-        <!-- Tengah: Nama + Kelas -->
+
         <div class="char-identity">
           <div class="char-modal-name-big" id="char-modal-name">—</div>
           <div class="char-modal-kelas" id="char-modal-kelas-new">—</div>
         </div>
 
-        <!-- Kanan: badge level box -->
+
         <div class="char-badge-box" id="char-badge-box-new">
           <div class="char-badge-icon-wrap" id="char-badge-icon-new">🌱</div>
           <span class="char-badge-lbl">Badge Level</span>
@@ -2990,14 +2964,14 @@ input:focus,select:focus,textarea:focus{
         </div>
       </div>
 
-      <!-- legacy hidden elements kept for JS compat -->
+
       <div class="char-display" style="display:none">
         <div class="char-body" id="char-body-display"></div>
         <div class="char-name-tag"></div>
       </div>
-    </div><!-- end .char-stage -->
+    </div>
 
-    <!-- XP Progress bar -->
+
     <div class="char-xp-progress-wrap">
       <div class="char-xp-progress-meta">
         <strong>Level Progress</strong>
@@ -3008,20 +2982,20 @@ input:focus,select:focus,textarea:focus{
       </div>
     </div>
 
-    <!-- Tab strip: Data only -->
+
     <div class="char-tab-strip">
       <button class="char-tab-btn active" id="char-tab-data" type="button" onclick="switchCharTab('data')">📊 Data</button>
       <button class="char-tab-btn" id="char-tab-profil" type="button" onclick="switchCharTab('profil')">🪪 Profil</button>
     </div>
 
-    <!-- ══ SECTION: DATA ══ -->
+
     <div id="char-section-data" class="char-body-section">
 
-      <!-- Profil: foto + nama + kelas + edit -->
+
       <div class="char-section-lbl">👤 Profil Saya</div>
       <div style="background:#f8f6ff;border-radius:14px;border:1px solid #ebebeb;padding:14px;margin-bottom:14px">
 
-        <!-- View mode -->
+
         <div id="spe-view-mode">
           <div style="display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;gap:12px;margin-bottom:12px">
             <div id="spe-view-photo-mini" style="width:44px;height:44px;border-radius:50%;-webkit-flex-shrink:0;flex-shrink:0;overflow:hidden;border:2px solid #e8e6e0;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;font-size:18px;font-weight:700;color:#fff"></div>
@@ -3033,9 +3007,9 @@ input:focus,select:focus,textarea:focus{
           <button type="button" class="edit-profile-toggle" onclick="openProfileEdit()">✏️ Edit Profil</button>
         </div>
 
-        <!-- Edit mode -->
+
         <div id="spe-edit-mode" style="display:none">
-          <!-- Foto Profil -->
+
           <div class="spe-edit-row">
             <label>Foto Profil</label>
             <div style="display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;gap:10px;margin-top:4px">
@@ -3054,30 +3028,30 @@ input:focus,select:focus,textarea:focus{
         </div>
       </div>
 
-      <!-- Statistik 3-col grid -->
+
       <div class="char-section-lbl">📊 Statistik</div>
-      <div class="char-stats-new-grid" id="char-stats-grid"><!-- Rendered by JS --></div>
+      <div class="char-stats-new-grid" id="char-stats-grid"></div>
 
-      <!-- Skill progress table -->
+
       <div class="char-section-lbl">🎯 Skill Progress</div>
-      <div class="char-skill-table" id="char-skill-table-new"><!-- Rendered by JS --></div>
+      <div class="char-skill-table" id="char-skill-table-new"></div>
 
-      <!-- Tutup -->
+
       <div style="margin-top:16px">
         <button type="button" onclick="closeCharModal()" style="width:100%;font-family:'DM Sans','Sora',sans-serif;font-size:14px;font-weight:700;padding:13px;border-radius:12px;border:none;background:rgba(108,82,227,.07);color:#444;cursor:pointer">Tutup</button>
       </div>
     </div>
 
-    <!-- PROFIL GEN Z section dihapus -->
 
-    <!-- ══ SECTION: PROFIL MURID (login) ══ -->
+
+
     <div id="char-section-avatar" class="char-body-section" style="display:none">
 
-      <!-- SIM Card Preview langsung di atas -->
-      <div class="char-section-lbl">🪪 SIM Card Saya</div>
-      <div id="student-simcard-preview" style="margin-bottom:16px"><!-- rendered by JS --></div>
 
-      <!-- Background personal SIM Card -->
+      <div class="char-section-lbl">🪪 SIM Card Saya</div>
+      <div id="student-simcard-preview" style="margin-bottom:16px"></div>
+
+
       <div style="background:#f8f6ff;border-radius:14px;border:1px solid #ebebeb;padding:12px 14px;margin-bottom:14px">
         <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">🖼 Background SIM Card Pribadi</div>
         <div style="display:-webkit-flex;display:flex;gap:8px;-webkit-flex-wrap:wrap;flex-wrap:wrap">
@@ -3087,12 +3061,12 @@ input:focus,select:focus,textarea:focus{
         </div>
       </div>
 
-      <!-- Dynamic profil form rendered by JS from _profilChapters -->
+
       <div id="prf-dynamic-chapters-container">
-        <!-- Rendered dynamically by renderFullDynamicProfilForm() -->
+
       </div>
 
-      <!-- HIDDEN LEGACY ELEMENTS — kept for JS save functions compatibility -->
+
       <div style="display:none">
         <input type="text" id="prf-nickname">
         <textarea id="prf-bio"></textarea>
@@ -3145,12 +3119,12 @@ input:focus,select:focus,textarea:focus{
         <div id="prf-card-preview" class="profil-card-preview"></div>
       </div>
 
-      <!-- Tutup -->
+
       <div style="margin-top:16px">
         <button type="button" onclick="closeCharModal()" style="width:100%;font-family:'DM Sans','Sora',sans-serif;font-size:14px;font-weight:700;padding:13px;border-radius:12px;border:none;background:rgba(108,82,227,.07);color:#444;cursor:pointer">Tutup</button>
       </div>
     </div>
-  </div><!-- end .char-modal-box -->
+  </div>
 </div>
 
 <div class="container">
@@ -3169,7 +3143,7 @@ input:focus,select:focus,textarea:focus{
         <span class="sync-dot pulse" id="sync-dot"></span>
         <span id="sync-label">Menghubungkan…</span>
       </span>
-      <!-- Tombol Konfigurasi — hanya muncul saat pembina login -->
+
       <button class="edit-btn" id="edit-btn" type="button" style="display:none">⚙️ Konfigurasi</button>
       <div class="notif-bell-wrap" id="notif-bell-wrap" style="display:none">
         <button class="notif-bell-btn" id="notif-bell-btn" type="button" title="Notifikasi">🔔</button>
@@ -3179,7 +3153,7 @@ input:focus,select:focus,textarea:focus{
         <button class="admin-bell-btn" id="admin-bell-btn" type="button" title="Permintaan bergabung">📬</button>
         <span class="admin-bell-badge" id="admin-bell-badge">0</span>
       </div>
-      <!-- Hidden: student-login-btn & reg-open-btn tetap ada di DOM untuk kompatibilitas JS lama -->
+
       <button class="btn-student-login" id="student-login-btn" type="button" style="display:none">🎮 Login Murid</button>
       <button class="btn-student-login" id="reg-open-btn" type="button" style="display:none">✏️ Daftar</button>
       <button type="button" id="back-to-lobby-btn" style="font-family:'DM Sans','Sora',sans-serif;font-size:12px;font-weight:600;padding:6px 13px;border-radius:99px;border:1px solid #c5c0b8;background:transparent;color:#888;cursor:pointer">← Lobby</button>
@@ -3195,7 +3169,7 @@ input:focus,select:focus,textarea:focus{
     <button class="tab-btn" data-tab="materi-editor" type="button" id="tab-btn-materi-editor" style="display:none"><span class="tab-icon">📚</span><span class="tab-lbl">Materi</span></button>
   </div>
 
-  <!-- STUDENT DASHBOARD BAR (visible when student logged in) -->
+
   <div class="student-dashboard-bar" id="student-dashboard-bar" onclick="openCharModal()">
     <div class="sdb-top-row">
       <div class="sdb-char" id="sdb-char-wrap"></div>
@@ -3218,41 +3192,41 @@ input:focus,select:focus,textarea:focus{
     </div>
   </div>
 
-  <!-- QUEST BOARD TAB -->
+
   <div class="tab-content active" id="tab-quest">
 
-    <!-- PANEL KONFIGURASI PEMBINA — Terpisah dari quest board -->
+
     <div class="edit-panel" id="edit-panel" style="border:2px solid #4c35a822;background:#f0f7ff">
-      <!-- Edit Section Tabs -->
+
       <div class="edit-section-tabs">
         <button class="edit-section-tab active" data-esec="config" type="button">⚙️ Konfigurasi</button>
         <button class="edit-section-tab" data-esec="bab" type="button">📚 Bab & Materi</button>
         <button class="edit-section-tab" data-esec="profil-fields" type="button">🪪 Tabel Profil</button>
       </div>
 
-      <!-- SECTION: Config -->
+
       <div id="esec-config">
         <div class="app-config-panel" id="app-config-panel" style="display:block">
           <h3 style="font-size:13px;font-weight:700;margin-bottom:10px;color:#1e1b4b">⚙️ Konfigurasi Aplikasi</h3>
 
-          <!-- ─── TAMPILAN MENU UTAMA ─── -->
+
           <div style="background:linear-gradient(135deg,#f0f7ff,#f5f0ff);border-radius:12px;border:1.5px solid #4c35a833;padding:14px;margin-bottom:14px">
             <div style="font-size:11px;font-weight:700;color:#4c35a8;text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;display:flex;align-items:center;gap:6px">🎨 Tampilan Menu Utama</div>
 
-            <!-- Nama Ekskul -->
+
             <div style="margin-bottom:10px">
               <label style="font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px">Nama Ekskul / Aplikasi</label>
               <input type="text" id="cfg-app-name" placeholder="Nama ekskul..." style="font-family:'DM Sans','Sora',sans-serif;padding:8px 11px;border-radius:8px;border:1px solid rgba(108,82,227,.15);background:#fff;color:#1e1b4b;width:100%;font-size:13px;box-sizing:border-box">
             </div>
 
-            <!-- Tagline / Subtitle -->
+
             <div style="margin-bottom:10px">
               <label style="font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px">Tagline / Subtitle</label>
               <input type="text" id="cfg-tagline" placeholder="Contoh: Quest Board Ekskul DKV..." style="font-family:'DM Sans','Sora',sans-serif;padding:8px 11px;border-radius:8px;border:1px solid rgba(108,82,227,.15);background:#fff;color:#1e1b4b;width:100%;font-size:13px;box-sizing:border-box">
               <div style="font-size:10px;color:#aaa;margin-top:3px">Tampil sebagai sub-judul di halaman utama</div>
             </div>
 
-            <!-- Logo Ekskul -->
+
             <div style="margin-bottom:10px">
               <label style="font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:6px">Logo Ekskul</label>
               <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
@@ -3268,7 +3242,7 @@ input:focus,select:focus,textarea:focus{
               <div style="font-size:10px;color:#aaa;margin-top:4px">Format JPG/PNG. Muncul di sudut kiri atas halaman & judul browser</div>
             </div>
 
-            <!-- Background Halaman Utama -->
+
             <div style="margin-bottom:6px">
               <label style="font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:6px">Background Halaman Utama</label>
               <div id="cfg-bg-preview-wrap" style="display:none;margin-bottom:8px">
@@ -3287,9 +3261,9 @@ input:focus,select:focus,textarea:focus{
               <button class="btn-save" id="save-app-config-btn" type="button" style="font-size:12px;padding:7px 16px">💾 Simpan Tampilan</button>
             </div>
           </div>
-          <!-- ─── END TAMPILAN ─── -->
 
-          <!-- Password section remains -->
+
+
           <table style="width:100%;border-collapse:collapse;font-size:12px">
             <tbody>
               <tr style="border-bottom:1px solid #f0eeea">
@@ -3314,7 +3288,7 @@ input:focus,select:focus,textarea:focus{
             <button class="btn-save" id="save-pw-btn" type="button" style="font-size:12px;padding:7px 14px">🔑 Simpan Password</button>
           </div>
 
-          <!-- BADGE LEVEL EDITOR -->
+
           <div style="height:1px;background:rgba(108,82,227,.07);margin:14px 0"></div>
           <h3 style="font-size:13px;font-weight:700;margin-bottom:4px;color:#1e1b4b">🏅 Level Badge Murid</h3>
           <div style="font-size:11px;color:#888;margin-bottom:10px">Atur nama badge, gambar, dan minimal XP per tingkatan.</div>
@@ -3322,22 +3296,21 @@ input:focus,select:focus,textarea:focus{
           <button class="badge-add-btn" id="add-badge-level-btn" type="button">+ Tambah Tingkatan Badge</button>
           <button class="btn-save" id="save-badge-levels-btn" type="button" style="margin-top:10px;width:100%">💾 Simpan Semua Badge</button>
 
-          <!-- MURID ACCOUNTS ADMIN -->
+
           <div style="height:1px;background:rgba(108,82,227,.07);margin:14px 0"></div>
           <h3 style="font-size:13px;font-weight:700;margin-bottom:4px;color:#1e1b4b">🔑 Akun Login Murid</h3>
           <div style="font-size:11px;color:#888;margin-bottom:12px">Username &amp; password murid dikelola oleh admin.</div>
-          <div id="murid-account-list" style="display:-webkit-flex;display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto"><!-- rendered by JS --></div>
+          <div id="murid-account-list" style="display:-webkit-flex;display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto"></div>
         </div>
 
-        <!-- EDITOR MATERI ACCESS -->
+
         <div style="height:1px;background:rgba(108,82,227,.07);margin:14px 0"></div>
         <h3 style="font-size:13px;font-weight:700;margin-bottom:4px;color:#1e1b4b">✏️ Akses Edit Materi</h3>
         <div style="font-size:11px;color:#888;margin-bottom:12px">Pilih murid yang boleh menambah/mengedit materi di tab Bab &amp; Materi. Mereka tidak perlu password pembina.</div>
-        <div id="editor-access-list" style="display:-webkit-flex;display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto"><!-- rendered by JS --></div>
+        <div id="editor-access-list" style="display:-webkit-flex;display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto"></div>
       </div>
 
 
-      <!-- SECTION: Bab & Materi -->
       <div id="esec-bab" style="display:none">
         <div style="display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:space-between;justify-content:space-between;margin-bottom:14px">
           <div>
@@ -3349,9 +3322,9 @@ input:focus,select:focus,textarea:focus{
         <div id="bab-editor-list"></div>
       </div>
 
-      <!-- SECTION: Tabel Profil Murid dihapus -->
 
-      <!-- SECTION: Tabel Profil Murid -->
+
+
       <div id="esec-profil-fields" style="display:none">
         <div style="display:-webkit-flex;display:flex;-webkit-align-items:flex-start;align-items:flex-start;-webkit-justify-content:space-between;justify-content:space-between;margin-bottom:12px;gap:8px">
           <div>
@@ -3360,7 +3333,7 @@ input:focus,select:focus,textarea:focus{
           </div>
           <button type="button" id="add-profil-chapter-btn" class="btn-save" style="white-space:nowrap;font-size:11px;padding:7px 12px;-webkit-flex-shrink:0;flex-shrink:0">+ Tambah Bab</button>
         </div>
-        <!-- SimCard background upload for admin -->
+
         <div style="background:#f8f6ff;border-radius:12px;border:1.5px solid rgba(108,82,227,.12);padding:13px;margin-bottom:14px">
           <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">🖼 Background SIM Card Murid</div>
           <div style="font-size:11px;color:#888;margin-bottom:10px">Upload gambar yang akan dijadikan background SIM Card semua murid. Murid juga dapat upload background pribadi.</div>
@@ -3381,7 +3354,7 @@ input:focus,select:focus,textarea:focus{
         </div>
       </div>
 
-      <!-- LEGACY: hidden elements still needed for old JS compatibility -->
+
       <div style="display:none">
         <select id="ep-world-sel"></select>
         <div id="ep-world-fields"></div>
@@ -3416,7 +3389,7 @@ input:focus,select:focus,textarea:focus{
     <div id="worlds-container" class="worlds"></div>
   </div>
 
-  <!-- MURID TAB -->
+
   <div class="tab-content" id="tab-murid">
     <div class="murid-top">
       <div>
@@ -3435,7 +3408,7 @@ input:focus,select:focus,textarea:focus{
     <div class="murid-grid" id="murid-grid"></div>
   </div>
 
-  <!-- KELOMPOK TAB -->
+
   <div class="tab-content" id="tab-kelompok">
     <div class="murid-top">
       <div>
@@ -3452,7 +3425,7 @@ input:focus,select:focus,textarea:focus{
     </div>
   </div>
 
-  <!-- PERINGKAT TAB -->
+
   <div class="tab-content" id="tab-peringkat">
     <div class="murid-top">
       <div>
@@ -3463,7 +3436,7 @@ input:focus,select:focus,textarea:focus{
     <div id="rank-container"></div>
   </div>
 
-  <!-- ABSENSI TAB -->
+
   <div class="tab-content" id="tab-absensi">
     <div class="murid-top">
       <div>
@@ -3473,7 +3446,7 @@ input:focus,select:focus,textarea:focus{
       <button class="btn-add-murid" id="btn-absen-session" type="button" style="display:flex">➕ Sesi Baru</button>
     </div>
 
-    <!-- SCAN PANEL -->
+
     <div style="background:#fff;border-radius:16px;border:1.5px solid rgba(108,82,227,.12);padding:16px;margin-bottom:14px" id="absen-scan-panel">
       <div style="font-size:12px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">📷 Scan Barcode SIM Card</div>
       <div style="margin-bottom:10px">
@@ -3507,12 +3480,10 @@ input:focus,select:focus,textarea:focus{
       </div>
     </div>
 
-
-
     <div id="absen-rekap-container"></div>
   </div>
 
-  <!-- TAB MATERI EDITOR (untuk murid dengan akses editor) -->
+
   <div class="tab-content" id="tab-materi-editor">
     <div style="display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;gap:10px;margin-bottom:16px;-webkit-flex-wrap:wrap;flex-wrap:wrap">
       <div style="flex:1;min-width:0">
@@ -3539,7 +3510,6 @@ input:focus,select:focus,textarea:focus{
 
 </div>
 
-<!-- MODAL SESI BARU -->
 <div class="modal-overlay" id="absen-session-modal">
   <div class="modal-box">
     <div class="modal-icon">📋</div>
@@ -3563,7 +3533,6 @@ input:focus,select:focus,textarea:focus{
   </div>
 </div>
 
-<!-- MODAL ABSEN MANUAL -->
 <div class="modal-overlay" id="absen-manual-modal">
   <div class="modal-box">
     <div class="modal-icon">✍️</div>
@@ -3754,7 +3723,6 @@ function initFirebase(){
     _loadFromLocal();
   }
 }
-
 
 // ─── Sync CAT_LABELS & CAT_COLORS dari worlds (untuk bab yang ditambahkan dinamis) ───
 function syncCatLabelsFromWorlds(){
@@ -4361,7 +4329,6 @@ if(cfg){ window._appConfig = cfg; appConfig = cfg; }
   } catch(ex){}
 })();
 // Firebase akan meng-override data ini ketika koneksi berhasil
-
 
 // ─────────────────────────────────────────────
 // HELPERS
@@ -6305,7 +6272,6 @@ function showPDF(sid){
   document.getElementById('pdf-modal').classList.add('show');
 }
 
-
 // ─────────────────────────────────────────────
 // RENDER RANKING / PERINGKAT
 // ─────────────────────────────────────────────
@@ -7324,7 +7290,7 @@ document.addEventListener('change',function(e){
 });
 
 // ─────────────────────────────────────────────
-// WORLD ICON PNG HANDLER  
+// WORLD ICON PNG HANDLER
 // ─────────────────────────────────────────────
 document.getElementById('ep-quests-list').addEventListener('change', function(e){
   if(e.target && e.target.id && e.target.id.indexOf('wif-input-') === 0){
@@ -8423,8 +8389,6 @@ function doGlobalLogout(){
 window.doGlobalLogout = doGlobalLogout;
 window.updateToolbarByRole = updateToolbarByRole;
 
-
-
 function updateStudentUI(){
   // Sync status lobby setiap kali sesi berubah
   if(typeof lobbyUpdateStatus === 'function') lobbyUpdateStatus();
@@ -8841,7 +8805,6 @@ function clearProfilePhoto(){
   var clearBtn = document.getElementById('spe-photo-clear');
   if(clearBtn) clearBtn.style.display = 'none';
 }
-
 
 // Close on overlay click
 document.getElementById('char-modal').addEventListener('click', function(e){
@@ -9868,10 +9831,6 @@ setTimeout(function(){
 
 </script>
 
-<!-- ═══════════════════════════════════════════════════════
-     MODUL ABSENSI BARCODE — DKV SPENSA
-     SIM Card barcode → foto admin → otomatis catat hadir
-═══════════════════════════════════════════════════════ -->
 <script>
 (function(){
 // ─── State ───
@@ -10438,7 +10397,6 @@ document.addEventListener('click',function(e){
   if(btn&&btn.dataset.tab!=='absensi') stopAbsenCam();
 });
 
-
 // ─── QR Code Generator menggunakan qrcodejs library ───
 // Pakai library CDN: qrcodejs — support semua panjang teks, format QR standar
 // Data: "DKV_<muridId>" → sinkron dengan sistem absensi
@@ -10662,7 +10620,6 @@ document.addEventListener('click',function(e){
   };
 })();
 
-
 })();
 
 // ══════════════════════════════════════════════════════════════
@@ -10802,7 +10759,7 @@ document.getElementById('reg-submit-btn').addEventListener('click', function(){
     document.getElementById('reg-step-2').classList.add('active');
     document.getElementById('reg-done-username').textContent = username;
     btn.disabled = false;
-    btn.textContent = 'Kirim Pendaftaran 🚀';
+    btn.textContent = 'Kirim Pendaftaran';
   });
 });
 
@@ -11016,9 +10973,7 @@ document.addEventListener('click', function(e){
 // Tapi kita juga perlu panggil saat pembina login
 
 </script>
-<!-- ═══════════════════════════════════════════════════════════
-     RUANG UJIAN — JAVASCRIPT
-════════════════════════════════════════════════════════════ -->
+
 <script>
 (function(){
   // ── Konstanta & State ──────────────────────────────────────
