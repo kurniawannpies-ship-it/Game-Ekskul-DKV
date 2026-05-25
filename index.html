@@ -1882,14 +1882,16 @@ button:focus:not(:focus-visible) { outline: none; }
 <!-- ═══════ LOBBY — PILIH RUANGAN ═══════ -->
 <style>
 /* ══ LOBBY v2 — LOGIN FIRST, THEN PICK ROOM ══ */
-#lobby-screen { font-family:'Space Grotesk',sans-serif; overflow:hidden; }
-/* Background lobby — fixed agar tidak ikut scroll */
-#lobby-screen-bg {
-  position:fixed;inset:0;z-index:9999;
-  background:linear-gradient(180deg,#e8f9fd 0%,#CAF0F8 20%,#90E0EF 55%,#00B4D8 85%,#0077B6 100%);
-  background-size:cover;background-position:center;
-  pointer-events:none;
+#lobby-screen {
+  font-family:'Space Grotesk',sans-serif;
+  overflow:hidden;
+  /* Fallback biru muda selagi background upload belum ter-load */
+  background-color:#90E0EF;
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
 }
+/* Background lobby — fixed agar tidak ikut scroll */
 .lobby-bg-overlay { display:none; }
 .lobby-dot-pattern { display:none;pointer-events:none; }
 .lobby-scroll-inner {
@@ -2064,22 +2066,10 @@ button:focus:not(:focus-visible) { outline: none; }
 </style>
 
 <!-- ══ LOBBY SCREEN v2 ══ -->
-<!-- Background fixed (tidak ikut scroll) -->
-<div id="lobby-screen-bg" style="display:none"></div>
 <!-- Dim overlay saat panel edit terbuka -->
 <div id="lobby-edit-dim" onclick="lobbyToggleEditPanel()" style="display:none;position:fixed;inset:0;z-index:10009;background:rgba(0,0,0,.45);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)"></div>
 
 <div id="lobby-screen" style="position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;">
-  <!-- Animated gradient blobs -->
-  <div style="position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden">
-    <div style="position:absolute;width:500px;height:500px;background:radial-gradient(circle,rgba(255,255,255,.5) 0%,transparent 70%);border-radius:50%;top:-100px;left:-100px;animation:gzFloat1 8s ease-in-out infinite"></div>
-    <div style="position:absolute;width:400px;height:400px;background:radial-gradient(circle,rgba(255,255,255,.4) 0%,transparent 70%);border-radius:50%;bottom:-80px;right:-80px;animation:gzFloat2 10s ease-in-out infinite reverse"></div>
-    <div style="position:absolute;width:300px;height:300px;background:radial-gradient(circle,rgba(3,4,94,.08) 0%,transparent 70%);border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);animation:gzFloat1 12s ease-in-out infinite 2s"></div>
-  </div>
-  <style>
-    @keyframes gzFloat1{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-20px) scale(1.05)}66%{transform:translate(-20px,15px) scale(.95)}}
-    @keyframes gzFloat2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-25px,-15px) scale(1.08)}}
-  </style>
   <div class="lobby-bg-overlay"></div>
   <div class="lobby-dot-pattern"></div>
 
@@ -2484,20 +2474,28 @@ button:focus:not(:focus-visible) { outline: none; }
         var el = document.getElementById(id); if(el) el.innerHTML = wrapHtml;
       });
     }
-    // Background
+    // Background — preload dulu, baru swap (warna biru muda tetap tampil selagi loading)
     if(cfg.bg){
-      var bgDiv = document.getElementById('lobby-screen-bg');
       var screen = document.getElementById('lobby-screen');
-      if(bgDiv){
-        bgDiv.style.backgroundImage = 'url('+cfg.bg+')';
-        bgDiv.style.backgroundSize = 'cover';
-        bgDiv.style.backgroundPosition = 'center';
-        bgDiv.style.display = 'block';
-      }
       if(screen){
-        screen.style.backgroundImage = 'url('+cfg.bg+')';
-        screen.style.backgroundSize = 'cover';
-        screen.style.backgroundPosition = 'center';
+        // Jika base64 (upload langsung), terapkan instan karena sudah ada di memori
+        if(cfg.bg.indexOf('data:') === 0){
+          screen.style.backgroundImage = 'url('+cfg.bg+')';
+          screen.style.backgroundSize = 'cover';
+          screen.style.backgroundPosition = 'center';
+          screen.style.backgroundRepeat = 'no-repeat';
+        } else {
+          // URL eksternal → preload dulu, background biru muda tetap tampil
+          var _img = new Image();
+          _img.onload = function(){
+            screen.style.transition = 'background-image .4s ease';
+            screen.style.backgroundImage = 'url('+cfg.bg+')';
+            screen.style.backgroundSize = 'cover';
+            screen.style.backgroundPosition = 'center';
+            screen.style.backgroundRepeat = 'no-repeat';
+          };
+          _img.src = cfg.bg;
+        }
       }
     }
   }
@@ -2562,9 +2560,7 @@ button:focus:not(:focus-visible) { outline: none; }
     var sub = document.getElementById('lobby-app-sub-display');
     if(sub) sub.textContent = 'SMPN 1 Sumenep';
     var screen = document.getElementById('lobby-screen');
-    if(screen){ screen.style.backgroundImage=''; }
-    var bgDiv = document.getElementById('lobby-screen-bg');
-    if(bgDiv){ bgDiv.style.backgroundImage=''; bgDiv.style.display='none'; }
+    if(screen){ screen.style.backgroundImage=''; screen.style.background='#90E0EF'; }
     ['lobby-logo-display','lobby-logo-display-2'].forEach(function(id){
       var el = document.getElementById(id);
       if(el) el.innerHTML = '<div class="lobby-logo-emoji">&#x1F3A8;</div>';
@@ -11123,7 +11119,8 @@ document.addEventListener('click', function(e){
 
   // Tombol Kembali ke Lobby dari Ruang Ekskul (TANPA logout)
   document.getElementById('back-to-lobby-btn').addEventListener('click',function(){
-    document.getElementById('lobby-screen').style.display='flex';
+    var ls = document.getElementById('lobby-screen');
+    ls.style.display='flex';
     document.getElementById('ujian-screen').style.display='none';
     if(typeof lobbyUpdateStatus==='function') setTimeout(lobbyUpdateStatus,30);
   });
@@ -11952,6 +11949,11 @@ document.addEventListener('click', function(e){
   function enterEkskul(){
     document.getElementById('lobby-screen').style.display = 'none';
     document.getElementById('ujian-screen').style.display = 'none';
+    // Sembunyikan elemen fixed lobby yang bisa menghalangi
+    var dim = document.getElementById('lobby-edit-dim');
+    var pan = document.getElementById('lobby-edit-panel');
+    if(dim) dim.style.display = 'none';
+    if(pan) pan.style.display = 'none';
   }
 
   // ── Login siswa dari gate ──────────────────────────
