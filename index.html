@@ -19,7 +19,7 @@
 <!-- ══ SKELETON LOADING SCREEN ══ -->
 <div id="app-skeleton" style="
   position:fixed;inset:0;z-index:99999;
-  background:#90E0EF;
+  background:#ffffff;
   display:flex;flex-direction:column;align-items:center;
   justify-content:center;gap:18px;
   transition:opacity 0.5s ease;
@@ -223,7 +223,7 @@ input,select,textarea{font-size:16px!important}
 ::selection{background:rgba(0,180,216,.3);color:#03045E}
 
 html {
-  background: #90E0EF;
+  background: #ffffff;
 }
 
 body{
@@ -1565,11 +1565,11 @@ body {
 .hud-stat-num { font-size: 16px; }
 .hud-stat-lbl { font-size: 8px; letter-spacing: .04em; }
 
-/* ── Tab bar: sticky on scroll ── */
+/* ── Tab bar: static (tidak sticky) ── */
 .tab-bar {
-  position: sticky;
-  top: env(safe-area-inset-top, 0px);
-  z-index: 100;
+  position: static;
+  top: unset;
+  z-index: auto;
   margin-bottom: 14px;
   gap: 3px;
   padding: 4px;
