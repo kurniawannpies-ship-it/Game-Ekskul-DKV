@@ -3643,88 +3643,183 @@ function isFirebaseConfigured(){
          FIREBASE_CONFIG.databaseURL !== 'GANTI_DENGAN_DATABASE_URL_ANDA';
 }
 
-// ─── Inisialisasi Firebase ───
+// ─── Inisialisasi Firebase (VERSI HEMAT BANDWIDTH) ───
+// Perubahan utama:
+//  - Data statis (worlds, cfg, dll) diambil sekali saja pakai .once()
+//  - Hanya key yang sering berubah (done, sdone, absensi, dll) pakai .on() realtime
+//  - Listener otomatis di-pause saat tab browser tidak aktif
+
+var _fbListeners = {};
+var _fbVisibilityAttached = false;
+
+// ─── Terapkan satu key dari Firebase ke variabel global ──────────────────
+function _applyOneKey(key, val){
+  switch(key){
+    case 'dkv_worlds':
+      if(val){ var w=typeof val==='string'?JSON.parse(val):val; window.worlds=w; window.worlds.forEach(function(w){if(!w.gateQuests)w.gateQuests=[];if(!w.finalQuest)w.finalQuest='';}); syncCatLabelsFromWorlds(); saveJSON('dkv_worlds',window.worlds); } break;
+    case 'dkv_done':
+      if(val){ window.done=typeof val==='string'?JSON.parse(val):val; saveJSON('dkv_done',window.done); } break;
+    case 'dkv_siswa':
+      if(val&&!window._isSaving){ window.muridList=typeof val==='string'?JSON.parse(val):val; saveJSON('dkv_siswa',window.muridList); }
+      else if(val&&window._isSaving){ var _inc=typeof val==='string'?JSON.parse(val):val; if(_inc.length>=window.muridList.length){ window.muridList=_inc; saveJSON('dkv_siswa',window.muridList); } } break;
+    case 'dkv_sdone':
+      if(val&&!window._isSaving){ window.muridDone=typeof val==='string'?JSON.parse(val):val; saveJSON('dkv_sdone',window.muridDone); } break;
+    case 'dkv_badge_levels':
+      if(val){ window.badgeLevels=typeof val==='string'?JSON.parse(val):val; window.badgeLevels.sort(function(a,b){return (a.minXP||0)-(b.minXP||0);}); saveJSON('dkv_badge_levels',window.badgeLevels); } break;
+    case 'dkv_cfg':
+      if(val){ var _cfg=typeof val==='string'?JSON.parse(val):val; window._appConfig=_cfg; appConfig=_cfg; try{ var _sl=localStorage.getItem('dkv_logo_data'); if(_sl){appConfig.logoData=_sl;window._appConfig.logoData=_sl;} }catch(ex){} saveJSON('dkv_cfg',_cfg); } break;
+    case 'dkv_pw_hash':
+      if(val){ CORRECT_PW_HASH=val; store_set('dkv_pw_hash',val); } else { CORRECT_PW_HASH='89fb490244aa84f7e98c894139167db5faf2542b11d03daaad03364c1a9eda7d'; store_set('dkv_pw_hash',CORRECT_PW_HASH); } break;
+    case 'dkv_accounts':
+      if(val&&!window._isSaving){ window.muridAccounts=typeof val==='string'?JSON.parse(val):val; if(typeof window.muridAccounts!=='object'||Array.isArray(window.muridAccounts))window.muridAccounts={}; saveJSON('dkv_accounts',window.muridAccounts); }
+      else if(val&&window._isSaving){ var _ia=typeof val==='string'?JSON.parse(val):val; if(typeof _ia==='object'&&!Array.isArray(_ia))window.muridAccounts=Object.assign({},_ia,window.muridAccounts); }
+      else { if(!window.muridAccounts||typeof window.muridAccounts!=='object')window.muridAccounts={}; } break;
+    case 'dkv_profiles':
+      if(val){ window.muridProfiles=typeof val==='string'?JSON.parse(val):val; saveJSON('dkv_profiles',window.muridProfiles); } break;
+    case 'dkv_kelompok':
+      if(val){ window.kelompokList=typeof val==='string'?JSON.parse(val):val; if(!Array.isArray(window.kelompokList))window.kelompokList=[]; saveJSON('dkv_kelompok',window.kelompokList); } break;
+    case 'dkv_notif':
+      if(val){ window.dkvNotif=typeof val==='string'?JSON.parse(val):val; if(typeof window.dkvNotif!=='object'||Array.isArray(window.dkvNotif))window.dkvNotif={}; saveJSON('dkv_notif',window.dkvNotif); } break;
+    case 'dkv_editor_access':
+      if(val){ window.dkvEditorAccess=typeof val==='string'?JSON.parse(val):val; if(!Array.isArray(window.dkvEditorAccess))window.dkvEditorAccess=[]; }
+      else { if(!Array.isArray(window.dkvEditorAccess))window.dkvEditorAccess=[]; } break;
+    case 'dkv_profil_chapters':
+      if(val&&Array.isArray(val)&&val.length>0){ window._profilChapters=val; saveJSON('dkv_profil_chapters',val); } break;
+    case 'dkv_global_simcard_bg':
+      if(typeof val==='string'){ window._globalSimcardBg=val; saveJSON('dkv_global_simcard_bg',val);
+        var _cb=document.getElementById('simcard-bg-clear-btn'),_st=document.getElementById('simcard-bg-status'),_pv=document.getElementById('simcard-bg-preview'),_pi=document.getElementById('simcard-bg-preview-img');
+        if(val){ if(_cb)_cb.style.display='inline-block'; if(_st)_st.textContent='Background global aktif ✓'; if(_pv)_pv.style.display='block'; if(_pi)_pi.src=val; }
+        else { if(_cb)_cb.style.display='none'; if(_st)_st.textContent=''; if(_pv)_pv.style.display='none'; }
+        if(typeof renderMurid==='function')renderMurid(); } break;
+    case 'dkv_pending_reg':
+      if(!window._isSaving){ var _po=document.getElementById('pending-panel')&&document.getElementById('pending-panel').classList.contains('open'); var _ip=Array.isArray(val)?val:[]; if(JSON.stringify(window.dkvPendingReg||[])!==JSON.stringify(_ip)){ window.dkvPendingReg=_ip; if(typeof updateAdminBell==='function')updateAdminBell(); if(_po&&typeof renderPendingList==='function')renderPendingList(); } } break;
+    case 'dkv_absensi':
+      if(val&&!window._isSaving){ var _ia2=typeof val==='string'?JSON.parse(val):val; if(Array.isArray(_ia2)){ var _lc=window.absenSesi||[],_mp={}; _lc.forEach(function(s){_mp[s.id]=JSON.parse(JSON.stringify(s));}); _ia2.forEach(function(s){ if(!_mp[s.id]){_mp[s.id]=JSON.parse(JSON.stringify(s));}else{var _mh=Object.assign({},_mp[s.id].hadir||{},s.hadir||{});_mp[s.id]=Object.assign({},_mp[s.id],s,{hadir:_mh});} }); var _mg=Object.keys(_mp).map(function(k){return _mp[k];}); _mg.sort(function(a,b){return (b.tanggal||'')>(a.tanggal||'')?1:-1;}); window.absenSesi=_mg; saveJSON('dkv_absensi',window.absenSesi); } } break;
+  }
+}
+
+// ─── Re-render semua UI ───────────────────────────────────────────────────
+function _reRenderAll(){
+  if(typeof applyAppConfig==='function')applyAppConfig();
+  if(typeof render==='function')render();
+  if(typeof renderMurid==='function')renderMurid();
+  if(typeof renderKelompok==='function')renderKelompok();
+  if(typeof renderRanking==='function')renderRanking();
+  if(typeof renderBadgeLevelEditor==='function')renderBadgeLevelEditor();
+  if(typeof renderMuridAccountList==='function')renderMuridAccountList();
+  if(typeof updateStudentUI==='function')updateStudentUI();
+  if(typeof updateMateriEditorTabVisibility==='function')updateMateriEditorTabVisibility();
+}
+
+// ─── Pasang listener realtime (hanya key yang sering berubah) ────────────
+function _attachRealtimeListeners(){
+  var realtimeKeys=['dkv_done','dkv_sdone','dkv_pending_reg','dkv_absensi','dkv_notif'];
+  realtimeKeys.forEach(function(key){
+    if(_fbListeners[key]) return;
+    var ref=_fbRef.child(key);
+    var handler=ref.on('value',function(snap){
+      if(window._isSaving&&key!=='dkv_pending_reg'&&key!=='dkv_notif') return;
+      _applyOneKey(key,snap.val());
+      if(key==='dkv_done'||key==='dkv_sdone'){
+        if(typeof render==='function')render();
+        if(typeof renderMurid==='function')renderMurid();
+        if(typeof renderRanking==='function')renderRanking();
+        if(typeof updateStudentUI==='function')updateStudentUI();
+      }
+      if(key==='dkv_notif'){ if(typeof updateStudentUI==='function')updateStudentUI(); }
+    });
+    _fbListeners[key]=function(){ ref.off('value',handler); };
+  });
+}
+
+// ─── Ambil data statis sekali saja (.once) ────────────────────────────────
+function _loadStaticData(onDone){
+  var staticKeys=['dkv_worlds','dkv_siswa','dkv_cfg','dkv_badge_levels','dkv_kelompok','dkv_accounts','dkv_profiles','dkv_pw_hash','dkv_editor_access','dkv_profil_chapters','dkv_global_simcard_bg'];
+  var remaining=staticKeys.length;
+  function done(){ remaining--; if(remaining<=0&&typeof onDone==='function')onDone(); }
+  staticKeys.forEach(function(key){
+    var cached=loadJSON(key,null);
+    _fbRef.child(key).once('value').then(function(snap){
+      _applyOneKey(key,snap.val()!==null?snap.val():cached);
+      done();
+    }).catch(function(e){
+      console.warn('[DKV Firebase] once() gagal untuk',key,e);
+      if(cached!==null)_applyOneKey(key,cached);
+      done();
+    });
+  });
+}
+
+// ─── Pause listener saat tab tidak aktif ─────────────────────────────────
+function _pauseRealtimeListeners(){
+  Object.keys(_fbListeners).forEach(function(key){ if(_fbListeners[key]){_fbListeners[key]();_fbListeners[key]=null;} });
+  console.log('[DKV Firebase] Listener di-pause (tab tidak aktif)');
+}
+
+// ─── Resume listener saat tab aktif kembali ──────────────────────────────
+function _resumeRealtimeListeners(){
+  _attachRealtimeListeners();
+  _loadStaticData(function(){ _reRenderAll(); setSyncStatus('online','☁️ Firebase Aktif'); });
+  console.log('[DKV Firebase] Listener di-resume (tab aktif kembali)');
+}
+
+// ─── Inisialisasi Firebase utama ─────────────────────────────────────────
 function initFirebase(){
   if(!isFirebaseConfigured()){
-    setSyncStatus('error', '⚠️ Firebase Belum Dikonfigurasi');
+    setSyncStatus('error','⚠️ Firebase Belum Dikonfigurasi');
     console.warn('[DKV Firebase] Config belum diisi. Gunakan localStorage sebagai fallback.');
     _loadFromLocal();
     return;
   }
-  // ── Tunggu SDK Firebase siap (async load) ──
-  if(typeof firebase === 'undefined' || !firebase.app){
+  if(typeof firebase==='undefined'||!firebase.app){
     console.log('[DKV Firebase] SDK belum siap, menunggu...');
-    setSyncStatus('connecting', '🔄 Memuat SDK…');
-    window._fbPendingInit = true;
-    var _sdkWait = 0;
-    var _sdkInterval = setInterval(function(){
+    setSyncStatus('connecting','🔄 Memuat SDK…');
+    window._fbPendingInit=true;
+    var _sdkWait=0;
+    var _sdkInterval=setInterval(function(){
       _sdkWait++;
-      if(typeof firebase !== 'undefined' && firebase.app){
-        clearInterval(_sdkInterval);
-        window._fbPendingInit = false;
-        initFirebase();
-      } else if(_sdkWait > 100){
-        clearInterval(_sdkInterval);
-        console.error('[DKV Firebase] SDK timeout — fallback ke localStorage');
-        setSyncStatus('error', '❌ SDK Gagal Dimuat');
-        _loadFromLocal();
-      }
-    }, 100);
+      if(typeof firebase!=='undefined'&&firebase.app){ clearInterval(_sdkInterval); window._fbPendingInit=false; initFirebase(); }
+      else if(_sdkWait>100){ clearInterval(_sdkInterval); console.error('[DKV Firebase] SDK timeout — fallback ke localStorage'); setSyncStatus('error','❌ SDK Gagal Dimuat'); _loadFromLocal(); }
+    },100);
     return;
   }
   try {
-    if(!firebase.apps.length){
-      firebase.initializeApp(FIREBASE_CONFIG);
-    }
-    _fbDb  = firebase.database();
-    // CATATAN: enablePersistence dinonaktifkan — sering menyebabkan konflik
-    // multi-tab & mode private yang membuat app stuck offline.
-    // localStorage sudah berfungsi sebagai cache offline.
-    _fbRef = _fbDb.ref(FB_PATH);
-    _fbInitError = null;
-    setSyncStatus('connecting', '🔄 Menghubungkan…');
-    // Listen realtime — update semua tab/device secara langsung
-    _fbRef.on('value', function(snapshot){
-      // Abaikan update dari Firebase jika sedang dalam proses save (hindari race condition)
-      if(window._isSaving){ return; }
-      var data = snapshot.val();
-      if(data){
-        // Gunakan window._applyFirebaseData agar patch dari modul lain (absensi, dll) aktif
-        (window._applyFirebaseData || _applyFirebaseData)(data);
-        // Simpan ke localStorage sebagai cache offline
-        Object.keys(data).forEach(function(k){ saveJSON(k, JSON.parse(JSON.stringify(data[k]))); });
-      } else {
-        // Database kosong — push data lokal yang ada
-        _pushLocalToFirebase();
+    if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    _fbDb=firebase.database();
+    _fbRef=_fbDb.ref(FB_PATH);
+    _fbInitError=null;
+    setSyncStatus('connecting','🔄 Menghubungkan…');
+
+    // 1. Ambil data statis sekali saja → hemat bandwidth
+    _loadStaticData(function(){
+      var dbEmpty=!window.worlds||!window.worlds.length;
+      if(dbEmpty) _pushLocalToFirebase();
+      _fbReady=true;
+      setSyncStatus('online','☁️ Firebase Aktif');
+      _reRenderAll();
+      // 2. Pasang listener realtime hanya untuk key yang perlu sync antar device
+      _attachRealtimeListeners();
+      // 3. Pause/resume listener otomatis saat tab disembunyikan
+      if(!_fbVisibilityAttached){
+        _fbVisibilityAttached=true;
+        document.addEventListener('visibilitychange',function(){
+          if(!_fbRef) return;
+          if(document.hidden){ _pauseRealtimeListeners(); }
+          else { _resumeRealtimeListeners(); }
+        });
       }
-      _fbReady = true;
-      setSyncStatus('online', '☁️ Firebase Aktif');
-      // Re-render UI setelah data dari Firebase diterima
-      if(typeof render === 'function') render();
-      if(typeof renderMurid === 'function') renderMurid();
-      if(typeof renderKelompok === 'function') renderKelompok();
-      if(typeof renderRanking === 'function') renderRanking();
-      if(typeof applyAppConfig === 'function') applyAppConfig();
-    }, function(err){
-      _fbReady = false;
-      _fbInitError = err.message;
-      setSyncStatus('error', '❌ ' + (err.message.indexOf('PERMISSION_DENIED') >= 0 ? 'Akses Ditolak' : 'Koneksi Gagal'));
-      console.error('[DKV Firebase] Error:', err);
     });
 
-    // Deteksi status koneksi (online/offline)
-    _fbDb.ref('.info/connected').on('value', function(snap){
-      if(snap.val() === true){
-        setSyncStatus('online', '☁️ Firebase Aktif');
-      } else {
-        setSyncStatus('connecting', '📶 Offline — Cache Lokal');
-      }
+    // 4. Deteksi status koneksi (sangat ringan)
+    _fbDb.ref('.info/connected').on('value',function(snap){
+      if(snap.val()===true){ setSyncStatus('online','☁️ Firebase Aktif'); }
+      else { setSyncStatus('connecting','📶 Offline — Cache Lokal'); }
     });
 
   } catch(e){
-    _fbInitError = e.message;
-    setSyncStatus('error', '❌ Firebase Error');
-    console.error('[DKV Firebase] Init error:', e);
+    _fbInitError=e.message;
+    setSyncStatus('error','❌ Firebase Error');
+    console.error('[DKV Firebase] Init error:',e);
     _loadFromLocal();
   }
 }
@@ -3754,146 +3849,13 @@ function getCatLabelFromId(catId, icon){
     .replace(/\b\w/g, function(c){ return c.toUpperCase(); });
   return (icon||'📚') + ' ' + name;
 }
-// ─── Terapkan data dari Firebase ke variabel global ───
+// ─── _applyFirebaseData: wrapper backward-compat (dipanggil dari kode lama) ───
 function _applyFirebaseData(data){
-  if(data.dkv_worlds){
-    var w = typeof data.dkv_worlds === 'string' ? JSON.parse(data.dkv_worlds) : data.dkv_worlds;
-    window.worlds = w;
-    window.worlds.forEach(function(w){ if(!w.gateQuests)w.gateQuests=[]; if(!w.finalQuest)w.finalQuest=''; });
-    syncCatLabelsFromWorlds();
-  }
-  if(data.dkv_done){
-    window.done = typeof data.dkv_done === 'string' ? JSON.parse(data.dkv_done) : data.dkv_done;
-  }
-  // BUGFIX: Jangan timpa muridList / muridDone / muridAccounts / pending_reg
-  // saat _isSaving = true (proses approve/reject sedang berlangsung).
-  // Snapshot Firebase yang datang saat ini bisa berisi data LAMA (sebelum approve)
-  // karena Firebase listener bisa menembak lebih cepat dari konfirmasi .then().
-  if(!window._isSaving){
-    if(data.dkv_siswa){
-      window.muridList = typeof data.dkv_siswa === 'string' ? JSON.parse(data.dkv_siswa) : data.dkv_siswa;
-    }
-    if(data.dkv_sdone){
-      window.muridDone = typeof data.dkv_sdone === 'string' ? JSON.parse(data.dkv_sdone) : data.dkv_sdone;
-    }
-  } else {
-    // Tetap izinkan update dkv_siswa dari Firebase HANYA jika snapshot sudah mengandung
-    // murid baru yang ditambahkan (deteksi: jumlah item >= jumlah lokal)
-    if(data.dkv_siswa){
-      var incoming = typeof data.dkv_siswa === 'string' ? JSON.parse(data.dkv_siswa) : data.dkv_siswa;
-      if(incoming.length >= window.muridList.length){
-        window.muridList = incoming;
-      }
-      // jika incoming lebih sedikit, abaikan — snapshot lama dari sebelum approve
-    }
-    if(data.dkv_sdone){
-      window.muridDone = typeof data.dkv_sdone === 'string' ? JSON.parse(data.dkv_sdone) : data.dkv_sdone;
-    }
-  }
-  if(data.dkv_badge_levels){
-    window.badgeLevels = typeof data.dkv_badge_levels === 'string' ? JSON.parse(data.dkv_badge_levels) : data.dkv_badge_levels;
-    window.badgeLevels.sort(function(a,b){return (a.minXP||0)-(b.minXP||0);});
-  }
-  if(data.dkv_cfg){
-    var cfg = typeof data.dkv_cfg === 'string' ? JSON.parse(data.dkv_cfg) : data.dkv_cfg;
-    window._appConfig = cfg;
-    appConfig = cfg;
-    // Logo disimpan di localStorage terpisah — pulihkan agar tidak ditimpa Firebase
-    try{
-      var savedLogo = localStorage.getItem('dkv_logo_data');
-      if(savedLogo){ appConfig.logoData = savedLogo; window._appConfig.logoData = savedLogo; }
-    } catch(ex){}
-  }
-  if(data.dkv_pw_hash){
-    CORRECT_PW_HASH = data.dkv_pw_hash;
-    store_set('dkv_pw_hash', data.dkv_pw_hash);
-  } else {
-    // BUGFIX: Jika Firebase tidak menyimpan dkv_pw_hash (terhapus oleh saveAll lama),
-    // reset ke nilai hardcoded default agar localStorage lama tidak dipakai.
-    CORRECT_PW_HASH = '89fb490244aa84f7e98c894139167db5faf2542b11d03daaad03364c1a9eda7d';
-    store_set('dkv_pw_hash', CORRECT_PW_HASH);
-  }
-  // Extended data: akun murid & profil
-  if(data.dkv_accounts && !window._isSaving){
-    window.muridAccounts = typeof data.dkv_accounts === 'string' ? JSON.parse(data.dkv_accounts) : data.dkv_accounts;
-    if(typeof window.muridAccounts !== 'object' || Array.isArray(window.muridAccounts)) window.muridAccounts = {};
-  } else if(data.dkv_accounts && window._isSaving) {
-    // Merge saja, jangan replace — akun baru dari approve mungkin belum ada di snapshot Firebase
-    var incomingAcc = typeof data.dkv_accounts === 'string' ? JSON.parse(data.dkv_accounts) : data.dkv_accounts;
-    if(typeof incomingAcc === 'object' && !Array.isArray(incomingAcc)){
-      // Merge: local wins (lebih baru)
-      window.muridAccounts = Object.assign({}, incomingAcc, window.muridAccounts);
-    }
-  } else {
-    if(!window.muridAccounts || typeof window.muridAccounts !== 'object') window.muridAccounts = {};
-  }
-  if(data.dkv_profiles){
-    window.muridProfiles = typeof data.dkv_profiles === 'string' ? JSON.parse(data.dkv_profiles) : data.dkv_profiles;
-  }
-  if(data.dkv_kelompok){
-    window.kelompokList = typeof data.dkv_kelompok === 'string' ? JSON.parse(data.dkv_kelompok) : data.dkv_kelompok;
-    if(!Array.isArray(window.kelompokList)) window.kelompokList = [];
-  }
-  if(data.dkv_notif){
-    window.dkvNotif = typeof data.dkv_notif === 'string' ? JSON.parse(data.dkv_notif) : data.dkv_notif;
-    if(typeof window.dkvNotif !== 'object' || Array.isArray(window.dkvNotif)) window.dkvNotif = {};
-  }
-  if(data.dkv_editor_access){
-    window.dkvEditorAccess = typeof data.dkv_editor_access === 'string' ? JSON.parse(data.dkv_editor_access) : data.dkv_editor_access;
-    if(!Array.isArray(window.dkvEditorAccess)) window.dkvEditorAccess = [];
-  } else {
-    if(!Array.isArray(window.dkvEditorAccess)) window.dkvEditorAccess = [];
-  }
-  // ProfilChapters — sync dari Firebase
-  if(data.dkv_profil_chapters){
-    window._profilChapters = Array.isArray(data.dkv_profil_chapters) ? data.dkv_profil_chapters : [];
-  }
-  // Pending registrasi (dihandle juga via child listener, tapi fallback di sini)
-  // Jangan timpa jika panel sedang terbuka (admin sedang review) atau sedang saving
-  if(data.dkv_pending_reg){
-    var panelOpen = document.getElementById('pending-panel') && document.getElementById('pending-panel').classList.contains('open');
-    if(!panelOpen && !window._isSaving){
-      window.dkvPendingReg = Array.isArray(data.dkv_pending_reg) ? data.dkv_pending_reg : [];
-    }
-  }
-  // Absensi — wajib di sini agar Firebase listener (line 2518) bisa membaca data ini
-  if(data.dkv_absensi){
-    var incomingAbsen = typeof data.dkv_absensi==='string'?JSON.parse(data.dkv_absensi):data.dkv_absensi;
-    if(Array.isArray(incomingAbsen) && !window._isSaving){
-      // BUGFIX: Merge berbasis id sesi, gabungkan data hadir dari semua perangkat.
-      // Sebelumnya hanya membandingkan panjang array sehingga data bisa saling tindih.
-      var local = window.absenSesi || [];
-      var map = {};
-      // Masukkan data lokal dulu sebagai dasar
-      local.forEach(function(s){ map[s.id] = JSON.parse(JSON.stringify(s)); });
-      // Merge data dari Firebase
-      incomingAbsen.forEach(function(s){
-        if(!map[s.id]){
-          // Sesi baru dari perangkat lain — langsung tambahkan
-          map[s.id] = JSON.parse(JSON.stringify(s));
-        } else {
-          // Sesi sudah ada — gabungkan daftar hadir (union), tidak ada yang hilang
-          var mergedHadir = Object.assign({}, map[s.id].hadir || {}, s.hadir || {});
-          map[s.id] = Object.assign({}, map[s.id], s, { hadir: mergedHadir });
-        }
-      });
-      // Susun kembali ke array, urutkan dari terbaru
-      var merged = Object.keys(map).map(function(k){ return map[k]; });
-      merged.sort(function(a,b){ return (b.tanggal||'') > (a.tanggal||'') ? 1 : -1; });
-      window.absenSesi = merged;
-    }
-  }
-  // Re-render semua tampilan
-  if(typeof applyAppConfig === 'function') applyAppConfig();
-  if(typeof render === 'function') render();
-  if(typeof renderMurid === 'function') renderMurid();
-  if(typeof renderKelompok === 'function') renderKelompok();
-  if(typeof renderRanking === 'function') renderRanking();
-  if(typeof renderBadgeLevelEditor === 'function') renderBadgeLevelEditor();
-  if(typeof renderMuridAccountList === 'function') renderMuridAccountList();
-  if(typeof updateStudentUI === 'function') updateStudentUI();
-  if(typeof updateMateriEditorTabVisibility === 'function') updateMateriEditorTabVisibility();
+  if(!data) return;
+  Object.keys(data).forEach(function(key){ _applyOneKey(key, data[key]); });
+  _reRenderAll();
 }
+window._applyFirebaseData = _applyFirebaseData;
 
 // ─── Load dari localStorage jika Firebase tidak tersedia ───
 function _loadFromLocal(){
@@ -7025,44 +6987,8 @@ document.addEventListener('click', function(e){
   showToast('Tersimpan! ✅');
 });
 
-// Also sync _profilChapters from Firebase
-var _origFbInitPC = window.initFirebase;
-window.initFirebase = function(){
-  if(typeof _origFbInitPC === 'function') _origFbInitPC.apply(this, arguments);
-  setTimeout(function(){
-    if(!_fbRef) return;
-    _fbRef.child('dkv_profil_chapters').on('value', function(snap){
-      var v = snap.val();
-      if(v && Array.isArray(v) && v.length > 0){
-        window._profilChapters = v;
-        saveJSON('dkv_profil_chapters', v);
-      }
-    });
-    // Sync global simcard background
-    _fbRef.child('dkv_global_simcard_bg').on('value', function(snap){
-      var v = snap.val();
-      if(typeof v === 'string'){
-        window._globalSimcardBg = v;
-        saveJSON('dkv_global_simcard_bg', v);
-        var clearBtn = document.getElementById('simcard-bg-clear-btn');
-        var status = document.getElementById('simcard-bg-status');
-        var prev = document.getElementById('simcard-bg-preview');
-        var prevImg = document.getElementById('simcard-bg-preview-img');
-        if(v){
-          if(clearBtn) clearBtn.style.display = 'inline-block';
-          if(status) status.textContent = 'Background global aktif ✓';
-          if(prev) prev.style.display = 'block';
-          if(prevImg) prevImg.src = v;
-        } else {
-          if(clearBtn) clearBtn.style.display = 'none';
-          if(status) status.textContent = '';
-          if(prev) prev.style.display = 'none';
-        }
-        if(typeof renderMurid === 'function') renderMurid();
-      }
-    });
-  }, 2500);
-};
+// dkv_profil_chapters & dkv_global_simcard_bg sudah dihandle
+// oleh _loadStaticData() di dalam initFirebase() yang baru.
 
 document.getElementById('pdf-modal-close').addEventListener('click',function(){
   document.getElementById('pdf-modal').classList.remove('show');
@@ -8158,14 +8084,7 @@ function saveExtended(){
   }
 }
 
-// Hook into initFirebase to also load extended data
-// CATATAN: Tidak perlu listener child terpisah — data dkv_accounts & dkv_profiles
-// sudah diambil oleh _applyFirebaseData() lewat listener utama _fbRef.on('value').
-// renderMurid() dipanggil otomatis dari _applyFirebaseData agar profil card realtime.
-var _origFbInit = window.initFirebase;
-window.initFirebase = function(){
-  if(typeof _origFbInit === 'function') _origFbInit.apply(this, arguments);
-};
+// dkv_accounts & dkv_profiles sudah dihandle oleh _loadStaticData() di initFirebase() baru.
 
 // ─────────────────────────────────────────────
 // GEN Z PROFILE HELPERS
@@ -10886,36 +10805,11 @@ document.addEventListener('click', function(e){
   }
 });
 
-// ── Hook ke Firebase listener ──
-// Gunakan satu child listener saja untuk dkv_pending_reg
-// Hanya update array jika TIDAK sedang _isSaving (hindari overwrite saat admin sedang approve/reject)
-(function(){
-  function attachPendingListener(){
-    if(!window._fbRef) { setTimeout(attachPendingListener, 500); return; }
-    window._fbRef.child('dkv_pending_reg').on('value', function(snap){
-      // Jangan timpa jika sedang proses save (approve/reject sedang berjalan)
-      if(window._isSaving) return;
-      var val = snap.val();
-      var incoming = Array.isArray(val) ? val : [];
-      // Hanya update jika isi berbeda (cegah flicker saat panel terbuka)
-      var currentStr = JSON.stringify(window.dkvPendingReg || []);
-      var incomingStr = JSON.stringify(incoming);
-      if(currentStr !== incomingStr){
-        window.dkvPendingReg = incoming;
-        updateAdminBell();
-        // Hanya re-render list jika panel sedang terbuka
-        if(document.getElementById('pending-panel').classList.contains('open')){
-          renderPendingList();
-        }
-      }
-    });
-  }
-  setTimeout(attachPendingListener, 800);
-  // Fallback: load dari localStorage jika belum ada
-  if(!window.dkvPendingReg || !window.dkvPendingReg.length){
-    window.dkvPendingReg = loadJSON('dkv_pending_reg', []);
-  }
-})();
+// dkv_pending_reg sudah dihandle oleh _attachRealtimeListeners() di initFirebase() baru.
+// Fallback localStorage tetap dipertahankan:
+if(!window.dkvPendingReg || !window.dkvPendingReg.length){
+  window.dkvPendingReg = loadJSON('dkv_pending_reg', []);
+}
 
 // ── Tampilkan admin bell saat masuk edit mode ──
 // Hook ke toggleEditMode — updateAdminBell sudah dipanggil dari updateMateriEditorTabVisibility
