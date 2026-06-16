@@ -1,0 +1,1573 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Warna DKV - Color Games</title>
+<style>
+  :root {
+    --bg-page: #0f1420;
+    --bg-card: rgba(255,255,255,0.06);
+    --bg-card-solid: #1a2235;
+    --border: rgba(255,255,255,0.12);
+    --text-primary: #f1f3f9;
+    --text-secondary: #9aa3b8;
+    --accent: #7c5cff;
+    --success: #34d399;
+    --success-bg: rgba(52,211,153,0.15);
+    --danger: #f87171;
+    --danger-bg: rgba(248,113,113,0.15);
+    --warn: #fbbf24;
+    --warn-bg: rgba(251,191,36,0.15);
+    --radius-md: 10px;
+    --radius-lg: 16px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg-page);
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(124,92,255,0.12), transparent 40%),
+      radial-gradient(circle at 80% 80%, rgba(52,211,153,0.10), transparent 40%);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .app-shell {
+    width: 100%;
+    max-width: 460px;
+  }
+
+  .app-header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .app-header h1 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 4px;
+    letter-spacing: 0.2px;
+  }
+
+  .app-header p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  /* ========== GAME SELECTOR SCREEN ========== */
+  .game-select-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .game-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 18px 18px;
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    text-align: left;
+    color: var(--text-primary);
+    font-family: inherit;
+    width: 100%;
+  }
+
+  .game-card:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.25);
+  }
+
+  .game-card:active { transform: scale(0.98); }
+
+  .game-card-icon {
+    font-size: 32px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .game-card-info { flex: 1; }
+  .game-card-name { font-size: 17px; font-weight: 700; margin-bottom: 3px; }
+  .game-card-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.4; }
+
+  .game-card-arrow {
+    font-size: 18px;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+
+  /* ========== LEVEL SELECT (COLOR MIXER) ========== */
+  .level-select-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .level-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px 18px;
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    text-align: left;
+    color: var(--text-primary);
+    font-family: inherit;
+  }
+
+  .level-card:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.25);
+  }
+
+  .level-card:active { transform: scale(0.98); }
+
+  .level-card-left { display: flex; flex-direction: column; gap: 4px; }
+  .level-card-name { font-size: 16px; font-weight: 600; }
+  .level-card-desc { font-size: 12px; color: var(--text-secondary); }
+  .level-card-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    white-space: nowrap;
+  }
+  .badge-eazy { background: var(--success-bg); color: var(--success); }
+  .badge-bisalah { background: rgba(124,92,255,0.18); color: var(--accent); }
+  .badge-stress { background: var(--danger-bg); color: var(--danger); }
+
+  /* ========== QUIZ THEORY CATEGORY SELECT ========== */
+  .category-select-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .category-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 14px 18px;
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    text-align: left;
+    color: var(--text-primary);
+    font-family: inherit;
+  }
+
+  .category-card:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.25);
+  }
+
+  .category-card:active { transform: scale(0.98); }
+
+  .category-card-left { display: flex; flex-direction: column; gap: 3px; flex: 1; }
+  .category-card-name { font-size: 14px; font-weight: 600; }
+  .category-card-sub { font-size: 11px; color: var(--text-secondary); }
+
+  .category-card-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(124,92,255,0.18);
+    color: var(--accent);
+    white-space: nowrap;
+    margin-left: 10px;
+  }
+
+  /* ========== MATERI PANEL ========== */
+  .materi-panel {
+    display: none;
+    background: rgba(124,92,255,0.06);
+    border: 1px solid rgba(124,92,255,0.25);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    margin-top: 8px;
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--text-primary);
+  }
+  .materi-panel.open { display: block; }
+
+  .materi-panel h4 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--accent);
+    margin: 0 0 8px;
+  }
+
+  .materi-panel p { margin: 0 0 8px; color: var(--text-secondary); }
+  .materi-panel p:last-of-type { margin-bottom: 0; }
+
+  .materi-panel ul {
+    margin: 0 0 8px;
+    padding-left: 18px;
+    color: var(--text-secondary);
+  }
+  .materi-panel li { margin-bottom: 4px; }
+  .materi-panel strong { color: var(--text-primary); }
+
+  .materi-highlight {
+    background: rgba(52,211,153,0.08);
+    border-left: 3px solid var(--success);
+    padding: 8px 12px;
+    border-radius: 0 6px 6px 0;
+    margin: 8px 0;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+  .materi-highlight strong { color: var(--success); }
+
+  .category-card-wrap { display: flex; flex-direction: column; }
+
+  .category-card-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .category-card-actions .category-card {
+    flex: 1;
+    margin: 0;
+  }
+
+  .materi-btn {
+    flex-shrink: 0;
+    padding: 0 14px;
+    height: 100%;
+    min-height: 56px;
+    background: rgba(124,92,255,0.1);
+    border: 1px solid rgba(124,92,255,0.3);
+    border-radius: var(--radius-lg);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    font-family: inherit;
+    white-space: nowrap;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    line-height: 1.2;
+  }
+  .materi-btn:hover { background: rgba(124,92,255,0.2); }
+  .materi-btn:active { transform: scale(0.97); }
+  .materi-btn.active {
+    background: rgba(124,92,255,0.25);
+    border-color: var(--accent);
+  }
+  .materi-btn-icon { font-size: 16px; }
+
+  .mulai-dari-materi-btn {
+    width: 100%;
+    margin-top: 12px;
+    padding: 10px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: opacity 0.15s;
+  }
+  .mulai-dari-materi-btn:hover { opacity: 0.88; }
+
+  /* ========== STAT BAR & PROGRESS ========== */
+  .stats-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    backdrop-filter: blur(10px);
+  }
+
+  .stat-block { text-align: center; flex: 1; }
+  .stat-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+  .stat-value { font-size: 20px; font-weight: 700; }
+  .stat-value.xp { color: var(--success); }
+  .stat-divider { width: 1px; height: 28px; background: var(--border); }
+
+  .progress-track {
+    height: 6px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--success));
+    border-radius: 999px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0 0 12px;
+    font-family: inherit;
+  }
+  .back-link:hover { color: var(--text-primary); }
+
+  /* ========== KARTU SOAL (COLOR MIXER) ========== */
+  .question-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 22px 18px;
+    margin-bottom: 14px;
+    backdrop-filter: blur(10px);
+  }
+
+  .question-label {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 14px;
+  }
+  .question-label .timer { color: var(--danger); font-weight: 600; }
+
+  .swatch-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: nowrap;
+    overflow: hidden;
+  }
+
+  .swatch {
+    width: 52px;
+    height: 52px;
+    border-radius: var(--radius-md);
+    border: 2px solid #ffffff;
+    flex-shrink: 0;
+  }
+
+  .swatch.small { width: 26px; height: 26px; border-radius: 6px; border-width: 1.5px; }
+
+  .swatch-row.count-3 .swatch { width: 48px; height: 48px; }
+  .swatch-row.count-3 { gap: 5px; }
+
+  .swatch-row.count-4 .swatch { width: 40px; height: 40px; }
+  .swatch-row.count-4 { gap: 4px; }
+
+  .swatch-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .swatch-name {
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-transform: capitalize;
+    letter-spacing: 0.3px;
+    font-weight: 500;
+    line-height: 1;
+  }
+
+  .plus-sign {
+    font-size: 18px;
+    color: var(--text-secondary);
+    font-weight: 300;
+  }
+
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .option-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 14px;
+    text-transform: capitalize;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    text-align: left;
+    font-family: inherit;
+  }
+
+  .option-btn:hover:not(:disabled) {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.25);
+  }
+
+  .option-btn:active:not(:disabled) { transform: scale(0.98); }
+
+  .option-btn:disabled {
+    cursor: default;
+    opacity: 0.55;
+  }
+
+  .option-btn.correct {
+    background: var(--success-bg);
+    border-color: var(--success);
+    opacity: 1;
+  }
+
+  .option-btn.wrong {
+    background: var(--danger-bg);
+    border-color: var(--danger);
+    opacity: 1;
+  }
+
+  /* ========== KARTU SOAL TEORI ========== */
+  .theory-question-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px 18px;
+    margin-bottom: 12px;
+    backdrop-filter: blur(10px);
+  }
+
+  .theory-q-number {
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .theory-q-timer { color: var(--danger); font-weight: 700; }
+
+  .theory-q-text {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+
+  .theory-options-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .theory-option-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 11px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    text-align: left;
+    font-family: inherit;
+    line-height: 1.45;
+  }
+
+  .theory-option-btn:hover:not(:disabled) {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.25);
+  }
+
+  .theory-option-btn:active:not(:disabled) { transform: scale(0.98); }
+
+  .theory-option-btn:disabled {
+    cursor: default;
+    opacity: 0.6;
+  }
+
+  .theory-option-btn.correct {
+    background: var(--success-bg);
+    border-color: var(--success);
+    opacity: 1;
+  }
+
+  .theory-option-btn.wrong {
+    background: var(--danger-bg);
+    border-color: var(--danger);
+    opacity: 1;
+  }
+
+  .option-letter {
+    font-weight: 700;
+    font-size: 12px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .theory-option-btn.correct .option-letter { background: rgba(52,211,153,0.3); }
+  .theory-option-btn.wrong .option-letter { background: rgba(248,113,113,0.3); }
+
+  .theory-explanation {
+    font-size: 12px;
+    color: var(--text-secondary);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    line-height: 1.5;
+    display: none;
+  }
+  .theory-explanation.show { display: block; }
+  .theory-explanation strong { color: var(--success); }
+
+  /* ========== SHARED FEEDBACK ========== */
+  .feedback {
+    min-height: 22px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+  .feedback.correct-text { color: var(--success); }
+  .feedback.wrong-text { color: var(--danger); }
+  .feedback.levelup-text { color: var(--accent); }
+
+  .action-row { display: flex; justify-content: center; gap: 10px; }
+
+  .next-btn, .restart-btn, .change-level-btn, .back-home-btn {
+    padding: 11px 22px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: var(--accent);
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    font-family: inherit;
+  }
+
+  .next-btn:hover, .restart-btn:hover, .change-level-btn:hover, .back-home-btn:hover { opacity: 0.9; }
+  .next-btn:active, .restart-btn:active, .change-level-btn:active, .back-home-btn:active { transform: scale(0.97); }
+
+  .restart-btn, .change-level-btn, .back-home-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+
+  .hidden { display: none !important; }
+
+  /* ========== SUMMARY CARD ========== */
+  .summary-card {
+    text-align: center;
+    padding: 8px 0 4px;
+  }
+  .summary-card .big-xp {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--success);
+    margin: 10px 0 4px;
+  }
+  .summary-card .summary-line {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
+
+  /* Result stars */
+  .result-stars {
+    font-size: 28px;
+    margin: 6px 0 12px;
+    letter-spacing: 4px;
+  }
+
+  .result-grade {
+    font-size: 14px;
+    font-weight: 700;
+    padding: 5px 14px;
+    border-radius: 999px;
+    display: inline-block;
+    margin-bottom: 14px;
+  }
+
+  .grade-a { background: var(--success-bg); color: var(--success); }
+  .grade-b { background: rgba(124,92,255,0.18); color: var(--accent); }
+  .grade-c { background: var(--warn-bg); color: var(--warn); }
+  .grade-d { background: var(--danger-bg); color: var(--danger); }
+
+  .cluster-result {
+    text-align: left;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    font-size: 12px;
+  }
+  .cluster-result-title {
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
+  .cluster-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+  }
+  .cluster-label { flex: 1; color: var(--text-secondary); }
+  .cluster-score { font-weight: 700; min-width: 32px; text-align: right; }
+  .cluster-bar-wrap { flex: 1; height: 5px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden; }
+  .cluster-bar-fill { height: 100%; border-radius: 99px; transition: width 0.5s ease; }
+  .fill-green { background: var(--success); }
+  .fill-purple { background: var(--accent); }
+  .fill-yellow { background: var(--warn); }
+  .fill-red { background: var(--danger); }
+
+  @media (max-width: 360px) {
+    .swatch { width: 44px; height: 44px; }
+    .stat-value { font-size: 17px; }
+    .theory-q-text { font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <div class="app-header">
+    <h1>TAMAN BERMAIN</h1>
+    <p id="header-subtitle">Pilih game untuk dimainkan</p>
+  </div>
+
+  <!-- ========== SCREEN: HOME (pilih game) ========== -->
+  <div id="screen-home">
+    <div class="game-select-grid">
+      <button class="game-card" id="go-color-mixer">
+        <div class="game-card-icon">🖌️</div>
+        <div class="game-card-info">
+          <div class="game-card-name">Color Mixer Quiz</div>
+          <div class="game-card-desc">Tebak hasil campuran warna berdasarkan swatch visual. Ada 3 level kesulitan.</div>
+        </div>
+        <div class="game-card-arrow">›</div>
+      </button>
+
+      <button class="game-card" id="go-theory">
+        <div class="game-card-icon">📚</div>
+        <div class="game-card-info">
+          <div class="game-card-name">Soal anak TK</div>
+          <div class="game-card-desc">50 soal pilihan ganda tentang teori warna, sistem RGB/CMYK, harmoni warna, dan psikologi warna.</div>
+        </div>
+        <div class="game-card-arrow">›</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN: LEVEL SELECT (Color Mixer) ========== -->
+  <div id="screen-level-select" class="hidden">
+    <button class="back-link" id="back-to-home-from-mixer">← Kembali ke menu</button>
+    <div class="level-select-grid" id="level-select-grid"></div>
+  </div>
+
+  <!-- ========== SCREEN: COLOR MIXER QUIZ ========== -->
+  <div id="screen-quiz" class="hidden">
+    <button class="back-link" id="back-to-levels">← Ganti level</button>
+
+    <div class="stats-bar">
+      <div class="stat-block">
+        <div class="stat-label">Level</div>
+        <div class="stat-value" id="level-out">-</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-block">
+        <div class="stat-label">Skor</div>
+        <div class="stat-value" id="score-out">0</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-block">
+        <div class="stat-label">XP</div>
+        <div class="stat-value xp" id="xp-out">0</div>
+      </div>
+    </div>
+
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+
+    <div id="quiz-active">
+      <div class="question-card">
+        <div class="question-label" id="question-label">Campuran warna apa ini?</div>
+        <div class="swatch-row" id="swatch-row"></div>
+      </div>
+
+      <div class="options-grid" id="options-grid"></div>
+
+      <div class="feedback" id="feedback"></div>
+
+      <div class="action-row">
+        <button class="next-btn hidden" id="next-btn">Soal berikutnya →</button>
+      </div>
+    </div>
+
+    <div id="quiz-summary" class="hidden">
+      <div class="question-card summary-card">
+        <div class="question-label">Sesi selesai</div>
+        <div class="big-xp" id="summary-xp">0 XP</div>
+        <div class="summary-line" id="summary-line">0 dari 0 benar</div>
+        <div class="action-row">
+          <button class="restart-btn" id="restart-btn">Main lagi</button>
+          <button class="change-level-btn" id="change-level-btn">Ganti level</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN: THEORY CATEGORY SELECT ========== -->
+  <div id="screen-theory-select" class="hidden">
+    <button class="back-link" id="back-to-home-from-theory">← Kembali ke menu</button>
+    <div class="category-select-grid" id="category-select-grid"></div>
+  </div>
+
+  <!-- ========== SCREEN: THEORY QUIZ ========== -->
+  <div id="screen-theory" class="hidden">
+    <button class="back-link" id="back-to-theory-select">← Ganti kategori</button>
+
+    <div class="stats-bar">
+      <div class="stat-block">
+        <div class="stat-label">Soal</div>
+        <div class="stat-value" id="tq-num">0</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-block">
+        <div class="stat-label">Benar</div>
+        <div class="stat-value" id="tq-correct">0</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-block">
+        <div class="stat-label">XP</div>
+        <div class="stat-value xp" id="tq-xp">0</div>
+      </div>
+    </div>
+
+    <div class="progress-track">
+      <div class="progress-fill" id="tq-progress"></div>
+    </div>
+
+    <div id="theory-quiz-active">
+      <div class="theory-question-card">
+        <div class="theory-q-number">
+          <span id="tq-label">Pertanyaan 1 dari 10</span>
+          <span class="theory-q-timer hidden" id="tq-timer">15s</span>
+        </div>
+        <div class="theory-q-text" id="tq-text"></div>
+      </div>
+
+      <div class="theory-options-grid" id="tq-options"></div>
+
+      <div class="theory-explanation" id="tq-explanation"></div>
+
+      <div class="feedback" id="tq-feedback"></div>
+
+      <div class="action-row">
+        <button class="next-btn hidden" id="tq-next-btn">Soal berikutnya →</button>
+      </div>
+    </div>
+
+    <div id="theory-summary" class="hidden">
+      <div class="question-card summary-card">
+        <div class="question-label" id="ts-category-label">Sesi selesai</div>
+        <div class="result-stars" id="ts-stars">⭐⭐⭐</div>
+        <div class="big-xp" id="ts-xp">0 XP</div>
+        <div class="result-grade" id="ts-grade">A</div>
+        <div class="summary-line" id="ts-line">0 dari 0 benar</div>
+        <div class="cluster-result" id="ts-cluster" style="display:none"></div>
+        <div class="action-row">
+          <button class="restart-btn" id="ts-restart">Main lagi</button>
+          <button class="change-level-btn" id="ts-change">Ganti kategori</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- .app-shell -->
+
+<script>
+(function () {
+"use strict";
+
+// =======================================================================
+// ======================= COLOR MIXER DATA ==============================
+// =======================================================================
+var SESSION_LENGTH = 20;
+
+var palette = {
+  merah: "#e24b4a", kuning: "#fac775", biru: "#378add",
+  hijau: "#639922", oranye: "#d85a30", ungu: "#7f77dd",
+  putih: "#e9e9ee", hitam: "#2c2c2a", coklat: "#71422b",
+  abu: "#888780", pink: "#d4537e", "merah-muda": "#e88a8a",
+  "biru-muda": "#9cc4ec", "hijau-muda": "#a8d46a", "kuning-muda": "#fde8a8",
+  "ungu-muda": "#c4bdf0", "hijau-tua": "#27500a", "biru-tua": "#0c447c",
+  "merah-tua": "#791f1f", "ungu-tua": "#3c3489", "kuning-oranye": "#ef9f27",
+  "merah-jingga": "#ba4a24", "merah-ungu": "#993556", "biru-ungu": "#534ab7",
+  "kuning-hijau": "#97c459", "biru-hijau": "#0f6e56", zaitun: "#5f5e2a",
+  krem: "#f0e6d2", "abu-tua": "#444441", "abu-muda": "#d3d1c7",
+  lumpur: "#5a4a3a", tosca: "#1d9e75", magenta: "#d4377e",
+  maroon: "#501313", navy: "#042c53", salem: "#173404",
+  karat: "#9c4a1f", mustard: "#c99a2e", lavender: "#b5aef0",
+  "abu-kehijauan": "#7a8a73", "abu-kebiruan": "#7088a0",
+  coral: "#e0775a", indigo: "#3a2f8a"
+};
+
+var eazyBase = [
+  [["merah","kuning"],"oranye"],[["kuning","merah"],"oranye"],
+  [["biru","kuning"],"hijau"],[["kuning","biru"],"hijau"],
+  [["merah","biru"],"ungu"],[["biru","merah"],"ungu"],
+  [["putih","hitam"],"abu"],[["hitam","putih"],"abu"],
+  [["merah","putih"],"merah-muda"],[["putih","merah"],"merah-muda"],
+  [["biru","putih"],"biru-muda"],[["putih","biru"],"biru-muda"],
+  [["hijau","putih"],"hijau-muda"],[["putih","hijau"],"hijau-muda"],
+  [["kuning","putih"],"kuning-muda"],[["putih","kuning"],"kuning-muda"],
+  [["ungu","putih"],"ungu-muda"],[["putih","ungu"],"ungu-muda"],
+  [["hijau","hitam"],"hijau-tua"],[["hitam","hijau"],"hijau-tua"],
+  [["biru","hitam"],"biru-tua"],[["hitam","biru"],"biru-tua"],
+  [["merah","hitam"],"merah-tua"],[["hitam","merah"],"merah-tua"],
+  [["ungu","hitam"],"ungu-tua"],[["hitam","ungu"],"ungu-tua"],
+  [["oranye","kuning"],"kuning-oranye"],[["kuning","oranye"],"kuning-oranye"],
+  [["merah","oranye"],"merah-jingga"],[["oranye","merah"],"merah-jingga"],
+  [["merah","ungu"],"merah-ungu"],[["ungu","merah"],"merah-ungu"],
+  [["biru","ungu"],"biru-ungu"],[["ungu","biru"],"biru-ungu"],
+  [["kuning","hijau"],"kuning-hijau"],[["hijau","kuning"],"kuning-hijau"],
+  [["biru","hijau"],"biru-hijau"],[["hijau","biru"],"biru-hijau"],
+  [["hijau","merah"],"coklat"],[["merah","hijau"],"coklat"]
+];
+
+var bisalahBase = [
+  [["merah","putih","biru"],"lavender"],
+  [["biru","putih","hitam"],"abu-kebiruan"],
+  [["hijau","putih","hitam"],"abu-kehijauan"],
+  [["merah","kuning","hitam"],"karat"],
+  [["oranye","putih"],"krem"],[["putih","oranye"],"krem"],
+  [["kuning","abu"],"mustard"],[["abu","kuning"],"mustard"],
+  [["hijau","abu"],"zaitun"],[["abu","hijau"],"zaitun"],
+  [["merah","biru","putih"],"ungu-muda"],[["biru","merah","putih"],"ungu-muda"],
+  [["ungu","merah"],"merah-ungu"],[["merah","ungu"],"merah-ungu"],
+  [["biru","hijau","putih"],"tosca"],[["hijau","biru","putih"],"tosca"],
+  [["merah","ungu","putih"],"magenta"],[["ungu","merah","putih"],"magenta"],
+  [["merah","hitam","ungu"],"maroon"],[["hitam","merah","ungu"],"maroon"],
+  [["biru","hitam","ungu"],"navy"],[["hitam","biru","ungu"],"navy"],
+  [["hijau","hitam","biru"],"salem"],[["hitam","hijau","biru"],"salem"],
+  [["oranye","merah","putih"],"coral"],[["merah","oranye","putih"],"coral"],
+  [["biru","ungu","hitam"],"indigo"],[["ungu","biru","hitam"],"indigo"],
+  [["coklat","putih"],"karat"],[["putih","coklat"],"karat"],
+  [["abu","putih"],"abu-muda"],[["putih","abu"],"abu-muda"],
+  [["abu","hitam"],"abu-tua"],[["hitam","abu"],"abu-tua"]
+];
+
+var stressBase = [
+  [["merah","kuning","biru","putih"],"coklat"],
+  [["biru","kuning","hijau","hitam"],"hijau-tua"],
+  [["merah","biru","kuning","hitam"],"coklat"],
+  [["kuning","ungu","putih","hitam"],"abu"],
+  [["merah","hijau","biru"],"lumpur"],[["hijau","merah","biru"],"lumpur"],
+  [["kuning","biru","merah"],"coklat"],[["hijau","merah","kuning"],"coklat"],
+  [["putih","merah","biru"],"ungu-muda"],
+  [["merah","kuning","hitam","putih"],"karat"],
+  [["biru","hijau","kuning","hitam"],"zaitun"],
+  [["ungu","kuning","hitam"],"lumpur"],[["kuning","ungu","hitam"],"lumpur"],
+  [["merah","hijau","hitam"],"lumpur"],[["hijau","merah","hitam"],"lumpur"],
+  [["biru","oranye","putih"],"abu-kebiruan"],[["oranye","biru","putih"],"abu-kebiruan"],
+  [["merah","biru","kuning","putih"],"coklat"],
+  [["coklat","hitam","merah"],"maroon"],[["hitam","coklat","merah"],"maroon"],
+  [["abu","biru","hitam"],"abu-tua"],[["biru","abu","hitam"],"abu-tua"],
+  [["hijau","kuning","hitam","putih"],"zaitun"],
+  [["merah","ungu","hitam","putih"],"maroon"],
+  [["oranye","hijau","hitam"],"lumpur"],[["hijau","oranye","hitam"],"lumpur"],
+  [["biru","merah","hijau","hitam"],"abu-tua"],
+  [["kuning","merah","biru","hitam"],"coklat"]
+];
+
+function buildLevel(id, name, badgeClass, desc, n, time, xp, base) {
+  return { id, name, badgeClass, desc, n, time, xp, qs: base };
+}
+
+var levels = [
+  buildLevel("eazy","Eazy","badge-eazy","2 warna dasar, tanpa timer",2,null,10,eazyBase),
+  buildLevel("bisalah","Bisalah","badge-bisalah","2-3 warna, ada timer",3,12,25,bisalahBase),
+  buildLevel("stress","Stress","badge-stress","3-4 warna campur, timer cepat",4,8,45,stressBase)
+];
+
+// =======================================================================
+// ======================= THEORY QUIZ DATA ==============================
+// =======================================================================
+var theoryQuestions = [
+  // ---- Soal 1-15: Tingkatan Warna Tradisional ----
+  {id:1, q:"Warna yang tidak dapat dibuat dengan mencampurkan warna lain disebut sebagai warna...", opts:["Sekunder","Primer","Tersier","Netral"], ans:1, cluster:0},
+  {id:2, q:"Di bawah ini yang termasuk ke dalam kelompok warna primer adalah...", opts:["Merah, Kuning, Biru","Merah, Hijau, Kuning","Hijau, Ungu, Oranye","Putih, Abu-abu, Hitam"], ans:0, cluster:0},
+  {id:3, q:"Jika warna Merah dicampur dengan warna Kuning dengan porsi yang sama (1:1), maka akan menghasilkan warna...", opts:["Ungu","Hijau","Oranye","Cokelat"], ans:2, cluster:0},
+  {id:4, q:"Warna Hijau merupakan hasil pencampuran seimbang antara dua warna primer, yaitu...", opts:["Merah dan Biru","Kuning dan Biru","Merah dan Kuning","Hitam dan Putih"], ans:1, cluster:0},
+  {id:5, q:"Pencampuran antara warna Merah dan warna Biru menghasilkan warna sekunder yaitu...", opts:["Ungu","Oranye","Hijau","Nila"], ans:0, cluster:0},
+  {id:6, q:"Warna yang dihasilkan dari pencampuran satu warna primer dengan satu warna sekunder yang bersebelahan disebut warna...", opts:["Utama","Kedua","Tersier","Kuarter"], ans:2, cluster:0},
+  {id:7, q:"Campuran antara warna murni Kuning (primer) dan Hijau (sekunder) menghasilkan warna...", opts:["Kuning-Oranye","Hijau-Biru","Kuning-Hijau","Daun kering"], ans:2, cluster:0},
+  {id:8, q:"Warna 'Teal' atau Biru-Hijau termasuk ke dalam kelompok warna...", opts:["Primer","Sekunder","Tersier","Netral"], ans:2, cluster:0},
+  {id:9, q:"Berikut ini yang BUKAN merupakan warna sekunder adalah...", opts:["Hijau","Oranye","Biru","Ungu"], ans:2, cluster:0},
+  {id:10, q:"Warna yang dihasilkan apabila kita mencampurkan warna Kuning dengan Oranye adalah...", opts:["Kuning-Oranye","Merah-Oranye","Kuning-Hijau","Cokelat muda"], ans:0, cluster:0},
+  {id:11, q:"Siapakah ilmuwan yang pertama kali memetakan bagan lingkaran warna (color wheel) menggunakan bantuan prisma cahaya?", opts:["Albert Einstein","Sir Isaac Newton","Leonardo da Vinci","Thomas Alva Edison"], ans:1, cluster:0},
+  {id:12, q:"Jika semua warna primer pada lingkaran warna RYB dicampurkan secara seimbang, warna cenderung menjadi...", opts:["Putih bersih","Cokelat gelap/keabuan","Kuning terang","Hijau neon"], ans:1, cluster:0},
+  {id:13, q:"Warna jernih yang belum dicampur dengan warna lain (masih asli di lingkaran warna) disebut sebagai warna...", opts:["Muted","Murni / Pure color","Gelap","Pastel"], ans:1, cluster:0},
+  {id:14, q:"Warna Merah-Ungu (Magenta) terbentuk dari perpaduan warna...", opts:["Merah dan Ungu","Biru dan Oranye","Merah dan Hijau","Kuning dan Ungu"], ans:0, cluster:0},
+  {id:15, q:"Warna-warna seperti Hitam, Putih, dan Abu-abu dikategorikan sebagai warna...", opts:["Primer","Sekunder","Netral","Kontras"], ans:2, cluster:0},
+  // ---- Soal 16-25: Atribut & Dimensi Karakter Warna ----
+  {id:16, q:"Nama asli atau identitas dari suatu warna (seperti merah, hijau, biru) disebut...", opts:["Value","Saturation","Hue","Chroma"], ans:2, cluster:1},
+  {id:17, q:"Tingkat terang atau gelapnya suatu warna dinamakan...", opts:["Hue","Value","Saturation","Contrast"], ans:1, cluster:1},
+  {id:18, q:"Tingkat kemurnian, kepekatan, atau kejelasan dari sebuah warna disebut...", opts:["Value","Brightness","Saturation / Intensitas","Shade"], ans:2, cluster:1},
+  {id:19, q:"Jika sebuah warna murni ditambahkan dengan warna PUTIH, maka akan menghasilkan variasi warna yang disebut...", opts:["Shade","Tint","Tone","Shadow"], ans:1, cluster:1},
+  {id:20, q:"Warna merah muda (pink) merupakan contoh dari ... dari warna merah murni.", opts:["Shade","Tone","Tint","Hue"], ans:2, cluster:1},
+  {id:21, q:"Jika sebuah warna murni dicampurkan dengan warna HITAM, maka akan menghasilkan tingkatan warna yang lebih gelap yang disebut...", opts:["Tint","Tone","Shade","Opacity"], ans:2, cluster:1},
+  {id:22, q:"Warna merah marun atau hijau tua merupakan contoh dari aplikasi...", opts:["Tint","Shade","Tone","Hue"], ans:1, cluster:1},
+  {id:23, q:"Campuran antara warna murni dengan warna ABU-ABU akan menghasilkan intensitas warna yang kalem/pudar, yang disebut...", opts:["Tint","Shade","Tone","Gradient"], ans:2, cluster:1},
+  {id:24, q:"Warna yang memiliki saturasi sangat rendah akan terlihat mendekati warna...", opts:["Putih","Hitam","Abu-abu","Cokelat"], ans:2, cluster:1},
+  {id:25, q:"Istilah 'Muted Colors' digunakan untuk menggambarkan warna-warna yang...", opts:["Sangat cerah dan menyala","Memiliki saturasi rendah dan kalem","Sangat gelap mendekati hitam","Berpendar di dalam gelap"], ans:1, cluster:1},
+  // ---- Soal 26-35: Sistem Warna Industri Modern (RGB & CMYK) ----
+  {id:26, q:"Sistem pencampuran warna yang berbasis CAHAYA dan digunakan pada layar digital komputer/HP disebut...", opts:["CMYK","RYB","RGB","Pantone"], ans:2, cluster:2},
+  {id:27, q:"Kepanjangan dari model warna RGB adalah...", opts:["Red, Green, Blue","Red, Grey, Black","Rose, Green, Brown","Red, Gold, Bronze"], ans:0, cluster:2},
+  {id:28, q:"Pada model digital RGB, jika warna Merah, Hijau, dan Biru dicampurkan secara maksimal, maka akan menghasilkan warna...", opts:["Hitam","Abu-abu","Putih","Kuning"], ans:2, cluster:2},
+  {id:29, q:"Sistem warna digital RGB bersifat 'Additive Color', yang artinya...", opts:["Semakin dicampur warna semakin gelap","Semakin dicampur warna semakin terang menuju cahaya putih","Warna tidak bisa dicampurkan sama sekali","Hanya bisa dipakai untuk mencetak kertas"], ans:1, cluster:2},
+  {id:30, q:"Model pencampuran warna berbasis PIGMEN/TINTA fisika yang digunakan dalam industri percetakan/printing adalah...", opts:["RGB","CMYK","RYB","HVS"], ans:1, cluster:2},
+  {id:31, q:"Huruf 'K' pada singkatan model warna CMYK merujuk pada kata 'Key', yang mewakili warna murni...", opts:["Kuning (Yellow)","Krim (Cream)","Hitam (Black)","Kelabu (Grey)"], ans:2, cluster:2},
+  {id:32, q:"Warna 'Cyan' dan 'Magenta' dalam dunia cetak CMYK secara awam sering disebut sebagai warna...", opts:["Biru Muda dan Merah Muda Keunguan","Hijau Daun dan Oranye","Kuning Tua dan Cokelat","Hitam dan Putih"], ans:0, cluster:2},
+  {id:33, q:"Mengapa desain brosur yang akan dicetak di kertas harus diatur ke mode CMYK di software desain?", opts:["Supaya ukuran filenya lebih kecil","Agar warna hasil cetak printer akurat dan tidak meleset dari layar","Supaya gambarnya otomatis menjadi 3D","Agar pengerjaan desain di software lebih cepat"], ans:1, cluster:2},
+  {id:34, q:"Sistem pencampuran warna CMYK disebut 'Subtractive Color' karena...", opts:["Semakin banyak tinta dicampur, warna menyerap cahaya dan menjadi gelap","Tinta akan berkurang sendiri saat dicetak","Hanya boleh menggunakan dua jenis warna saja","Warna menghasilkan cahaya lampu"], ans:0, cluster:2},
+  {id:35, q:"Pada printer warna rumahan, jika warna Cyan dicampur dengan Yellow, maka akan menghasilkan warna fisika yaitu...", opts:["Merah","Ungu","Hijau","Biru Tua"], ans:2, cluster:2},
+  // ---- Soal 36-45: Skema Harmoni Warna ----
+  {id:36, q:"Kombinasi warna yang menggunakan satu warna dasar (hue) namun divariasikan tingkat value atau saturasinya dinamakan harmoni warna...", opts:["Komplementer","Monokromatik","Analog","Triadik"], ans:1, cluster:3},
+  {id:37, q:"Desain logo yang menggunakan warna Biru Muda, Biru Tua, dan Biru Dongker menerapkan skema warna...", opts:["Analog","Triadik","Monokromatik","Komplementer"], ans:2, cluster:3},
+  {id:38, q:"Skema warna yang terdiri dari warna-warna yang letaknya BERSEBELAHAN di dalam lingkaran warna dinamakan skema...", opts:["Komplementer","Analog","Triadik","Tetradik"], ans:1, cluster:3},
+  {id:39, q:"Contoh perpaduan warna analog yang serasi dan memberikan kesan alami adalah...", opts:["Merah dan Hijau","Kuning, Kuning-Hijau, dan Hijau","Biru dan Oranye","Hitam dan Putih"], ans:1, cluster:3},
+  {id:40, q:"Skema warna yang menggunakan dua warna yang SALING BERHADAPAN (kontras tinggi) pada lingkaran warna disebut...", opts:["Monokromatik","Analog","Komplementer / Kontras","Triadik"], ans:2, cluster:3},
+  {id:41, q:"Pasangan warna komplementer di bawah ini yang menghasilkan kontras visual paling dinamis dan mencolok adalah...", opts:["Merah dan Oranye","Merah dan Hijau","Biru dan Ungu","Kuning dan Putih"], ans:1, cluster:3},
+  {id:42, q:"Skema warna yang menggunakan tiga warna yang posisinya membentuk SEGITIGA SAMA SISI pada lingkaran warna dinamakan...", opts:["Triadik","Analog","Monokromatik","Split-Komplementer"], ans:0, cluster:3},
+  {id:43, q:"Kombinasi warna primer (Merah, Kuning, Biru) dalam sebuah karya ilustrasi anak-anak merupakan contoh penerapan skema...", opts:["Monokromatik","Triadik","Analog","Tetradik"], ans:1, cluster:3},
+  {id:44, q:"Skema warna 'Split-Komplementer' dilakukan dengan cara...", opts:["Mengambil 4 warna acak","Menggunakan satu warna utama dan dua warna di sebelah warna berseberangannya","Hanya menggunakan warna abu-abu","Mencampur warna primer dengan hitam"], ans:1, cluster:3},
+  {id:45, q:"Skema warna yang melibatkan empat warna berupa dua pasang warna komplementer sekaligus disebut...", opts:["Triadik","Monokromatik","Tetradik / Double Complementary","Analog"], ans:2, cluster:3},
+  // ---- Soal 46-50: Psikologi Warna ----
+  {id:46, q:"Kelompok warna yang memberikan kesan semangat, panas, ceria, dan energik (seperti merah, oranye, kuning) disebut...", opts:["Cool Colors (Warna Dingin)","Warm Colors (Warna Hangat)","Dark Colors","Pastel"], ans:1, cluster:4},
+  {id:47, q:"Kelompok warna yang memberikan kesan tenang, damai, sejuk, dan profesional (seperti biru dan hijau) disebut...", opts:["Warm Colors","Cool Colors (Warna Dingin)","Neon Colors","Primary Colors"], ans:1, cluster:4},
+  {id:48, q:"Dalam psikologi warna DKV, warna apakah yang paling sering digunakan oleh perusahaan teknologi atau bank untuk memberikan kesan tepercaya, aman, dan profesional?", opts:["Merah","Kuning","Biru","Merah Muda"], ans:2, cluster:4},
+  {id:49, q:"Warna yang sering digunakan pada rambu-rambu bahaya atau tombol 'Hapus/Stop' karena sifatnya yang sangat menarik perhatian adalah warna...", opts:["Hijau","Merah","Putih","Abu-abu"], ans:1, cluster:4},
+  {id:50, q:"Mengapa produk-produk ramah lingkungan atau herbal sering menggunakan warna Hijau pada kemasannya?", opts:["Karena warna hijau adalah tinta paling murah","Karena hijau melambangkan alam, kesegaran, pertumbuhan, dan kesehatan","Agar produk terlihat mencolok di malam hari","Karena tidak ada pilihan warna lain"], ans:1, cluster:4}
+];
+
+var theoryCategories = [
+  { id:"all", name:"Semua Soal (50)", sub:"Semua klaster materi", badge:"50 soal", filter:null },
+  { id:"c0", name:"Tingkatan Warna", sub:"Primer, Sekunder, Tersier & Netral (Soal 1-15)", badge:"15 soal", filter:0 },
+  { id:"c1", name:"Atribut Warna", sub:"Hue, Value, Saturation, Tint, Shade, Tone (Soal 16-25)", badge:"10 soal", filter:1 },
+  { id:"c2", name:"RGB & CMYK", sub:"Sistem warna layar & cetak (Soal 26-35)", badge:"10 soal", filter:2 },
+  { id:"c3", name:"Harmoni Warna", sub:"Monokromatik, Analog, Komplementer, Triadik (Soal 36-45)", badge:"10 soal", filter:3 },
+  { id:"c4", name:"Psikologi Warna", sub:"Makna & fungsi warna dalam desain (Soal 46-50)", badge:"5 soal", filter:4 }
+];
+
+var clusterNames = [
+  "Tingkatan Warna","Atribut Warna","RGB & CMYK","Harmoni Warna","Psikologi Warna"
+];
+
+// =======================================================================
+// ========================= COLOR MIXER STATE ===========================
+// =======================================================================
+var activeLevel = null;
+var mixerPool = [];
+var score = 0;
+var xp = 0;
+var questionsAnswered = 0;
+var currentQ = null;
+var timer = null;
+var timeLeft = 0;
+var sessionTarget = 0;
+
+// =======================================================================
+// ========================= THEORY QUIZ STATE ===========================
+// =======================================================================
+var theoryPool = [];
+var theoryIndex = 0;
+var theoryCorrect = 0;
+var theoryXP = 0;
+var theorySessionTotal = 0;
+var theoryCurrent = null;
+var theoryTimer = null;
+var theoryTimeLeft = 0;
+var theoryCategory = null;
+var clusterResults = {};
+var theorySESSION = 15; // max soal per sesi teori
+
+// =======================================================================
+// ========================= DOM ELEMENTS ================================
+// =======================================================================
+var $ = function(id){ return document.getElementById(id); };
+
+var screens = {
+  home: $("screen-home"),
+  levelSelect: $("screen-level-select"),
+  quiz: $("screen-quiz"),
+  theorySelect: $("screen-theory-select"),
+  theory: $("screen-theory")
+};
+
+function showScreen(name) {
+  Object.keys(screens).forEach(function(k){ screens[k].classList.add("hidden"); });
+  screens[name].classList.remove("hidden");
+}
+
+// =======================================================================
+// ========================= UTIL ========================================
+// =======================================================================
+function shuffle(arr) {
+  var a = arr.slice();
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+  }
+  return a;
+}
+function prettify(name){ return name.replace(/-/g," "); }
+function makeSwatch(colorName, sizeClass) {
+  var div = document.createElement("div");
+  div.className = "swatch" + (sizeClass ? " "+sizeClass : "");
+  div.style.background = palette[colorName] || "#888";
+  return div;
+}
+
+// =======================================================================
+// ========================= HOME SCREEN =================================
+// =======================================================================
+$("go-color-mixer").addEventListener("click", function(){ showScreen("levelSelect"); renderLevelSelect(); });
+$("go-theory").addEventListener("click", function(){ showScreen("theorySelect"); renderTheorySelect(); });
+$("back-to-home-from-mixer").addEventListener("click", function(){ showScreen("home"); $("header-subtitle").textContent = "Pilih game untuk dimainkan"; });
+$("back-to-home-from-theory").addEventListener("click", function(){ showScreen("home"); $("header-subtitle").textContent = "Pilih game untuk dimainkan"; });
+
+// =======================================================================
+// ========================= COLOR MIXER =================================
+// =======================================================================
+function renderLevelSelect() {
+  $("header-subtitle").textContent = "Color Mixer Quiz · Pilih level";
+  var grid = $("level-select-grid");
+  grid.innerHTML = "";
+  levels.forEach(function(lvl){
+    var btn = document.createElement("button");
+    btn.className = "level-card";
+    var left = document.createElement("div"); left.className = "level-card-left";
+    var name = document.createElement("div"); name.className = "level-card-name"; name.textContent = lvl.name;
+    var desc = document.createElement("div"); desc.className = "level-card-desc"; desc.textContent = lvl.desc + " · " + lvl.qs.length + " soal tersedia";
+    left.appendChild(name); left.appendChild(desc);
+    var badge = document.createElement("div"); badge.className = "level-card-badge "+lvl.badgeClass; badge.textContent = "+"+lvl.xp+" xp";
+    btn.appendChild(left); btn.appendChild(badge);
+    btn.addEventListener("click", function(){ startMixerLevel(lvl); });
+    grid.appendChild(btn);
+  });
+}
+
+function startMixerLevel(lvl) {
+  activeLevel = lvl;
+  mixerPool = shuffle(lvl.qs);
+  sessionTarget = Math.min(SESSION_LENGTH, mixerPool.length);
+  score = 0; xp = 0; questionsAnswered = 0;
+  $("header-subtitle").textContent = lvl.desc;
+  $("level-out").textContent = lvl.name;
+  $("quiz-summary").classList.add("hidden");
+  $("quiz-active").classList.remove("hidden");
+  showScreen("quiz");
+  updateMixerUI();
+  renderMixerQuestion();
+}
+
+function drawMixerQuestion() {
+  if (mixerPool.length === 0) mixerPool = shuffle(activeLevel.qs);
+  var q = mixerPool.pop();
+  var mix = q[0]; var answer = q[1];
+  var wrongPool = Object.keys(palette).filter(function(c){ return c !== answer && mix.indexOf(c) === -1; });
+  var wrongs = shuffle(wrongPool).slice(0,3);
+  var options = shuffle([answer].concat(wrongs));
+  return { mix, answer, options };
+}
+
+function updateMixerUI() {
+  $("score-out").textContent = score;
+  $("xp-out").textContent = xp;
+  var pct = Math.min(100, Math.round((questionsAnswered/sessionTarget)*100));
+  $("progress-fill").style.width = pct+"%";
+}
+
+function startMixerTimer(seconds) {
+  clearInterval(timer);
+  if (!seconds) return;
+  timeLeft = seconds;
+  renderMixerTimerLabel();
+  timer = setInterval(function(){
+    timeLeft--;
+    renderMixerTimerLabel();
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      lockMixerAnswers();
+      revealMixerCorrect();
+      $("feedback").textContent = "Waktu habis. Jawaban: "+prettify(currentQ.answer);
+      $("feedback").className = "feedback wrong-text";
+      afterMixerAnswer();
+    }
+  }, 1000);
+}
+
+function renderMixerTimerLabel() {
+  if (activeLevel.time) {
+    $("question-label").innerHTML = "Campuran warna-warna di bawah ini menghasilkan warna apa? <span class=\"timer\">("+timeLeft+"s)</span>";
+  } else {
+    $("question-label").textContent = "Campuran warna-warna di bawah ini menghasilkan warna apa?";
+  }
+}
+
+function renderMixerQuestion() {
+  $("feedback").textContent = "";
+  $("feedback").className = "feedback";
+  $("next-btn").classList.add("hidden");
+  currentQ = drawMixerQuestion();
+  renderMixerTimerLabel();
+  var sr = $("swatch-row");
+  sr.innerHTML = "";
+  sr.className = "swatch-row count-"+currentQ.mix.length;
+  currentQ.mix.forEach(function(c, i){
+    var item = document.createElement("div"); item.className = "swatch-item";
+    item.appendChild(makeSwatch(c,""));
+    var nl = document.createElement("span"); nl.className = "swatch-name"; nl.textContent = prettify(c);
+    item.appendChild(nl);
+    sr.appendChild(item);
+    if (i < currentQ.mix.length-1) {
+      var plus = document.createElement("span"); plus.className = "plus-sign"; plus.textContent = "+";
+      sr.appendChild(plus);
+    }
+  });
+  var og = $("options-grid"); og.innerHTML = "";
+  currentQ.options.forEach(function(opt){
+    var btn = document.createElement("button"); btn.className = "option-btn";
+    btn.appendChild(makeSwatch(opt,"small"));
+    var lbl = document.createElement("span"); lbl.textContent = prettify(opt);
+    btn.appendChild(lbl);
+    btn.addEventListener("click", function(){ selectMixerAnswer(opt, btn); });
+    og.appendChild(btn);
+  });
+  startMixerTimer(activeLevel.time);
+}
+
+function lockMixerAnswers() {
+  clearInterval(timer);
+  document.querySelectorAll(".option-btn").forEach(function(b){ b.disabled = true; });
+}
+
+function revealMixerCorrect() {
+  document.querySelectorAll(".option-btn").forEach(function(b){
+    var lbl = b.querySelector("span:last-child").textContent;
+    if (lbl === prettify(currentQ.answer)) b.classList.add("correct");
+  });
+}
+
+function selectMixerAnswer(opt, btn) {
+  lockMixerAnswers();
+  if (opt === currentQ.answer) {
+    btn.classList.add("correct");
+    score++; xp += activeLevel.xp;
+    $("feedback").textContent = "Benar! +"+activeLevel.xp+" XP";
+    $("feedback").className = "feedback correct-text";
+  } else {
+    btn.classList.add("wrong");
+    revealMixerCorrect();
+    $("feedback").textContent = "Kurang tepat. Jawaban: "+prettify(currentQ.answer);
+    $("feedback").className = "feedback wrong-text";
+  }
+  afterMixerAnswer();
+}
+
+function afterMixerAnswer() {
+  questionsAnswered++;
+  updateMixerUI();
+  $("next-btn").textContent = questionsAnswered >= sessionTarget ? "Lihat hasil →" : "Soal berikutnya →";
+  $("next-btn").classList.remove("hidden");
+}
+
+function showMixerSummary() {
+  $("quiz-active").classList.add("hidden");
+  $("quiz-summary").classList.remove("hidden");
+  $("summary-xp").textContent = xp+" XP";
+  $("summary-line").textContent = score+" dari "+questionsAnswered+" benar · Level "+activeLevel.name;
+}
+
+$("next-btn").addEventListener("click", function(){
+  if (questionsAnswered >= sessionTarget) showMixerSummary();
+  else renderMixerQuestion();
+});
+$("restart-btn").addEventListener("click", function(){ startMixerLevel(activeLevel); });
+$("change-level-btn").addEventListener("click", function(){ clearInterval(timer); showScreen("levelSelect"); renderLevelSelect(); });
+$("back-to-levels").addEventListener("click", function(){ clearInterval(timer); showScreen("levelSelect"); renderLevelSelect(); });
+
+// =======================================================================
+// ========================= THEORY QUIZ =================================
+// =======================================================================
+var materiKonten = {
+  "all": {
+    judul: "Ringkasan Semua Materi Teori Warna",
+    isi: `<p>Kuis ini mencakup <strong>5 klaster materi</strong> sekaligus. Pastikan kamu sudah membaca ringkasan tiap bab di bawah ini.</p>
+<div class="materi-highlight"><strong>Tips:</strong> Baca materi per kategori dulu — klik tombol 📖 di tiap baris kategori lainnya.</div>
+<ul>
+  <li><strong>Tingkatan Warna</strong> — Primer, Sekunder, Tersier, Netral</li>
+  <li><strong>Atribut Warna</strong> — Hue, Value, Saturation, Tint, Shade, Tone</li>
+  <li><strong>RGB & CMYK</strong> — Sistem warna layar vs cetak</li>
+  <li><strong>Harmoni Warna</strong> — Monokromatik, Analog, Komplementer, Triadik</li>
+  <li><strong>Psikologi Warna</strong> — Makna & fungsi warna dalam desain</li>
+</ul>`
+  },
+  "c0": {
+    judul: "Bab 1 · Tingkatan Warna",
+    isi: `<p><strong>Warna Primer</strong> adalah warna dasar yang tidak bisa dibuat dari campuran warna lain: <strong>Merah, Kuning, Biru</strong>.</p>
+<p><strong>Warna Sekunder</strong> = hasil campuran 2 warna primer (1:1):</p>
+<ul>
+  <li>Merah + Kuning = <strong>Oranye</strong></li>
+  <li>Kuning + Biru = <strong>Hijau</strong></li>
+  <li>Merah + Biru = <strong>Ungu</strong></li>
+</ul>
+<p><strong>Warna Tersier</strong> = campuran 1 primer + 1 sekunder yang bersebelahan. Contoh: Kuning-Hijau, Biru-Hijau (Teal), Biru-Ungu (Indigo), Merah-Ungu (Magenta).</p>
+<p><strong>Warna Netral</strong> = Hitam, Putih, Abu-abu, Cokelat — dipakai sebagai penyeimbang.</p>
+<div class="materi-highlight"><strong>Ingat:</strong> Sir Isaac Newton adalah ilmuwan pertama yang memetakan lingkaran warna (color wheel) menggunakan prisma cahaya.</div>`
+  },
+  "c1": {
+    judul: "Bab 2 · Atribut & Dimensi Warna",
+    isi: `<p><strong>Hue</strong> = nama asli/identitas warna dalam kondisi murni (misal: Hue Merah, Hue Biru).</p>
+<p><strong>Value</strong> = tingkat terang atau gelapnya warna:</p>
+<ul>
+  <li><strong>Tint</strong> = warna murni + <strong>Putih</strong> → hasil: warna pastel/muda (contoh: Pink dari Merah)</li>
+  <li><strong>Shade</strong> = warna murni + <strong>Hitam</strong> → hasil: warna gelap/tua (contoh: Merah Marun, Hijau Tua)</li>
+  <li><strong>Tone</strong> = warna murni + <strong>Abu-abu</strong> → hasil: warna kalem/pudar (Muted Colors)</li>
+</ul>
+<p><strong>Saturation (Intensitas)</strong> = tingkat kemurnian/kepekatan warna. Saturasi tinggi = mencolok. Saturasi rendah = pudar, mendekati abu-abu.</p>
+<div class="materi-highlight"><strong>Hafal rumus:</strong> +Putih = Tint · +Hitam = Shade · +Abu = Tone</div>`
+  },
+  "c2": {
+    judul: "Bab 3 · Sistem Warna RGB & CMYK",
+    isi: `<p><strong>RGB (Additive Color)</strong> = berbasis <strong>cahaya lampu</strong>, untuk layar digital (HP, laptop, TV, medsos).</p>
+<ul>
+  <li>Komponen: <strong>Red, Green, Blue</strong></li>
+  <li>Semakin banyak dicampur → semakin <strong>terang</strong></li>
+  <li>R+G+B maksimal = <strong>Putih</strong></li>
+</ul>
+<p><strong>CMYK (Subtractive Color)</strong> = berbasis <strong>pigmen/tinta fisik</strong>, untuk hasil cetak (brosur, kaos, spanduk).</p>
+<ul>
+  <li>Komponen: <strong>Cyan, Magenta, Yellow, Key (Hitam)</strong></li>
+  <li>Semakin banyak tinta dicampur → semakin <strong>gelap</strong></li>
+  <li>Cyan + Magenta + Yellow = cokelat gelap (makanya perlu tinta Hitam/Key)</li>
+</ul>
+<div class="materi-highlight"><strong>Ingat:</strong> Desain untuk <strong>cetak → CMYK</strong>. Desain untuk <strong>layar → RGB</strong>. Cyan + Yellow (printer) = <strong>Hijau</strong>.</div>`
+  },
+  "c3": {
+    judul: "Bab 4 · Skema Harmoni Warna",
+    isi: `<p>Formula keserasian warna berdasarkan posisi di lingkaran warna:</p>
+<ul>
+  <li><strong>Monokromatik</strong> = 1 hue, beda value/saturasi. Contoh: Biru Muda, Biru, Biru Dongker.</li>
+  <li><strong>Analog</strong> = warna-warna yang <strong>bersebelahan</strong> di color wheel. Kesan: alami, tenang. Contoh: Hijau, Kuning-Hijau, Kuning.</li>
+  <li><strong>Komplementer</strong> = 2 warna yang <strong>saling berhadapan</strong> di color wheel. Kontras tinggi, mencolok. Contoh: Merah & Hijau, Biru & Oranye.</li>
+  <li><strong>Triadik</strong> = 3 warna membentuk <strong>segitiga sama sisi</strong>. Ceria, kaya warna. Contoh: Merah, Kuning, Biru (warna primer).</li>
+  <li><strong>Split-Komplementer</strong> = 1 warna utama + 2 warna di sebelah warna berseberangannya.</li>
+  <li><strong>Tetradik</strong> = 2 pasang warna komplementer sekaligus (4 warna).</li>
+</ul>`
+  },
+  "c4": {
+    judul: "Bab 5 · Psikologi Warna",
+    isi: `<p><strong>Warna Hangat (Warm Colors)</strong> = Merah, Oranye, Kuning.</p>
+<ul>
+  <li>Kesan: semangat, energik, ceria, panas, nafsu makan meningkat</li>
+  <li>Merah = tanda bahaya, stop, perhatian darurat</li>
+</ul>
+<p><strong>Warna Dingin (Cool Colors)</strong> = Biru, Hijau.</p>
+<ul>
+  <li>Kesan: tenang, damai, sejuk, tepercaya, profesional</li>
+  <li>Biru = warna favorit bank & perusahaan teknologi (kesan tepercaya & aman)</li>
+</ul>
+<p><strong>Hijau</strong> = melambangkan alam, kesegaran, pertumbuhan, kesehatan → sering dipakai produk herbal/ramah lingkungan.</p>
+<div class="materi-highlight"><strong>Ingat:</strong> Rambu bahaya/tombol hapus = <strong>Merah</strong>. Logo bank/teknologi = <strong>Biru</strong>. Produk herbal = <strong>Hijau</strong>.</div>`
+  }
+};
+
+function renderTheorySelect() {
+  $("header-subtitle").textContent = "Soal anak TK · Pilih kategori";
+  var grid = $("category-select-grid");
+  grid.innerHTML = "";
+
+  theoryCategories.forEach(function(cat){
+    var wrap = document.createElement("div"); wrap.className = "category-card-wrap";
+
+    // Baris: kartu kategori + tombol materi
+    var row = document.createElement("div"); row.className = "category-card-actions";
+
+    var btn = document.createElement("button"); btn.className = "category-card";
+    var left = document.createElement("div"); left.className = "category-card-left";
+    var nm = document.createElement("div"); nm.className = "category-card-name"; nm.textContent = cat.name;
+    var sub = document.createElement("div"); sub.className = "category-card-sub"; sub.textContent = cat.sub;
+    left.appendChild(nm); left.appendChild(sub);
+    var badge = document.createElement("div"); badge.className = "category-card-badge"; badge.textContent = cat.badge;
+    btn.appendChild(left); btn.appendChild(badge);
+    btn.addEventListener("click", function(){ startTheoryQuiz(cat); });
+
+    // Tombol baca materi
+    var mBtn = document.createElement("button"); mBtn.className = "materi-btn";
+    mBtn.innerHTML = '<span class="materi-btn-icon">📖</span><span>Materi</span>';
+
+    // Panel materi (tersembunyi awalnya)
+    var panel = document.createElement("div"); panel.className = "materi-panel";
+    var mk = materiKonten[cat.id];
+    if (mk) {
+      panel.innerHTML = "<h4>"+mk.judul+"</h4>"+mk.isi+
+        '<button class="mulai-dari-materi-btn" data-catid="'+cat.id+'">▶ Mulai soal '+cat.name+'</button>';
+    }
+
+    mBtn.addEventListener("click", function(e){
+      e.stopPropagation();
+      var isOpen = panel.classList.contains("open");
+      // Tutup semua panel lain
+      document.querySelectorAll(".materi-panel.open").forEach(function(p){ p.classList.remove("open"); });
+      document.querySelectorAll(".materi-btn.active").forEach(function(b){ b.classList.remove("active"); });
+      if (!isOpen) {
+        panel.classList.add("open");
+        mBtn.classList.add("active");
+        panel.scrollIntoView({ behavior:"smooth", block:"nearest" });
+      }
+    });
+
+    row.appendChild(btn);
+    row.appendChild(mBtn);
+    wrap.appendChild(row);
+    wrap.appendChild(panel);
+    grid.appendChild(wrap);
+  });
+
+  // Delegasi klik tombol "Mulai soal" dari dalam panel
+  grid.addEventListener("click", function(e){
+    if (e.target && e.target.classList.contains("mulai-dari-materi-btn")) {
+      var cid = e.target.getAttribute("data-catid");
+      var cat = theoryCategories.find(function(c){ return c.id === cid; });
+      if (cat) startTheoryQuiz(cat);
+    }
+  });
+}
+
+function startTheoryQuiz(cat) {
+  theoryCategory = cat;
+  var pool = cat.filter === null ? theoryQuestions : theoryQuestions.filter(function(q){ return q.cluster === cat.filter; });
+  theoryPool = shuffle(pool).slice(0, theorySESSION);
+  theoryIndex = 0;
+  theoryCorrect = 0;
+  theoryXP = 0;
+  theorySessionTotal = theoryPool.length;
+  clusterResults = {};
+
+  $("header-subtitle").textContent = "Kuis Teori: "+cat.name;
+  $("theory-summary").classList.add("hidden");
+  $("theory-quiz-active").classList.remove("hidden");
+  showScreen("theory");
+  updateTheoryUI();
+  renderTheoryQuestion();
+}
+
+function updateTheoryUI() {
+  $("tq-num").textContent = theoryIndex+1 <= theorySessionTotal ? theoryIndex+1 : theorySessionTotal;
+  $("tq-correct").textContent = theoryCorrect;
+  $("tq-xp").textContent = theoryXP;
+  var pct = Math.min(100, Math.round((theoryIndex/theorySessionTotal)*100));
+  $("tq-progress").style.width = pct+"%";
+}
+
+function renderTheoryQuestion() {
+  clearInterval(theoryTimer);
+  $("tq-feedback").textContent = "";
+  $("tq-feedback").className = "feedback";
+  $("tq-next-btn").classList.add("hidden");
+  $("tq-explanation").className = "theory-explanation";
+
+  theoryCurrent = theoryPool[theoryIndex];
+
+  $("tq-label").textContent = "Pertanyaan "+(theoryIndex+1)+" dari "+theorySessionTotal;
+
+  // Timer hanya untuk kategori "semua" (opsional) — tidak ada timer di mode normal
+  var timerEl = $("tq-timer");
+  timerEl.classList.add("hidden");
+
+  $("tq-text").textContent = theoryCurrent.q;
+
+  var og = $("tq-options"); og.innerHTML = "";
+  var letters = ["A","B","C","D"];
+  theoryCurrent.opts.forEach(function(opt, idx){
+    var btn = document.createElement("button"); btn.className = "theory-option-btn";
+    var letter = document.createElement("span"); letter.className = "option-letter"; letter.textContent = letters[idx];
+    var text = document.createElement("span"); text.textContent = opt;
+    btn.appendChild(letter); btn.appendChild(text);
+    btn.addEventListener("click", function(){ selectTheoryAnswer(idx, btn); });
+    og.appendChild(btn);
+  });
+}
+
+function lockTheoryAnswers() {
+  clearInterval(theoryTimer);
+  document.querySelectorAll(".theory-option-btn").forEach(function(b){ b.disabled = true; });
+}
+
+function revealTheoryCorrect() {
+  document.querySelectorAll(".theory-option-btn").forEach(function(b, i){
+    if (i === theoryCurrent.ans) b.classList.add("correct");
+  });
+}
+
+function selectTheoryAnswer(idx, btn) {
+  lockTheoryAnswers();
+  var isCorrect = idx === theoryCurrent.ans;
+  var cluster = theoryCurrent.cluster;
+  if (!clusterResults[cluster]) clusterResults[cluster] = { correct:0, total:0 };
+  clusterResults[cluster].total++;
+
+  if (isCorrect) {
+    btn.classList.add("correct");
+    theoryCorrect++;
+    theoryXP += 20;
+    clusterResults[cluster].correct++;
+    $("tq-feedback").textContent = "✓ Benar! +20 XP";
+    $("tq-feedback").className = "feedback correct-text";
+  } else {
+    btn.classList.add("wrong");
+    revealTheoryCorrect();
+    $("tq-feedback").textContent = "✗ Kurang tepat. Lihat penjelasan jawaban yang benar di atas.";
+    $("tq-feedback").className = "feedback wrong-text";
+    // Tampilkan penjelasan singkat
+    var expEl = $("tq-explanation");
+    expEl.innerHTML = "<strong>Jawaban:</strong> "+["A","B","C","D"][theoryCurrent.ans]+". "+theoryCurrent.opts[theoryCurrent.ans];
+    expEl.className = "theory-explanation show";
+  }
+
+  $("tq-next-btn").textContent = theoryIndex+1 >= theorySessionTotal ? "Lihat hasil →" : "Soal berikutnya →";
+  $("tq-next-btn").classList.remove("hidden");
+
+  updateTheoryUI();
+}
+
+$("tq-next-btn").addEventListener("click", function(){
+  theoryIndex++;
+  if (theoryIndex >= theorySessionTotal) showTheorySummary();
+  else { updateTheoryUI(); renderTheoryQuestion(); }
+});
+
+function showTheorySummary() {
+  $("theory-quiz-active").classList.add("hidden");
+  $("theory-summary").classList.remove("hidden");
+
+  var pct = theorySessionTotal > 0 ? Math.round((theoryCorrect/theorySessionTotal)*100) : 0;
+
+  // Stars
+  var stars = pct >= 90 ? "⭐⭐⭐" : pct >= 70 ? "⭐⭐" : pct >= 50 ? "⭐" : "☆";
+  $("ts-stars").textContent = stars;
+  $("ts-xp").textContent = theoryXP + " XP";
+  $("ts-line").textContent = theoryCorrect+" dari "+theorySessionTotal+" benar ("+pct+"%)";
+  $("ts-category-label").textContent = theoryCategory.name;
+
+  // Grade
+  var gradeEl = $("ts-grade");
+  if (pct >= 90) { gradeEl.textContent = "Nilai A · Luar Biasa!"; gradeEl.className = "result-grade grade-a"; }
+  else if (pct >= 75) { gradeEl.textContent = "Nilai B · Bagus!"; gradeEl.className = "result-grade grade-b"; }
+  else if (pct >= 60) { gradeEl.textContent = "Nilai C · Cukup"; gradeEl.className = "result-grade grade-c"; }
+  else { gradeEl.textContent = "Nilai D · Perlu Belajar Lagi"; gradeEl.className = "result-grade grade-d"; }
+
+  // Cluster breakdown (hanya jika lebih dari 1 klaster)
+  var clusterKeys = Object.keys(clusterResults);
+  var clusterEl = $("ts-cluster");
+  if (clusterKeys.length > 1) {
+    clusterEl.style.display = "block";
+    var fills = ["fill-green","fill-purple","fill-yellow","fill-red","fill-green"];
+    var html = "<div class=\"cluster-result-title\">Hasil per Klaster Materi</div>";
+    clusterKeys.forEach(function(k){
+      var c = clusterResults[k];
+      var pctC = c.total > 0 ? Math.round((c.correct/c.total)*100) : 0;
+      var fillClass = fills[parseInt(k)] || "fill-purple";
+      html += "<div class=\"cluster-row\">"
+        + "<span class=\"cluster-label\">"+clusterNames[parseInt(k)]+"</span>"
+        + "<span class=\"cluster-score\">"+c.correct+"/"+c.total+"</span>"
+        + "<div class=\"cluster-bar-wrap\"><div class=\"cluster-bar-fill "+fillClass+"\" style=\"width:"+pctC+"%\"></div></div>"
+        + "</div>";
+    });
+    clusterEl.innerHTML = html;
+  } else {
+    clusterEl.style.display = "none";
+  }
+}
+
+$("ts-restart").addEventListener("click", function(){ startTheoryQuiz(theoryCategory); });
+$("ts-change").addEventListener("click", function(){ showScreen("theorySelect"); renderTheorySelect(); });
+$("back-to-theory-select").addEventListener("click", function(){ clearInterval(theoryTimer); showScreen("theorySelect"); renderTheorySelect(); });
+
+// =======================================================================
+// INIT
+// =======================================================================
+showScreen("home");
+
+})();
+</script>
+
+</body>
+</html>
