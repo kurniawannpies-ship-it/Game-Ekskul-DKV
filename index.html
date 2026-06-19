@@ -152,9 +152,11 @@
     letter-spacing: 0.4px;
     white-space: nowrap;
   }
-  .badge-eazy { background: var(--success-bg); color: var(--success); }
-  .badge-bisalah { background: rgba(124,92,255,0.18); color: var(--accent); }
-  .badge-stress { background: var(--danger-bg); color: var(--danger); }
+  .badge-easy { background: var(--success-bg); color: var(--success); }
+  .badge-normal { background: rgba(124,92,255,0.18); color: var(--accent); }
+  .badge-hard { background: var(--warn-bg); color: var(--warn); }
+  .badge-expert { background: rgba(248,113,113,0.18); color: var(--danger); }
+  .badge-master { background: linear-gradient(135deg, rgba(248,113,113,0.25), rgba(124,92,255,0.25)); color: #ffb4b4; }
 
   /* ========== QUIZ THEORY CATEGORY SELECT ========== */
   .category-select-grid {
@@ -304,6 +306,135 @@
     transition: opacity 0.15s;
   }
   .mulai-dari-materi-btn:hover { opacity: 0.88; }
+
+  .materi-actions-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .materi-actions-row .mulai-dari-materi-btn { margin-top: 0; flex: 1; }
+  .materi-action-btn-game {
+    flex: 1;
+    padding: 10px;
+    background: rgba(167,139,250,0.14);
+    color: var(--text-primary);
+    border: 1px solid rgba(167,139,250,0.45);
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: opacity 0.15s, background 0.15s;
+  }
+  .materi-action-btn-game:hover { opacity: 0.88; background: rgba(167,139,250,0.22); }
+
+  .skema-grid {
+    display: grid;
+    gap: 8px;
+    margin: 8px 0 10px;
+  }
+  .skema-item {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 8px 10px;
+  }
+  .skema-item-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 3px;
+  }
+  .skema-item-num {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .skema-item-title { font-weight: 700; color: var(--text-primary); font-size: 13px; }
+  .skema-item-body { color: var(--text-secondary); font-size: 12px; margin: 0; padding-left: 28px; }
+  .skema-item-body strong { color: var(--text-primary); }
+
+  /* === Wheel: card per-skema dengan materi di atas === */
+  .wheel-skema-block {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-bottom: 10px;
+    background: var(--bg-card);
+    backdrop-filter: blur(10px);
+  }
+  .wheel-skema-materi {
+    padding: 14px 16px 10px;
+    background: rgba(124,92,255,0.06);
+    border-bottom: 1px solid rgba(124,92,255,0.18);
+    font-size: 13px;
+    line-height: 1.65;
+  }
+  .wheel-skema-materi-label {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: var(--accent);
+    margin-bottom: 5px;
+  }
+  .wheel-skema-materi-judul {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+  .wheel-skema-materi-desc {
+    color: var(--text-secondary);
+    font-size: 12.5px;
+    margin-bottom: 5px;
+  }
+  .wheel-skema-materi-contoh {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+  .wheel-skema-materi-contoh strong { color: var(--text-primary); }
+  .wheel-skema-play {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background 0.15s;
+    background: transparent;
+    border: none;
+    width: 100%;
+    font-family: inherit;
+    text-align: left;
+  }
+  .wheel-skema-play:hover { background: rgba(255,255,255,0.04); }
+  .wheel-skema-play-left {}
+  .wheel-skema-play-hint {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-bottom: 2px;
+  }
+  .wheel-skema-play-action {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .wheel-skema-play-badge {
+    font-size: 12px;
+    font-weight: 800;
+    padding: 5px 12px;
+    border-radius: 999px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
 
   /* ========== STAT BAR & PROGRESS ========== */
   .stats-bar {
@@ -464,6 +595,92 @@
     background: var(--danger-bg);
     border-color: var(--danger);
     opacity: 1;
+  }
+
+  /* ========== COLOR WHEEL HARMONY ========== */
+  .wheel-prompt-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+  }
+
+  .wheel-harmony-tag {
+    background: rgba(124,92,255,0.18);
+    color: var(--accent);
+    font-size: 15px;
+    font-weight: 700;
+    padding: 6px 16px;
+    border-radius: 999px;
+    letter-spacing: 0.3px;
+  }
+
+  .wheel-prompt-card .theory-q-timer {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    font-size: 13px;
+  }
+
+  .wheel-stage {
+    display: flex;
+    justify-content: center;
+    margin: 6px 0 14px;
+  }
+
+  .wheel-stage svg { width: 100%; max-width: 320px; height: auto; touch-action: manipulation; }
+
+  .wheel-seg {
+    cursor: pointer;
+    stroke: var(--bg-page);
+    stroke-width: 2;
+    transition: opacity 0.15s, filter 0.15s;
+  }
+  .wheel-seg:hover { opacity: 0.85; }
+  .wheel-seg.ref { stroke: #ffffff; stroke-width: 4; }
+  .wheel-seg.picked { stroke: var(--accent); stroke-width: 5; filter: brightness(1.18); }
+  .wheel-seg.correct-seg { stroke: var(--success); stroke-width: 5; filter: brightness(1.15); }
+  .wheel-seg.wrong-seg { stroke: var(--danger); stroke-width: 5; opacity: 0.55; }
+  .wheel-seg.locked { cursor: default; }
+  .wheel-seg.dim { opacity: 0.35; }
+
+  .wheel-center-label {
+    fill: var(--text-secondary);
+    font-size: 10px;
+    text-anchor: middle;
+    pointer-events: none;
+    text-transform: capitalize;
+  }
+
+  .wheel-pick-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    min-height: 34px;
+  }
+
+  .wheel-pick-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 5px 12px 5px 6px;
+    font-size: 12px;
+    color: var(--text-primary);
+    text-transform: capitalize;
+  }
+
+  .wheel-pick-chip .dot { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid #fff; flex-shrink: 0; }
+
+  .wheel-pick-chip.placeholder {
+    color: var(--text-secondary);
+    border-style: dashed;
+    opacity: 0.6;
   }
 
   /* ========== KARTU SOAL TEORI ========== */
@@ -695,7 +912,7 @@
 <div class="app-shell">
 
   <div class="app-header">
-    <h1>TAMAN BERMAIN</h1>
+    <h1>GAME DKV<br><span style="font-size:14px;font-weight:500;letter-spacing:1.5px;opacity:0.75;">SMPN 1 SUMENEP</span></h1>
     <p id="header-subtitle">Pilih game untuk dimainkan</p>
   </div>
 
@@ -706,7 +923,7 @@
         <div class="game-card-icon">🖌️</div>
         <div class="game-card-info">
           <div class="game-card-name">Color Mixer Quiz</div>
-          <div class="game-card-desc">Tebak hasil campuran warna berdasarkan swatch visual. Ada 3 level kesulitan.</div>
+          <div class="game-card-desc">Tebak hasil campuran warna berdasarkan swatch visual. Ada 5 level kesulitan.</div>
         </div>
         <div class="game-card-arrow">›</div>
       </button>
@@ -714,8 +931,17 @@
       <button class="game-card" id="go-theory">
         <div class="game-card-icon">📚</div>
         <div class="game-card-info">
-          <div class="game-card-name">Soal anak TK</div>
-          <div class="game-card-desc">50 soal pilihan ganda tentang teori warna, sistem RGB/CMYK, harmoni warna, dan psikologi warna.</div>
+          <div class="game-card-name">Latihan Soal</div>
+          <div class="game-card-desc">58 soal pilihan ganda tentang teori warna, sistem RGB/CMYK, 8 skema harmoni warna, dan psikologi warna.</div>
+        </div>
+        <div class="game-card-arrow">›</div>
+      </button>
+
+      <button class="game-card" id="go-wheel">
+        <div class="game-card-icon">🎡</div>
+        <div class="game-card-info">
+          <div class="game-card-name">Color Wheel Harmony</div>
+          <div class="game-card-desc">Cocokkan skema harmoni (komplementer, analog, triadik, dst) langsung di roda warna interaktif.</div>
         </div>
         <div class="game-card-arrow">›</div>
       </button>
@@ -776,6 +1002,68 @@
         <div class="action-row">
           <button class="restart-btn" id="restart-btn">Main lagi</button>
           <button class="change-level-btn" id="change-level-btn">Ganti level</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN: LEVEL SELECT (Color Wheel Harmony) ========== -->
+  <div id="screen-wheel-select" class="hidden">
+    <button class="back-link" id="back-to-home-from-wheel">← Kembali ke menu</button>
+    <div class="level-select-grid" id="wheel-level-select-grid"></div>
+  </div>
+
+  <!-- ========== SCREEN: COLOR WHEEL HARMONY GAME ========== -->
+  <div id="screen-wheel" class="hidden">
+    <button class="back-link" id="back-to-wheel-levels">← Ganti skema</button>
+
+    <div class="stats-bar">
+      <div class="stat-block">
+        <div class="stat-label">Skema</div>
+        <div class="stat-value" id="wh-level-out">-</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-block">
+        <div class="stat-label">Skor</div>
+        <div class="stat-value" id="wh-score-out">0</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-block">
+        <div class="stat-label">XP</div>
+        <div class="stat-value xp" id="wh-xp-out">0</div>
+      </div>
+    </div>
+
+    <div class="progress-track">
+      <div class="progress-fill" id="wh-progress-fill"></div>
+    </div>
+
+    <div id="wheel-active">
+      <div class="question-card wheel-prompt-card">
+        <div class="question-label" id="wh-prompt-label">Pilih kombinasi harmoni</div>
+        <div class="wheel-harmony-tag" id="wh-harmony-tag">Komplementer</div>
+        <span class="theory-q-timer hidden" id="wh-timer">15s</span>
+      </div>
+
+      <div class="wheel-stage" id="wheel-stage"></div>
+
+      <div class="wheel-pick-row" id="wheel-pick-row"></div>
+
+      <div class="feedback" id="wh-feedback"></div>
+
+      <div class="action-row">
+        <button class="next-btn hidden" id="wh-next-btn">Soal berikutnya →</button>
+      </div>
+    </div>
+
+    <div id="wheel-summary" class="hidden">
+      <div class="question-card summary-card">
+        <div class="question-label">Sesi selesai</div>
+        <div class="big-xp" id="wh-summary-xp">0 XP</div>
+        <div class="summary-line" id="wh-summary-line">0 dari 0 benar</div>
+        <div class="action-row">
+          <button class="restart-btn" id="wh-restart-btn">Main lagi</button>
+          <button class="change-level-btn" id="wh-change-level-btn">Ganti skema</button>
         </div>
       </div>
     </div>
@@ -945,14 +1233,69 @@ var stressBase = [
   [["kuning","merah","biru","hitam"],"coklat"]
 ];
 
+var expertBase = [
+  [["merah-tua","kuning","hitam"],"karat"],[["kuning","merah-tua","hitam"],"karat"],
+  [["biru-tua","kuning","abu"],"zaitun"],[["kuning","biru-tua","abu"],"zaitun"],
+  [["merah-ungu","putih","hitam"],"abu-kehijauan"],
+  [["hijau-tua","abu","putih"],"abu-kehijauan"],[["abu","hijau-tua","putih"],"abu-kehijauan"],
+  [["biru-ungu","hitam","putih"],"navy"],[["hitam","biru-ungu","putih"],"navy"],
+  [["kuning-oranye","hitam","merah"],"karat"],[["hitam","kuning-oranye","merah"],"karat"],
+  [["merah-jingga","hitam","kuning"],"karat"],
+  [["biru-hijau","hitam","putih"],"abu-kehijauan"],
+  [["kuning-hijau","hitam","abu"],"zaitun"],[["hitam","kuning-hijau","abu"],"zaitun"],
+  [["ungu-tua","merah","hitam"],"maroon"],[["merah","ungu-tua","hitam"],"maroon"],
+  [["coral","hitam","putih"],"karat"],[["hitam","coral","putih"],"karat"],
+  [["tosca","hitam","abu"],"salem"],
+  [["magenta","hitam","ungu"],"maroon"],[["hitam","magenta","ungu"],"maroon"],
+  [["lavender","abu","hitam"],"indigo"],
+  [["mustard","hitam","merah"],"karat"],[["hitam","mustard","merah"],"karat"],
+  [["krem","abu","hitam"],"zaitun"],
+  [["abu-muda","hitam","biru"],"abu-kebiruan"],
+  [["abu-tua","putih","kuning"],"zaitun"],
+  [["karat","putih","hitam"],"lumpur"],
+  [["zaitun","hitam","kuning"],"lumpur"],[["hitam","zaitun","kuning"],"lumpur"],
+  [["indigo","putih","merah"],"ungu-tua"],
+  [["navy","putih","kuning"],"abu-kebiruan"],
+  [["maroon","putih","biru"],"ungu-tua"]
+];
+
+var masterBase = [
+  [["merah-tua","biru-tua","kuning","hitam"],"lumpur"],[["biru-tua","merah-tua","kuning","hitam"],"lumpur"],
+  [["hijau-tua","merah-jingga","putih","hitam"],"abu-kehijauan"],
+  [["ungu-tua","kuning-oranye","abu","hitam"],"lumpur"],
+  [["biru-ungu","merah-ungu","putih","hitam"],"indigo"],[["merah-ungu","biru-ungu","putih","hitam"],"indigo"],
+  [["kuning-hijau","biru-hijau","hitam","abu"],"zaitun"],
+  [["coral","tosca","hitam","putih"],"abu-kehijauan"],
+  [["magenta","navy","putih","abu"],"indigo"],
+  [["lavender","maroon","hitam","kuning"],"lumpur"],
+  [["mustard","biru-tua","hitam","putih"],"zaitun"],
+  [["karat","biru-ungu","hitam","abu"],"lumpur"],
+  [["abu-kebiruan","merah-tua","hitam","kuning"],"lumpur"],
+  [["abu-kehijauan","ungu-tua","hitam","putih"],"abu-tua"],
+  [["krem","navy","hitam","merah"],"lumpur"],
+  [["zaitun","merah-jingga","hitam","putih"],"lumpur"],
+  [["indigo","mustard","putih","hitam"],"zaitun"],
+  [["salem","coral","hitam","abu"],"lumpur"],
+  [["biru-hijau","merah-tua","kuning","hitam"],"lumpur"],
+  [["kuning-oranye","biru-tua","hitam","putih"],"zaitun"],
+  [["hijau-tua","magenta","putih","hitam"],"abu-kehijauan"],
+  [["merah-ungu","kuning-hijau","hitam","putih"],"lumpur"],
+  [["abu-muda","maroon","hitam","kuning"],"lumpur"],
+  [["navy","mustard","abu","hitam"],"zaitun"],
+  [["tosca","karat","hitam","putih"],"lumpur"],
+  [["lavender","zaitun","hitam","merah"],"lumpur"]
+];
+
 function buildLevel(id, name, badgeClass, desc, n, time, xp, base) {
   return { id, name, badgeClass, desc, n, time, xp, qs: base };
 }
 
 var levels = [
-  buildLevel("eazy","Eazy","badge-eazy","2 warna dasar, tanpa timer",2,null,10,eazyBase),
-  buildLevel("bisalah","Bisalah","badge-bisalah","2-3 warna, ada timer",3,12,25,bisalahBase),
-  buildLevel("stress","Stress","badge-stress","3-4 warna campur, timer cepat",4,8,45,stressBase)
+  buildLevel("easy","Easy","badge-easy","2 warna dasar, tanpa timer",2,null,10,eazyBase),
+  buildLevel("normal","Normal","badge-normal","2-3 warna, ada timer",3,12,25,bisalahBase),
+  buildLevel("hard","Hard","badge-hard","3-4 warna campur, timer cepat",4,8,45,stressBase),
+  buildLevel("expert","Expert","badge-expert","Warna turunan & campuran rumit, timer kilat",3,6,70,expertBase),
+  buildLevel("master","Master","badge-master","4 warna ekstrem, timer super cepat",4,5,100,masterBase)
 ];
 
 // =======================================================================
@@ -1008,6 +1351,14 @@ var theoryQuestions = [
   {id:43, q:"Kombinasi warna primer (Merah, Kuning, Biru) dalam sebuah karya ilustrasi anak-anak merupakan contoh penerapan skema...", opts:["Monokromatik","Triadik","Analog","Tetradik"], ans:1, cluster:3},
   {id:44, q:"Skema warna 'Split-Komplementer' dilakukan dengan cara...", opts:["Mengambil 4 warna acak","Menggunakan satu warna utama dan dua warna di sebelah warna berseberangannya","Hanya menggunakan warna abu-abu","Mencampur warna primer dengan hitam"], ans:1, cluster:3},
   {id:45, q:"Skema warna yang melibatkan empat warna berupa dua pasang warna komplementer sekaligus disebut...", opts:["Triadik","Monokromatik","Tetradik / Double Complementary","Analog"], ans:2, cluster:3},
+  {id:51, q:"Skema warna yang hanya menggunakan Hitam, Putih, dan gradasi Abu-abu tanpa unsur hue (warna) sama sekali disebut skema...", opts:["Monokromatik","Akromatik","Analog","Polikromatik"], ans:1, cluster:3},
+  {id:52, q:"Sebuah poster fotografi hitam-putih yang hanya bermain dengan kontras gelap-terang tanpa warna apapun menerapkan skema...", opts:["Akromatik","Triadik","Analog","Split-Komplementer"], ans:0, cluster:3},
+  {id:53, q:"Perbedaan utama antara skema Akromatik dan Monokromatik adalah...", opts:["Akromatik pakai 1 hue, Monokromatik tanpa hue","Akromatik tanpa hue (hitam-putih-abu), Monokromatik pakai 1 hue yang divariasikan","Keduanya sama persis","Akromatik hanya untuk cetak, Monokromatik hanya untuk layar"], ans:1, cluster:3},
+  {id:54, q:"Sebuah desain ilustrasi festival anak-anak menggunakan 7 warna berbeda secara bebas tanpa mengikuti pola posisi tertentu di lingkaran warna. Skema ini disebut...", opts:["Tetradik","Polikromatik","Split-Komplementer","Akromatik"], ans:1, cluster:3},
+  {id:55, q:"Skema warna Polikromatik biasanya menggunakan jumlah warna sebanyak...", opts:["Hanya 1 warna","Hanya 2 warna","3 warna dengan jarak tetap","5 warna atau lebih, tanpa aturan posisi yang kaku"], ans:3, cluster:3},
+  {id:56, q:"Kesan visual yang paling sering muncul dari penerapan skema Polikromatik pada sebuah desain adalah...", opts:["Tenang dan minimalis","Ramai, ceria, dan playful","Maskulin dan klasik","Sangat formal dan kaku"], ans:1, cluster:3},
+  {id:57, q:"Skema warna apa yang TIDAK ditentukan berdasarkan posisi/jarak warna di lingkaran warna, melainkan berdasarkan ADA atau TIDAKNYA unsur hue?", opts:["Triadik dan Tetradik","Akromatik dan Monokromatik","Analog dan Komplementer","Split-Komplementer dan Triadik"], ans:1, cluster:3},
+  {id:58, q:"Logo profesional yang hanya menggunakan warna Hitam dan Putih untuk memberi kesan modern, klasik, dan elegan menerapkan skema...", opts:["Polikromatik","Triadik","Akromatik","Analog"], ans:2, cluster:3},
   // ---- Soal 46-50: Psikologi Warna ----
   {id:46, q:"Kelompok warna yang memberikan kesan semangat, panas, ceria, dan energik (seperti merah, oranye, kuning) disebut...", opts:["Cool Colors (Warna Dingin)","Warm Colors (Warna Hangat)","Dark Colors","Pastel"], ans:1, cluster:4},
   {id:47, q:"Kelompok warna yang memberikan kesan tenang, damai, sejuk, dan profesional (seperti biru dan hijau) disebut...", opts:["Warm Colors","Cool Colors (Warna Dingin)","Neon Colors","Primary Colors"], ans:1, cluster:4},
@@ -1017,11 +1368,11 @@ var theoryQuestions = [
 ];
 
 var theoryCategories = [
-  { id:"all", name:"Semua Soal (50)", sub:"Semua klaster materi", badge:"50 soal", filter:null },
+  { id:"all", name:"Semua Soal (58)", sub:"Semua klaster materi", badge:"58 soal", filter:null },
   { id:"c0", name:"Tingkatan Warna", sub:"Primer, Sekunder, Tersier & Netral (Soal 1-15)", badge:"15 soal", filter:0 },
   { id:"c1", name:"Atribut Warna", sub:"Hue, Value, Saturation, Tint, Shade, Tone (Soal 16-25)", badge:"10 soal", filter:1 },
   { id:"c2", name:"RGB & CMYK", sub:"Sistem warna layar & cetak (Soal 26-35)", badge:"10 soal", filter:2 },
-  { id:"c3", name:"Harmoni Warna", sub:"Monokromatik, Analog, Komplementer, Triadik (Soal 36-45)", badge:"10 soal", filter:3 },
+  { id:"c3", name:"Harmoni Warna", sub:"8 Skema: Mono, Akromatik, Analog, Komplementer, Split, Triadik, Tetradik, Poli", badge:"18 soal", filter:3 },
   { id:"c4", name:"Psikologi Warna", sub:"Makna & fungsi warna dalam desain (Soal 46-50)", badge:"5 soal", filter:4 }
 ];
 
@@ -1066,6 +1417,8 @@ var screens = {
   home: $("screen-home"),
   levelSelect: $("screen-level-select"),
   quiz: $("screen-quiz"),
+  wheelSelect: $("screen-wheel-select"),
+  wheel: $("screen-wheel"),
   theorySelect: $("screen-theory-select"),
   theory: $("screen-theory")
 };
@@ -1099,8 +1452,10 @@ function makeSwatch(colorName, sizeClass) {
 // =======================================================================
 $("go-color-mixer").addEventListener("click", function(){ showScreen("levelSelect"); renderLevelSelect(); });
 $("go-theory").addEventListener("click", function(){ showScreen("theorySelect"); renderTheorySelect(); });
+$("go-wheel").addEventListener("click", function(){ showScreen("wheelSelect"); renderWheelLevelSelect(); });
 $("back-to-home-from-mixer").addEventListener("click", function(){ showScreen("home"); $("header-subtitle").textContent = "Pilih game untuk dimainkan"; });
 $("back-to-home-from-theory").addEventListener("click", function(){ showScreen("home"); $("header-subtitle").textContent = "Pilih game untuk dimainkan"; });
+$("back-to-home-from-wheel").addEventListener("click", function(){ showScreen("home"); $("header-subtitle").textContent = "Pilih game untuk dimainkan"; });
 
 // =======================================================================
 // ========================= COLOR MIXER =================================
@@ -1264,6 +1619,400 @@ $("change-level-btn").addEventListener("click", function(){ clearInterval(timer)
 $("back-to-levels").addEventListener("click", function(){ clearInterval(timer); showScreen("levelSelect"); renderLevelSelect(); });
 
 // =======================================================================
+// ========================= COLOR WHEEL HARMONY ==========================
+// =======================================================================
+
+// 12-hue color wheel (urutan tradisional RYB, searah jarum jam dari Merah)
+var wheelColors = [
+  { name: "merah",         hex: "#e24b4a" },
+  { name: "merah-oranye",  hex: "#e2702f" },
+  { name: "oranye",        hex: "#d85a30" },
+  { name: "kuning-oranye", hex: "#ef9f27" },
+  { name: "kuning",        hex: "#fac775" },
+  { name: "kuning-hijau",  hex: "#97c459" },
+  { name: "hijau",         hex: "#639922" },
+  { name: "biru-hijau",    hex: "#0f6e56" },
+  { name: "biru",          hex: "#378add" },
+  { name: "biru-ungu",     hex: "#534ab7" },
+  { name: "ungu",          hex: "#7f77dd" },
+  { name: "merah-ungu",    hex: "#993556" }
+];
+var WHEEL_N = wheelColors.length;
+function wmod(x){ return ((x % WHEEL_N) + WHEEL_N) % WHEEL_N; }
+
+// Definisi tipe harmoni: berapa target yang harus dipilih relatif terhadap index acuan
+var harmonyTypes = {
+  komplementer: {
+    label: "Komplementer",
+    pickCount: 1,
+    xp: 15,
+    desc: "Pilih 1 warna yang berlawanan langsung (tepat di seberang) warna acuan.",
+    targets: function(ref){ return [wmod(ref+6)]; }
+  },
+  analog: {
+    label: "Analog",
+    pickCount: 2,
+    xp: 20,
+    desc: "Pilih 2 warna yang bertetangga langsung di kiri & kanan warna acuan.",
+    targets: function(ref){ return [wmod(ref+1), wmod(ref-1)]; }
+  },
+  triadik: {
+    label: "Triadik",
+    pickCount: 2,
+    xp: 25,
+    desc: "Pilih 2 warna lain yang membentuk segitiga sama sisi dengan warna acuan.",
+    targets: function(ref){ return [wmod(ref+4), wmod(ref+8)]; }
+  },
+  split: {
+    label: "Split-Komplementer",
+    pickCount: 2,
+    xp: 30,
+    desc: "Pilih 2 warna di sisi kiri & kanan dari titik komplementer warna acuan.",
+    targets: function(ref){ return [wmod(ref+5), wmod(ref+7)]; }
+  },
+  tetradik: {
+    label: "Tetradik (Persegi)",
+    pickCount: 3,
+    xp: 40,
+    desc: "Pilih 3 warna lain yang membentuk persegi sempurna dengan warna acuan.",
+    targets: function(ref){ return [wmod(ref+3), wmod(ref+6), wmod(ref+9)]; }
+  }
+};
+
+// Model per-skema: setiap skema harmoni jadi card sendiri
+var wheelSkemas = [
+  { id:"wh-kompl",   typeKey:"komplementer", badgeClass:"badge-easy",   timer:null },
+  { id:"wh-analog",  typeKey:"analog",       badgeClass:"badge-easy",   timer:null },
+  { id:"wh-triadik", typeKey:"triadik",      badgeClass:"badge-normal", timer:15   },
+  { id:"wh-split",   typeKey:"split",        badgeClass:"badge-normal", timer:15   },
+  { id:"wh-tetradik",typeKey:"tetradik",     badgeClass:"badge-hard",   timer:10   }
+];
+
+// ---- state ----
+var whActiveLevel = null;
+var whPool = [];
+var whCurrent = null;
+var whScore = 0, whXp = 0, whAnswered = 0, whSessionTarget = 0;
+var whPicked = [];
+var whLocked = false;
+var whTimer = null, whTimeLeft = 0;
+var WHEEL_SESSION = 10;
+
+// Materi ringkas per-skema untuk ditampilkan di atas card play
+var wheelSkemaMateri = {
+  komplementer: {
+    nomor: "4",
+    desc: "Menggunakan <strong>2 warna yang tepat berhadapan (180°)</strong> di lingkaran warna. Menghasilkan kontras paling tinggi dan paling mencolok di antara semua skema.",
+    contoh: "Contoh: <strong>Merah & Hijau · Biru & Oranye · Kuning & Ungu</strong>",
+    aturan: "Pilih 1 warna yang berlawanan langsung dengan warna acuan."
+  },
+  analog: {
+    nomor: "3",
+    desc: "Memadukan warna-warna yang <strong>bersebelahan langsung</strong> di lingkaran warna (biasanya 2–3 warna berdekatan). Kesan: alami, tenang, nyaman dipandang.",
+    contoh: "Contoh: <strong>Hijau · Kuning-Hijau · Kuning</strong>",
+    aturan: "Pilih 2 warna yang bertetangga langsung di kiri & kanan warna acuan."
+  },
+  triadik: {
+    nomor: "6",
+    desc: "Menggunakan <strong>3 warna</strong> yang posisinya membentuk <strong>segitiga sama sisi (120°)</strong> di lingkaran warna. Kesan: ceria, seimbang, kaya warna namun tetap harmonis.",
+    contoh: "Contoh: <strong>Merah · Kuning · Biru</strong> (warna primer)",
+    aturan: "Pilih 2 warna lain yang membentuk segitiga sama sisi dengan warna acuan."
+  },
+  split: {
+    nomor: "5",
+    desc: "Mengambil <strong>1 warna utama</strong>, lalu <strong>2 warna di kiri-kanan titik komplementernya</strong> (bukan komplementer langsung). Tetap kontras tapi lebih lembut & fleksibel.",
+    contoh: "Contoh: Merah sebagai acuan → <strong>Kuning-Hijau & Biru-Hijau</strong>",
+    aturan: "Pilih 2 warna di sisi kiri & kanan dari titik komplementer warna acuan."
+  },
+  tetradik: {
+    nomor: "7",
+    desc: "Menggunakan <strong>4 warna</strong> berupa <strong>2 pasang warna komplementer</strong> yang membentuk persegi di lingkaran warna. Skema paling kompleks — butuh 1 warna dominan agar tidak berantakan.",
+    contoh: "Contoh: <strong>Merah · Oranye · Biru · Hijau</strong>",
+    aturan: "Pilih 3 warna lain yang membentuk persegi sempurna dengan warna acuan."
+  }
+};
+
+function renderWheelLevelSelect() {
+  $("header-subtitle").textContent = "Color Wheel Harmony · Pilih skema";
+  var grid = $("wheel-level-select-grid");
+  grid.innerHTML = "";
+
+  wheelSkemas.forEach(function(sk){
+    var ht = harmonyTypes[sk.typeKey];
+    var mat = wheelSkemaMateri[sk.typeKey];
+    var timerLabel = sk.timer ? "⏱ Timer " + sk.timer + "s" : "Tanpa timer";
+
+    var badgeColorStyle = sk.badgeClass === "badge-easy"
+      ? "background:rgba(52,211,153,0.18);color:#34d399;"
+      : sk.badgeClass === "badge-normal"
+      ? "background:rgba(124,92,255,0.22);color:#a78bfa;"
+      : "background:rgba(234,179,8,0.18);color:#eab308;";
+
+    var wrap = document.createElement("div"); wrap.className = "category-card-wrap";
+
+    // Baris: card play + tombol Materi (mirip category-card-actions)
+    var row = document.createElement("div"); row.className = "category-card-actions";
+
+    var btn = document.createElement("button"); btn.className = "category-card";
+    var left = document.createElement("div"); left.className = "category-card-left";
+    var nm = document.createElement("div"); nm.className = "category-card-name"; nm.textContent = ht.label;
+    var desc = document.createElement("div"); desc.className = "category-card-sub";
+    desc.textContent = mat.aturan + " · " + timerLabel;
+    left.appendChild(nm); left.appendChild(desc);
+    var badge = document.createElement("div"); badge.className = "category-card-badge";
+    badge.setAttribute("style", badgeColorStyle + "font-size:12px;font-weight:800;padding:5px 12px;border-radius:999px;");
+    badge.textContent = "+" + ht.xp + " XP";
+    btn.appendChild(left); btn.appendChild(badge);
+    btn.addEventListener("click", function(){ startWheelSkema(sk); });
+
+    // Tombol Materi (sama persis seperti di latihan soal)
+    var mBtn = document.createElement("button"); mBtn.className = "materi-btn";
+    mBtn.innerHTML = '<span class="materi-btn-icon">📖</span><span>Materi</span>';
+
+    // Panel materi (tersembunyi awalnya)
+    var panel = document.createElement("div"); panel.className = "materi-panel";
+    panel.innerHTML =
+      '<h4>Skema ' + mat.nomor + ' dari 8 · ' + ht.label + '</h4>'
+      + '<p>' + mat.desc + '</p>'
+      + '<p>' + mat.contoh + '</p>'
+      + '<div class="materi-highlight"><strong>Aturan game:</strong> ' + mat.aturan + '</div>';
+
+    mBtn.addEventListener("click", function(e){
+      e.stopPropagation();
+      var isOpen = panel.classList.contains("open");
+      document.querySelectorAll(".materi-panel.open").forEach(function(p){ p.classList.remove("open"); });
+      document.querySelectorAll(".materi-btn.active").forEach(function(b){ b.classList.remove("active"); });
+      if (!isOpen) {
+        panel.classList.add("open");
+        mBtn.classList.add("active");
+        panel.scrollIntoView({ behavior:"smooth", block:"nearest" });
+      }
+    });
+
+    row.appendChild(btn);
+    row.appendChild(mBtn);
+    wrap.appendChild(row);
+    wrap.appendChild(panel);
+    grid.appendChild(wrap);
+  });
+}
+
+// Bangun pool soal: 12 kombinasi (semua acuan roda warna) untuk 1 tipe skema
+function buildWheelPool(sk) {
+  var pool = [];
+  for (var ref = 0; ref < WHEEL_N; ref++) {
+    pool.push({ typeKey: sk.typeKey, ref: ref });
+  }
+  return shuffle(pool);
+}
+
+function startWheelSkema(sk) {
+  var ht = harmonyTypes[sk.typeKey];
+  // Bungkus sebagai lvl-like object agar sisa kode wheel tetap kompatibel
+  whActiveLevel = {
+    id: sk.id,
+    name: ht.label,
+    desc: ht.desc,
+    types: [sk.typeKey],
+    time: sk.timer,
+    baseXpMul: 1,
+    _sk: sk
+  };
+  whPool = buildWheelPool(sk);
+  whSessionTarget = Math.min(WHEEL_SESSION, whPool.length);
+  whScore = 0; whXp = 0; whAnswered = 0;
+  $("header-subtitle").textContent = ht.label;
+  $("wh-level-out").textContent = ht.label;
+  $("wheel-summary").classList.add("hidden");
+  $("wheel-active").classList.remove("hidden");
+  showScreen("wheel");
+  updateWheelUI();
+  renderWheelQuestion();
+}
+
+function drawWheelQuestion() {
+  if (whPool.length === 0) whPool = buildWheelPool(whActiveLevel._sk);
+  var q = whPool.pop();
+  var type = harmonyTypes[q.typeKey];
+  var targets = type.targets(q.ref);
+  return { typeKey: q.typeKey, type: type, ref: q.ref, targets: targets };
+}
+
+function updateWheelUI() {
+  $("wh-score-out").textContent = whScore;
+  $("wh-xp-out").textContent = whXp;
+  var pct = Math.min(100, Math.round((whAnswered/whSessionTarget)*100));
+  $("wh-progress-fill").style.width = pct+"%";
+}
+
+function wheelLevelXp() {
+  return Math.round(whCurrent.type.xp * whActiveLevel.baseXpMul);
+}
+
+function startWheelTimer(seconds) {
+  clearInterval(whTimer);
+  $("wh-timer").classList.add("hidden");
+  if (!seconds) return;
+  whTimeLeft = seconds;
+  $("wh-timer").classList.remove("hidden");
+  $("wh-timer").textContent = whTimeLeft+"s";
+  whTimer = setInterval(function(){
+    whTimeLeft--;
+    $("wh-timer").textContent = whTimeLeft+"s";
+    if (whTimeLeft <= 0) {
+      clearInterval(whTimer);
+      finalizeWheelAnswer(false, true);
+    }
+  }, 1000);
+}
+
+// Membangun SVG roda 12-segmen. cx,cy = 160,160 (lihat .wheel-seg transform-origin)
+function buildWheelSVG() {
+  var cx = 160, cy = 160, rOuter = 150, rInner = 46;
+  var anglePer = 360 / WHEEL_N;
+  function polar(r, deg) {
+    var rad = (deg - 90) * Math.PI / 180; // -90 supaya index 0 (merah) mulai dari atas
+    return [cx + r*Math.cos(rad), cy + r*Math.sin(rad)];
+  }
+  var svg = '<svg viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">';
+  for (var i = 0; i < WHEEL_N; i++) {
+    var a0 = i*anglePer, a1 = (i+1)*anglePer;
+    var p0o = polar(rOuter, a0), p1o = polar(rOuter, a1);
+    var p0i = polar(rInner, a0), p1i = polar(rInner, a1);
+    var d = "M "+p0i[0]+" "+p0i[1]+
+            " L "+p0o[0]+" "+p0o[1]+
+            " A "+rOuter+" "+rOuter+" 0 0 1 "+p1o[0]+" "+p1o[1]+
+            " L "+p1i[0]+" "+p1i[1]+
+            " A "+rInner+" "+rInner+" 0 0 0 "+p0i[0]+" "+p0i[1]+" Z";
+    svg += '<path class="wheel-seg" data-idx="'+i+'" d="'+d+'" fill="'+wheelColors[i].hex+'"></path>';
+  }
+  svg += '</svg>';
+  return svg;
+}
+
+function renderWheelQuestion() {
+  $("wh-feedback").textContent = "";
+  $("wh-feedback").className = "feedback";
+  $("wh-next-btn").classList.add("hidden");
+  whPicked = [];
+  whLocked = false;
+  whCurrent = drawWheelQuestion();
+
+  $("wh-harmony-tag").textContent = whCurrent.type.label;
+  $("wh-prompt-label").innerHTML = whCurrent.type.desc + ' Warna acuan: <strong style="text-transform:capitalize">'+prettify(wheelColors[whCurrent.ref].name)+'</strong>.';
+
+  var stage = $("wheel-stage");
+  stage.innerHTML = buildWheelSVG();
+  var refIdx = whCurrent.ref;
+  stage.querySelectorAll(".wheel-seg").forEach(function(seg){
+    var idx = parseInt(seg.getAttribute("data-idx"), 10);
+    if (idx === refIdx) seg.classList.add("ref");
+    seg.addEventListener("click", function(){ onWheelSegClick(idx, seg); });
+  });
+
+  renderWheelPickRow();
+  startWheelTimer(whActiveLevel.time);
+}
+
+function renderWheelPickRow() {
+  var row = $("wheel-pick-row");
+  row.innerHTML = "";
+  var needed = whCurrent.type.pickCount;
+  for (var i = 0; i < needed; i++) {
+    var chip = document.createElement("div");
+    if (whPicked[i] !== undefined) {
+      chip.className = "wheel-pick-chip";
+      var dot = document.createElement("span"); dot.className = "dot"; dot.style.background = wheelColors[whPicked[i]].hex;
+      chip.appendChild(dot);
+      var lbl = document.createElement("span"); lbl.textContent = prettify(wheelColors[whPicked[i]].name);
+      chip.appendChild(lbl);
+    } else {
+      chip.className = "wheel-pick-chip placeholder";
+      chip.textContent = "Pilihan "+(i+1);
+    }
+    row.appendChild(chip);
+  }
+}
+
+function onWheelSegClick(idx, segEl) {
+  if (whLocked) return;
+  if (idx === whCurrent.ref) return; // tidak bisa pilih warna acuan itu sendiri
+  var existingPos = whPicked.indexOf(idx);
+  if (existingPos !== -1) {
+    // klik ulang segmen yang sudah dipilih -> batalkan pilihan
+    whPicked.splice(existingPos, 1);
+    segEl.classList.remove("picked");
+    renderWheelPickRow();
+    return;
+  }
+  if (whPicked.length >= whCurrent.type.pickCount) return;
+  whPicked.push(idx);
+  segEl.classList.add("picked");
+  renderWheelPickRow();
+  if (whPicked.length === whCurrent.type.pickCount) {
+    checkWheelAnswer();
+  }
+}
+
+function checkWheelAnswer() {
+  var targets = whCurrent.targets.slice().sort();
+  var picked = whPicked.slice().sort();
+  var isCorrect = targets.length === picked.length && targets.every(function(t, i){ return t === picked[i]; });
+  finalizeWheelAnswer(isCorrect, false);
+}
+
+function finalizeWheelAnswer(isCorrect, timedOut) {
+  whLocked = true;
+  clearInterval(whTimer);
+  var stage = $("wheel-stage");
+  var segs = stage.querySelectorAll(".wheel-seg");
+  segs.forEach(function(seg){ seg.classList.add("locked"); });
+
+  // highlight jawaban benar di roda, dan tandai pilihan user yang salah
+  var targetSet = whCurrent.targets;
+  segs.forEach(function(seg){
+    var idx = parseInt(seg.getAttribute("data-idx"), 10);
+    if (targetSet.indexOf(idx) !== -1) seg.classList.add("correct-seg");
+    else if (whPicked.indexOf(idx) !== -1) seg.classList.add("wrong-seg");
+  });
+
+  if (isCorrect) {
+    whScore++;
+    var gained = wheelLevelXp();
+    whXp += gained;
+    $("wh-feedback").textContent = "Benar! Kombinasi "+whCurrent.type.label+" tepat. +"+gained+" XP";
+    $("wh-feedback").className = "feedback correct-text";
+  } else {
+    var targetNames = whCurrent.targets.map(function(i){ return prettify(wheelColors[i].name); }).join(" & ");
+    $("wh-feedback").textContent = (timedOut ? "Waktu habis. " : "Kurang tepat. ") + "Jawaban: "+targetNames;
+    $("wh-feedback").className = "feedback wrong-text";
+  }
+  afterWheelAnswer();
+}
+
+function afterWheelAnswer() {
+  whAnswered++;
+  updateWheelUI();
+  $("wh-next-btn").textContent = whAnswered >= whSessionTarget ? "Lihat hasil →" : "Soal berikutnya →";
+  $("wh-next-btn").classList.remove("hidden");
+}
+
+function showWheelSummary() {
+  $("wheel-active").classList.add("hidden");
+  $("wheel-summary").classList.remove("hidden");
+  $("wh-summary-xp").textContent = whXp+" XP";
+  $("wh-summary-line").textContent = whScore+" dari "+whAnswered+" benar · Level "+whActiveLevel.name;
+}
+
+$("wh-next-btn").addEventListener("click", function(){
+  if (whAnswered >= whSessionTarget) showWheelSummary();
+  else renderWheelQuestion();
+});
+$("wh-restart-btn").addEventListener("click", function(){ startWheelSkema(whActiveLevel._sk); });
+$("wh-change-level-btn").addEventListener("click", function(){ clearInterval(whTimer); showScreen("wheelSelect"); renderWheelLevelSelect(); });
+$("back-to-wheel-levels").addEventListener("click", function(){ clearInterval(whTimer); showScreen("wheelSelect"); renderWheelLevelSelect(); });
+
+// =======================================================================
 // ========================= THEORY QUIZ =================================
 // =======================================================================
 var materiKonten = {
@@ -1275,7 +2024,7 @@ var materiKonten = {
   <li><strong>Tingkatan Warna</strong> — Primer, Sekunder, Tersier, Netral</li>
   <li><strong>Atribut Warna</strong> — Hue, Value, Saturation, Tint, Shade, Tone</li>
   <li><strong>RGB & CMYK</strong> — Sistem warna layar vs cetak</li>
-  <li><strong>Harmoni Warna</strong> — Monokromatik, Analog, Komplementer, Triadik</li>
+  <li><strong>Harmoni Warna</strong> — 8 Skema: Mono, Akromatik, Analog, Komplementer, Split-Komplementer, Triadik, Tetradik, Polikromatik</li>
   <li><strong>Psikologi Warna</strong> — Makna & fungsi warna dalam desain</li>
 </ul>`
   },
@@ -1321,16 +2070,43 @@ var materiKonten = {
 <div class="materi-highlight"><strong>Ingat:</strong> Desain untuk <strong>cetak → CMYK</strong>. Desain untuk <strong>layar → RGB</strong>. Cyan + Yellow (printer) = <strong>Hijau</strong>.</div>`
   },
   "c3": {
-    judul: "Bab 4 · Skema Harmoni Warna",
-    isi: `<p>Formula keserasian warna berdasarkan posisi di lingkaran warna:</p>
-<ul>
-  <li><strong>Monokromatik</strong> = 1 hue, beda value/saturasi. Contoh: Biru Muda, Biru, Biru Dongker.</li>
-  <li><strong>Analog</strong> = warna-warna yang <strong>bersebelahan</strong> di color wheel. Kesan: alami, tenang. Contoh: Hijau, Kuning-Hijau, Kuning.</li>
-  <li><strong>Komplementer</strong> = 2 warna yang <strong>saling berhadapan</strong> di color wheel. Kontras tinggi, mencolok. Contoh: Merah & Hijau, Biru & Oranye.</li>
-  <li><strong>Triadik</strong> = 3 warna membentuk <strong>segitiga sama sisi</strong>. Ceria, kaya warna. Contoh: Merah, Kuning, Biru (warna primer).</li>
-  <li><strong>Split-Komplementer</strong> = 1 warna utama + 2 warna di sebelah warna berseberangannya.</li>
-  <li><strong>Tetradik</strong> = 2 pasang warna komplementer sekaligus (4 warna).</li>
-</ul>`
+    judul: "Bab 4 · Skema Harmoni Warna (8 Skema)",
+    isi: `<p>Harmoni warna adalah formula keserasian warna berdasarkan posisi warna di lingkaran warna (color wheel). Secara akademik DKV, harmoni warna dikelompokkan menjadi <strong>8 skema</strong>:</p>
+<div class="skema-grid">
+  <div class="skema-item">
+    <div class="skema-item-head"><span class="skema-item-num">1</span><span class="skema-item-title">Monokromatik</span></div>
+    <p class="skema-item-body">Menggunakan <strong>1 hue (warna) yang sama</strong>, divariasikan lewat <strong>tint, shade, atau tone</strong>-nya. Kesan: rapi, elegan, minim risiko salah padu. Contoh: Biru Muda, Biru, Biru Dongker.</p>
+  </div>
+  <div class="skema-item">
+    <div class="skema-item-head"><span class="skema-item-num">2</span><span class="skema-item-title">Akromatik</span></div>
+    <p class="skema-item-body">Skema <strong>tanpa hue/warna sama sekali</strong> — hanya memakai <strong>Hitam, Putih, dan gradasi Abu-abu</strong>. Kesan: maskulin, modern, klasik, fokus pada kontras terang-gelap (value). Banyak dipakai di fotografi hitam-putih & desain minimalis.</p>
+  </div>
+  <div class="skema-item">
+    <div class="skema-item-head"><span class="skema-item-num">3</span><span class="skema-item-title">Analog</span></div>
+    <p class="skema-item-body">Memadukan warna-warna yang <strong>bersebelahan langsung</strong> di lingkaran warna (biasanya 2-3 warna). Kesan: alami, tenang, nyaman dipandang. Contoh: Hijau, Kuning-Hijau, Kuning.</p>
+  </div>
+  <div class="skema-item">
+    <div class="skema-item-head"><span class="skema-item-num">4</span><span class="skema-item-title">Komplementer</span></div>
+    <p class="skema-item-body">Memakai <strong>2 warna yang saling berhadapan</strong> (180°) di lingkaran warna. Kontras paling tinggi & paling mencolok di antara semua skema. Contoh: Merah & Hijau, Biru & Oranye, Kuning & Ungu.</p>
+  </div>
+  <div class="skema-item">
+    <div class="skema-item-head"><span class="skema-item-num">5</span><span class="skema-item-title">Split-Komplementer</span></div>
+    <p class="skema-item-body">Mengambil <strong>1 warna utama</strong>, lalu <strong>2 warna di kiri-kanan titik komplementernya</strong> (bukan komplementer langsung). Hasilnya tetap kontras tapi <strong>lebih lembut & lebih fleksibel</strong> dibanding komplementer murni.</p>
+  </div>
+  <div class="skema-item">
+    <div class="skema-item-head"><span class="skema-item-num">6</span><span class="skema-item-title">Triadik</span></div>
+    <p class="skema-item-body">Menggunakan <strong>3 warna</strong> yang posisinya membentuk <strong>segitiga sama sisi</strong> (jarak 120° satu sama lain) di lingkaran warna. Kesan: ceria, seimbang, kaya warna namun tetap harmonis. Contoh: Merah, Kuning, Biru (warna primer).</p>
+  </div>
+  <div class="skema-item">
+    <div class="skema-item-head"><span class="skema-item-num">7</span><span class="skema-item-title">Tetradik (Persegi)</span></div>
+    <p class="skema-item-body">Menggunakan <strong>4 warna</strong> berupa <strong>2 pasang warna komplementer</strong> yang membentuk persegi/persegi panjang di lingkaran warna. Skema paling kompleks & paling banyak variasi, butuh 1 warna dominan agar tidak ramai/berantakan.</p>
+  </div>
+  <div class="skema-item">
+    <div class="skema-item-head"><span class="skema-item-num">8</span><span class="skema-item-title">Polikromatik</span></div>
+    <p class="skema-item-body">Menggunakan <strong>banyak warna (5 atau lebih)</strong> tanpa aturan posisi yang kaku di lingkaran warna. Kesan: ramai, ceria, playful — sering dipakai pada desain anak-anak, festival, atau ilustrasi bertema keberagaman.</p>
+  </div>
+</div>
+<div class="materi-highlight"><strong>Tips membedakan:</strong> Akromatik = TANPA warna (hanya hitam-putih-abu). Monokromatik = SATU warna saja. Polikromatik = warna BEBAS & BANYAK tanpa aturan posisi. Sisanya (Analog, Komplementer, Split-Komplementer, Triadik, Tetradik) ditentukan dari <strong>posisi/jarak antar-warna</strong> di lingkaran warna.</div>`
   },
   "c4": {
     judul: "Bab 5 · Psikologi Warna",
@@ -1350,7 +2126,7 @@ var materiKonten = {
 };
 
 function renderTheorySelect() {
-  $("header-subtitle").textContent = "Soal anak TK · Pilih kategori";
+  $("header-subtitle").textContent = "Latihan Soal · Pilih kategori";
   var grid = $("category-select-grid");
   grid.innerHTML = "";
 
@@ -1377,8 +2153,17 @@ function renderTheorySelect() {
     var panel = document.createElement("div"); panel.className = "materi-panel";
     var mk = materiKonten[cat.id];
     if (mk) {
-      panel.innerHTML = "<h4>"+mk.judul+"</h4>"+mk.isi+
-        '<button class="mulai-dari-materi-btn" data-catid="'+cat.id+'">▶ Mulai soal '+cat.name+'</button>';
+      if (cat.id === "c3") {
+        // Khusus Harmoni Warna: ada game dedicated (Color Wheel Harmony), tampilkan 2 pilihan aksi
+        panel.innerHTML = "<h4>"+mk.judul+"</h4>"+mk.isi+
+          '<div class="materi-actions-row">'
+          + '<button class="mulai-dari-materi-btn" data-catid="'+cat.id+'">▶ Latihan Soal</button>'
+          + '<button class="materi-action-btn-game" data-action="wheel-game">🎡 Main Game Roda Warna</button>'
+          + '</div>';
+      } else {
+        panel.innerHTML = "<h4>"+mk.judul+"</h4>"+mk.isi+
+          '<button class="mulai-dari-materi-btn" data-catid="'+cat.id+'">▶ Mulai soal '+cat.name+'</button>';
+      }
     }
 
     mBtn.addEventListener("click", function(e){
@@ -1407,6 +2192,10 @@ function renderTheorySelect() {
       var cid = e.target.getAttribute("data-catid");
       var cat = theoryCategories.find(function(c){ return c.id === cid; });
       if (cat) startTheoryQuiz(cat);
+    }
+    if (e.target && e.target.getAttribute("data-action") === "wheel-game") {
+      showScreen("wheelSelect");
+      renderWheelLevelSelect();
     }
   });
 }
