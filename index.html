@@ -498,6 +498,7 @@
     font-family: inherit;
   }
   .back-link:hover { color: var(--text-primary); }
+  .back-arrow { font-size: 17px; line-height: 1; }
 
   /* ========== KARTU SOAL (COLOR MIXER) ========== */
   .question-card {
@@ -515,7 +516,7 @@
     color: var(--text-secondary);
     margin-bottom: 14px;
   }
-  .question-label .timer { color: var(--danger); font-weight: 600; }
+  .question-label .timer { color: var(--danger); font-weight: 600; margin-left: 4px; }
 
   .swatch-row {
     display: flex;
@@ -1416,13 +1417,13 @@
 
   <!-- ========== SCREEN: LEVEL SELECT (Color Mixer) ========== -->
   <div id="screen-level-select" class="hidden">
-    <button class="back-link" id="back-to-home-from-mixer">← Kembali ke menu</button>
+    <button class="back-link" id="back-to-home-from-mixer"><span class="back-arrow">←</span> Kembali ke menu</button>
     <div class="level-select-grid" id="level-select-grid"></div>
   </div>
 
   <!-- ========== SCREEN: COLOR MIXER QUIZ ========== -->
   <div id="screen-quiz" class="hidden">
-    <button class="back-link" id="back-to-levels">← Ganti level</button>
+    <button class="back-link" id="back-to-levels"><span class="back-arrow">←</span> Ganti level</button>
 
     <div class="stats-bar">
       <div class="stat-block">
@@ -1475,13 +1476,13 @@
 
   <!-- ========== SCREEN: LEVEL SELECT (Color Wheel Harmony) ========== -->
   <div id="screen-wheel-select" class="hidden">
-    <button class="back-link" id="back-to-home-from-wheel">← Kembali ke menu</button>
+    <button class="back-link" id="back-to-home-from-wheel"><span class="back-arrow">←</span> Kembali ke menu</button>
     <div class="level-select-grid" id="wheel-level-select-grid"></div>
   </div>
 
   <!-- ========== SCREEN: COLOR WHEEL HARMONY GAME ========== -->
   <div id="screen-wheel" class="hidden">
-    <button class="back-link" id="back-to-wheel-levels">← Ganti skema</button>
+    <button class="back-link" id="back-to-wheel-levels"><span class="back-arrow">←</span> Ganti skema</button>
 
     <div class="stats-bar">
       <div class="stat-block">
@@ -1537,13 +1538,13 @@
 
   <!-- ========== SCREEN: THEORY CATEGORY SELECT ========== -->
   <div id="screen-theory-select" class="hidden">
-    <button class="back-link" id="back-to-home-from-theory">← Kembali ke menu</button>
+    <button class="back-link" id="back-to-home-from-theory"><span class="back-arrow">←</span> Kembali ke menu</button>
     <div class="category-select-grid" id="category-select-grid"></div>
   </div>
 
   <!-- ========== SCREEN: THEORY QUIZ ========== -->
   <div id="screen-theory" class="hidden">
-    <button class="back-link" id="back-to-theory-select">← Ganti kategori</button>
+    <button class="back-link" id="back-to-theory-select"><span class="back-arrow">←</span> Ganti kategori</button>
 
     <div class="stats-bar">
       <div class="stat-block">
@@ -1604,7 +1605,7 @@
 
   <!-- ========== SCREEN: INFO WARNA PANTONE ========== -->
   <div id="screen-pantone-info" class="hidden">
-    <button class="back-link" id="back-to-theory-from-pantone">← Kembali ke menu</button>
+    <button class="back-link" id="back-to-theory-from-pantone"><span class="back-arrow">←</span> Kembali ke menu</button>
     <div class="pantone-info-note">
       <strong>PMS Solid (Coated)</strong> — Standar percetakan &amp; desain grafis. ±1.867 warna solid. Tabel ini menampilkan <strong>293 warna PMS terpilih</strong> dalam <strong>22 kelompok warna</strong>, termasuk Silver &amp; Metalik, Merah Marun &amp; Burgundy, dan kelompok baru lainnya.
     </div>
@@ -1617,7 +1618,7 @@
 
   <!-- ========== SCREEN: PELAJARI WARNA (sebelum mode select) ========== -->
   <div id="screen-nama-study" class="hidden">
-    <button class="back-link" id="back-to-home-from-nama-study">← Kembali ke menu</button>
+    <button class="back-link" id="back-to-home-from-nama-study"><span class="back-arrow">←</span> Kembali ke menu</button>
     <div class="study-header">
       <input type="text" class="study-search" id="study-search-input" placeholder="Cari nama atau kode warna..." oninput="filterStudyColors()">
       <span class="study-count" id="study-count-badge">64 warna</span>
@@ -1628,13 +1629,13 @@
 
   <!-- ========== SCREEN: TEBAK NAMA WARNA - MODE SELECT ========== -->
   <div id="screen-nama-select" class="hidden">
-    <button class="back-link" id="back-to-nama-study-from-select">← Pelajari warna dulu</button>
+    <button class="back-link" id="back-to-nama-study-from-select"><span class="back-arrow">←</span> Pelajari warna dulu</button>
     <div class="level-select-grid" id="nama-mode-grid"></div>
   </div>
 
   <!-- ========== SCREEN: TEBAK NAMA WARNA - GAME ========== -->
   <div id="screen-nama" class="hidden">
-    <button class="back-link" id="back-to-nama-select">← Ganti mode</button>
+    <button class="back-link" id="back-to-nama-select"><span class="back-arrow">←</span> Ganti mode</button>
 
     <div class="stats-bar">
       <div class="stat-block">
@@ -1660,7 +1661,7 @@
     <div id="nw-active">
       <!-- kotak warna besar -->
       <div class="question-card" style="text-align:center;">
-        <div class="theory-q-number" style="justify-content:center; margin-bottom:14px;">
+        <div class="theory-q-number" style="justify-content:center; gap:14px; margin-bottom:14px;">
           <span id="nw-label">Soal 1 dari 15</span>
           <span class="theory-q-timer hidden" id="nw-timer">8s</span>
         </div>
