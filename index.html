@@ -1167,6 +1167,14 @@
     justify-content: center;
     font-size: 26px;
   }
+  /* harmony label removed */
+  #splash-color-wheel path {
+    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    transform-origin: 80px 80px;
+  }
+  #splash-color-wheel path.seg-pop {
+    transform: scale(1.14);
+  }
 
   /* === TITLE === */
   .splash-title {
@@ -1218,6 +1226,7 @@
     transition: transform 0.15s, box-shadow 0.15s;
     animation: splashFadeUp 0.5s ease 0.95s both;
     font-family: inherit;
+    margin-top: 28px;
   }
 
   .splash-btn:hover  { transform: translateY(-2px) scale(1.01); box-shadow: 0 6px 20px rgba(91,79,207,0.35); }
@@ -1241,6 +1250,55 @@
   }
   .splash-corner-tl { top: 0; left: 0; }
   .splash-corner-br { bottom: 0; right: 0; transform: rotate(180deg); }
+
+  /* ========== INFO WARNA PANTONE (grid style) ========== */
+  .pantone-header-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .pantone-search {
+    flex: 1;
+    height: 36px;
+    font-size: 13px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 0 12px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .pantone-search:focus { border-color: var(--accent); }
+  .pantone-count-badge {
+    font-size: 11px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+  }
+  .pantone-info-note {
+    font-size: 11px;
+    color: var(--text-secondary);
+    background: rgba(91,79,207,0.05);
+    border: 1px solid rgba(91,79,207,0.15);
+    border-radius: var(--radius-md);
+    padding: 10px 12px;
+    line-height: 1.6;
+    margin-bottom: 14px;
+  }
+  .pantone-info-note strong { color: var(--accent); }
+  /* kode PMS kecil di bawah hex */
+  .pms-code-small {
+    font-size: 7.5px;
+    color: var(--accent);
+    display: block;
+    font-family: monospace;
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 </style>
 </head>
 <body>
@@ -1269,20 +1327,23 @@
     <!-- Spinning color wheel SVG -->
     <div class="splash-wheel-wrap">
       <svg id="splash-color-wheel" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
-        <!-- 12 color segments -->
-        <path d="M80,80 L80,10 A70,70 0 0,1 115,17.4 Z" fill="#ff0000"/>
-        <path d="M80,80 L115,17.4 A70,70 0 0,1 141.2,43 Z" fill="#ff5500"/>
-        <path d="M80,80 L141.2,43 A70,70 0 0,1 150,80 Z" fill="#ff9900"/>
-        <path d="M80,80 L150,80 A70,70 0 0,1 141.2,117 Z" fill="#ffdd00"/>
-        <path d="M80,80 L141.2,117 A70,70 0 0,1 115,142.6 Z" fill="#aadd00"/>
-        <path d="M80,80 L115,142.6 A70,70 0 0,1 80,150 Z" fill="#00bb00"/>
-        <path d="M80,80 L80,150 A70,70 0 0,1 45,142.6 Z" fill="#00bbaa"/>
-        <path d="M80,80 L45,142.6 A70,70 0 0,1 18.8,117 Z" fill="#0099ff"/>
-        <path d="M80,80 L18.8,117 A70,70 0 0,1 10,80 Z" fill="#0044ff"/>
-        <path d="M80,80 L10,80 A70,70 0 0,1 18.8,43 Z" fill="#6600cc"/>
-        <path d="M80,80 L18.8,43 A70,70 0 0,1 45,17.4 Z" fill="#cc00aa"/>
-        <path d="M80,80 L45,17.4 A70,70 0 0,1 80,10 Z" fill="#ff0066"/>
-        <!-- inner ring light overlay -->
+        <!-- 12 color segments, individually addressable by id -->
+        <!-- seg-0=Red, seg-1=Red-Orange, seg-2=Orange, seg-3=Yellow-Orange,
+             seg-4=Yellow, seg-5=Yellow-Green, seg-6=Green, seg-7=Blue-Green,
+             seg-8=Blue, seg-9=Blue-Violet, seg-10=Violet, seg-11=Red-Violet -->
+        <path id="wseg-0"  d="M80,80 L80,10 A70,70 0 0,1 115,17.4 Z"     fill="#ff0000" opacity="1"/>
+        <path id="wseg-1"  d="M80,80 L115,17.4 A70,70 0 0,1 141.2,43 Z"  fill="#ff5500" opacity="1"/>
+        <path id="wseg-2"  d="M80,80 L141.2,43 A70,70 0 0,1 150,80 Z"    fill="#ff9900" opacity="1"/>
+        <path id="wseg-3"  d="M80,80 L150,80 A70,70 0 0,1 141.2,117 Z"   fill="#ffdd00" opacity="1"/>
+        <path id="wseg-4"  d="M80,80 L141.2,117 A70,70 0 0,1 115,142.6 Z" fill="#aadd00" opacity="1"/>
+        <path id="wseg-5"  d="M80,80 L115,142.6 A70,70 0 0,1 80,150 Z"   fill="#00bb00" opacity="1"/>
+        <path id="wseg-6"  d="M80,80 L80,150 A70,70 0 0,1 45,142.6 Z"    fill="#00bbaa" opacity="1"/>
+        <path id="wseg-7"  d="M80,80 L45,142.6 A70,70 0 0,1 18.8,117 Z"  fill="#0099ff" opacity="1"/>
+        <path id="wseg-8"  d="M80,80 L18.8,117 A70,70 0 0,1 10,80 Z"     fill="#0044ff" opacity="1"/>
+        <path id="wseg-9"  d="M80,80 L10,80 A70,70 0 0,1 18.8,43 Z"      fill="#6600cc" opacity="1"/>
+        <path id="wseg-10" d="M80,80 L18.8,43 A70,70 0 0,1 45,17.4 Z"    fill="#cc00aa" opacity="1"/>
+        <path id="wseg-11" d="M80,80 L45,17.4 A70,70 0 0,1 80,10 Z"      fill="#ff0066" opacity="1"/>
+        <!-- inner ring overlay -->
         <circle cx="80" cy="80" r="35" fill="#f0f4ff"/>
         <!-- subtle ring border -->
         <circle cx="80" cy="80" r="70" fill="none" stroke="rgba(0,0,0,0.08)" stroke-width="1"/>
@@ -1296,7 +1357,6 @@
     <p class="splash-sub">Ekskul DKV · SMPN 1 Sumenep</p>
 
     <button class="splash-btn" id="splash-btn">Mulai Belajar</button>
-    <p class="splash-hint">Tap di mana saja untuk mulai</p>
   </div>
 </div>
 
@@ -1310,6 +1370,14 @@
   <!-- ========== SCREEN: HOME (pilih game) ========== -->
   <div id="screen-home">
     <div class="game-select-grid">
+      <button class="game-card" id="go-pantone-info" style="border-color:rgba(200,150,0,0.35);background:linear-gradient(135deg,rgba(255,253,240,0.9),rgba(255,244,210,0.5));">
+        <div class="game-card-info">
+          <div class="game-card-name">🎨 Info Warna Pantone</div>
+          <div class="game-card-desc">Tabel 293 warna PMS Solid pilihan — nama, kode &amp; swatch warna. Referensi standar desain grafis &amp; percetakan.</div>
+        </div>
+        <div class="game-card-arrow" style="color:#c47d00;">›</div>
+      </button>
+
       <button class="game-card" id="go-theory">
         <div class="game-card-info">
           <div class="game-card-name">Latihan Soal</div>
@@ -1532,6 +1600,19 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- ========== SCREEN: INFO WARNA PANTONE ========== -->
+  <div id="screen-pantone-info" class="hidden">
+    <button class="back-link" id="back-to-theory-from-pantone">← Kembali ke menu</button>
+    <div class="pantone-info-note">
+      <strong>PMS Solid (Coated)</strong> — Standar percetakan &amp; desain grafis. ±1.867 warna solid. Tabel ini menampilkan <strong>293 warna PMS terpilih</strong> dalam <strong>22 kelompok warna</strong>, termasuk Silver &amp; Metalik, Merah Marun &amp; Burgundy, dan kelompok baru lainnya.
+    </div>
+    <div class="pantone-header-bar">
+      <input type="text" class="pantone-search" id="pantone-search-input" placeholder="Cari nama, kode PMS, atau hex..." oninput="filterPantoneGrid()">
+      <span class="pantone-count-badge" id="pantone-count-badge">293 warna</span>
+    </div>
+    <div class="study-grid" id="pantone-color-grid"></div>
   </div>
 
   <!-- ========== SCREEN: PELAJARI WARNA (sebelum mode select) ========== -->
@@ -2103,6 +2184,7 @@ var screens = {
   wheel: $("screen-wheel"),
   theorySelect: $("screen-theory-select"),
   theory: $("screen-theory"),
+  pantoneInfo: $("screen-pantone-info"),
   namaStudy: $("screen-nama-study"),
   namaSelect: $("screen-nama-select"),
   nama: $("screen-nama")
@@ -2139,12 +2221,389 @@ $("go-color-mixer").addEventListener("click", function(){ showScreen("levelSelec
 $("go-theory").addEventListener("click", function(){ showScreen("theorySelect"); renderTheorySelect(); });
 $("go-wheel").addEventListener("click", function(){ showScreen("wheelSelect"); renderWheelLevelSelect(); });
 $("go-nama-warna").addEventListener("click", function(){ showScreen("namaStudy"); renderStudyScreen(); });
+$("go-pantone-info").addEventListener("click", function(){ showPantoneInfo(); });
 
 $("back-to-home-from-mixer").addEventListener("click", function(){ showScreen("home"); $("header-subtitle").textContent = "Pilih game untuk dimainkan"; });
 $("back-to-home-from-theory").addEventListener("click", function(){ showScreen("home"); $("header-subtitle").textContent = "Pilih game untuk dimainkan"; });
 $("back-to-home-from-wheel").addEventListener("click", function(){ showScreen("home"); $("header-subtitle").textContent = "Pilih game untuk dimainkan"; });
 $("back-to-home-from-nama-study").addEventListener("click", function(){ showScreen("home"); $("header-subtitle").textContent = "Pilih game untuk dimainkan"; });
 $("back-to-nama-study-from-select").addEventListener("click", function(){ showScreen("namaStudy"); renderStudyScreen(); });
+$("back-to-theory-from-pantone").addEventListener("click", function(){ showScreen("home"); $("header-subtitle").textContent = "Pilih game untuk dimainkan"; });
+
+// =======================================================================
+// ========================= PANTONE PMS DATA ============================
+// =======================================================================
+var pantoneData = [
+  // ---- WARNA IDENTITAS PANTONE (warna basis/resmi Pantone) ----
+  { group:"Warna Identitas Pantone", code:"PMS Pantone Yellow C", name:"Pantone Yellow", hex:"#FEDD00" },
+  { group:"Warna Identitas Pantone", code:"PMS Pantone Orange 021 C", name:"Pantone Orange", hex:"#FE5000" },
+  { group:"Warna Identitas Pantone", code:"PMS Pantone Red 032 C", name:"Pantone Red", hex:"#EF3340" },
+  { group:"Warna Identitas Pantone", code:"PMS Pantone Rubine Red C", name:"Rubine Red", hex:"#CE0058" },
+  { group:"Warna Identitas Pantone", code:"PMS Pantone Rhodamine Red C", name:"Rhodamine Red", hex:"#E40087" },
+  { group:"Warna Identitas Pantone", code:"PMS Pantone Purple C", name:"Pantone Purple", hex:"#7C4D9F" },
+  { group:"Warna Identitas Pantone", code:"PMS Pantone Violet C", name:"Pantone Violet", hex:"#440099" },
+  { group:"Warna Identitas Pantone", code:"PMS Pantone Blue 072 C", name:"Pantone Blue 072", hex:"#10239E" },
+  { group:"Warna Identitas Pantone", code:"PMS Pantone Reflex Blue C", name:"Reflex Blue", hex:"#001489" },
+  { group:"Warna Identitas Pantone", code:"PMS Pantone Process Blue C", name:"Process Blue", hex:"#0085CA" },
+  { group:"Warna Identitas Pantone", code:"PMS Pantone Green C", name:"Pantone Green", hex:"#00A550" },
+  { group:"Warna Identitas Pantone", code:"PMS Pantone Black C", name:"Pantone Black", hex:"#2B2926" },
+  { group:"Warna Identitas Pantone", code:"PMS Process Cyan C", name:"Process Cyan", hex:"#00AEEF" },
+  { group:"Warna Identitas Pantone", code:"PMS Process Magenta C", name:"Process Magenta", hex:"#CC0066" },
+  { group:"Warna Identitas Pantone", code:"PMS Process Yellow C", name:"Process Yellow", hex:"#FEDD00" },
+  { group:"Warna Identitas Pantone", code:"PMS Warm Red C", name:"Warm Red", hex:"#F9423A" },
+  // ---- MERAH ----
+  { group:"Merah", code:"PMS 032 C", name:"Merah Pantone", hex:"#EF3340" },
+  { group:"Merah", code:"PMS 179 C", name:"Merah Oranye", hex:"#E8472B" },
+  { group:"Merah", code:"PMS 1788 C", name:"Merah Menyala", hex:"#F4364C" },
+  { group:"Merah", code:"PMS 185 C", name:"Merah Cerah", hex:"#E4002B" },
+  { group:"Merah", code:"PMS 186 C", name:"Merah Tua", hex:"#C8102E" },
+  { group:"Merah", code:"PMS 187 C", name:"Merah Gelap", hex:"#A6192E" },
+  { group:"Merah", code:"PMS 188 C", name:"Merah Maroon", hex:"#6F263D" },
+  { group:"Merah", code:"PMS 1795 C", name:"Merah Korek Api", hex:"#DC2727" },
+  { group:"Merah", code:"PMS 1805 C", name:"Merah Bata", hex:"#9E1B32" },
+  { group:"Merah", code:"PMS 201 C", name:"Merah Mawar", hex:"#9D2235" },
+  { group:"Merah", code:"PMS 202 C", name:"Merah Crimson", hex:"#862633" },
+  { group:"Merah", code:"PMS 200 C", name:"Merah Segar", hex:"#BA0C2F" },
+  { group:"Merah", code:"PMS 193 C", name:"Merah Rubi", hex:"#BE3A54" },
+  { group:"Merah", code:"PMS 194 C", name:"Merah Anggur Muda", hex:"#9B2743" },
+  // ---- MERAH MUDA & PINK ----
+  { group:"Merah Muda & Pink", code:"PMS 1767 C", name:"Pink Muda", hex:"#FAADC3" },
+  { group:"Merah Muda & Pink", code:"PMS 1775 C", name:"Pink Salmon", hex:"#F7ACC4" },
+  { group:"Merah Muda & Pink", code:"PMS 1787 C", name:"Pink Mencolok", hex:"#F96183" },
+  { group:"Merah Muda & Pink", code:"PMS 204 C", name:"Pink Magenta", hex:"#DD6596" },
+  { group:"Merah Muda & Pink", code:"PMS 210 C", name:"Pink Lembut", hex:"#FBACCA" },
+  { group:"Merah Muda & Pink", code:"PMS 211 C", name:"Pink Baby", hex:"#F8A3C0" },
+  { group:"Merah Muda & Pink", code:"PMS 218 C", name:"Pink Tua", hex:"#E85799" },
+  { group:"Merah Muda & Pink", code:"PMS 219 C", name:"Pink Fuchsia", hex:"#E0457B" },
+  { group:"Merah Muda & Pink", code:"PMS 225 C", name:"Hot Pink", hex:"#E9517D" },
+  { group:"Merah Muda & Pink", code:"PMS 226 C", name:"Pink Terang", hex:"#E31C79" },
+  { group:"Merah Muda & Pink", code:"PMS 232 C", name:"Pink Cerah", hex:"#F271AC" },
+  { group:"Merah Muda & Pink", code:"PMS Rhodamine Red C", name:"Rhodamine Red", hex:"#E40087" },
+  // ---- MAGENTA & UNGU MERAH ----
+  { group:"Magenta & Ungu Merah", code:"PMS Rubine Red C", name:"Rubine Red", hex:"#CE0058" },
+  { group:"Magenta & Ungu Merah", code:"PMS 233 C", name:"Merah Ungu", hex:"#CF3E91" },
+  { group:"Magenta & Ungu Merah", code:"PMS 234 C", name:"Fuchsia Tua", hex:"#B4287A" },
+  { group:"Magenta & Ungu Merah", code:"PMS 235 C", name:"Fuchsia Gelap", hex:"#9B2661" },
+  { group:"Magenta & Ungu Merah", code:"PMS 241 C", name:"Violet Merah", hex:"#B83D96" },
+  { group:"Magenta & Ungu Merah", code:"PMS 248 C", name:"Mauve", hex:"#C264A5" },
+  { group:"Magenta & Ungu Merah", code:"PMS 255 C", name:"Ungu Anggur", hex:"#7B3F6E" },
+  { group:"Magenta & Ungu Merah", code:"PMS 2365 C", name:"Pink Orchid Muda", hex:"#F7BBDA" },
+  { group:"Magenta & Ungu Merah", code:"PMS 245 C", name:"Orchid Muda", hex:"#E6A0C4" },
+  { group:"Magenta & Ungu Merah", code:"PMS 252 C", name:"Orchid Tua", hex:"#C06DB5" },
+  // ---- UNGU & VIOLET ----
+  { group:"Ungu & Violet", code:"PMS 2552 C", name:"Ungu Lavender", hex:"#C8B4DA" },
+  { group:"Ungu & Violet", code:"PMS 2562 C", name:"Ungu Muda", hex:"#B385CC" },
+  { group:"Ungu & Violet", code:"PMS 2572 C", name:"Ungu Sedang", hex:"#9E62BA" },
+  { group:"Ungu & Violet", code:"PMS 2577 C", name:"Ungu Segar", hex:"#8B4FAC" },
+  { group:"Ungu & Violet", code:"PMS 2582 C", name:"Ungu Standar", hex:"#7E3B9E" },
+  { group:"Ungu & Violet", code:"PMS 2592 C", name:"Ungu Terang", hex:"#A15FBE" },
+  { group:"Ungu & Violet", code:"PMS 2607 C", name:"Ungu Tua", hex:"#6B2D8B" },
+  { group:"Ungu & Violet", code:"PMS 2617 C", name:"Ungu Gelap", hex:"#5C2D82" },
+  { group:"Ungu & Violet", code:"PMS 264 C", name:"Lavender", hex:"#C9A9DD" },
+  { group:"Ungu & Violet", code:"PMS 265 C", name:"Ungu Anggur Muda", hex:"#9B63BD" },
+  { group:"Ungu & Violet", code:"PMS 266 C", name:"Violet", hex:"#6B3FA0" },
+  { group:"Ungu & Violet", code:"PMS 267 C", name:"Ungu Royal", hex:"#5B2F86" },
+  { group:"Ungu & Violet", code:"PMS 268 C", name:"Ungu Dalam", hex:"#4A2372" },
+  { group:"Ungu & Violet", code:"PMS Purple C", name:"Purple Pantone", hex:"#7C4D9F" },
+  { group:"Ungu & Violet", code:"PMS 2735 C", name:"Violet Gelap", hex:"#4B2A95" },
+  { group:"Ungu & Violet", code:"PMS 2685 C", name:"Violet Royal", hex:"#3D1082" },
+  // ---- BIRU VIOLET & INDIGO ----
+  { group:"Biru Violet & Indigo", code:"PMS 2706 C", name:"Biru Lavender Muda", hex:"#C8D8E8" },
+  { group:"Biru Violet & Indigo", code:"PMS 2716 C", name:"Biru Periwinkle", hex:"#9BADDB" },
+  { group:"Biru Violet & Indigo", code:"PMS 2726 C", name:"Biru Violet", hex:"#4855A3" },
+  { group:"Biru Violet & Indigo", code:"PMS 2736 C", name:"Biru Indigo", hex:"#3A41B3" },
+  { group:"Biru Violet & Indigo", code:"PMS 2747 C", name:"Navy Dalam", hex:"#1B2C6B" },
+  { group:"Biru Violet & Indigo", code:"PMS 2748 C", name:"Biru Navy Pekat", hex:"#162A6B" },
+  { group:"Biru Violet & Indigo", code:"PMS 2756 C", name:"Biru Malam", hex:"#1B2A5B" },
+  { group:"Biru Violet & Indigo", code:"PMS Blue 072 C", name:"Biru Pantone 072", hex:"#10239E" },
+  { group:"Biru Violet & Indigo", code:"PMS Reflex Blue C", name:"Reflex Blue", hex:"#001489" },
+  { group:"Biru Violet & Indigo", code:"PMS 286 C", name:"Biru Kobalt", hex:"#0033A0" },
+  { group:"Biru Violet & Indigo", code:"PMS 287 C", name:"Biru Gelap", hex:"#00337F" },
+  { group:"Biru Violet & Indigo", code:"PMS 288 C", name:"Biru Laut", hex:"#00297B" },
+  { group:"Biru Violet & Indigo", code:"PMS 289 C", name:"Biru Navy", hex:"#012169" },
+  // ---- BIRU ----
+  { group:"Biru", code:"PMS 277 C", name:"Biru Langit Terang", hex:"#7DC4E4" },
+  { group:"Biru", code:"PMS 278 C", name:"Biru Langit Muda", hex:"#5BA4CF" },
+  { group:"Biru", code:"PMS 279 C", name:"Biru Cerah", hex:"#4393D3" },
+  { group:"Biru", code:"PMS 280 C", name:"Biru Standar", hex:"#003DA5" },
+  { group:"Biru", code:"PMS 282 C", name:"Biru Prusia", hex:"#003057" },
+  { group:"Biru", code:"PMS 285 C", name:"Biru Murni", hex:"#0070CD" },
+  { group:"Biru", code:"PMS 292 C", name:"Biru Langit Dalam", hex:"#6EB4E4" },
+  { group:"Biru", code:"PMS 293 C", name:"Biru Klasik", hex:"#0047BB" },
+  { group:"Biru", code:"PMS 294 C", name:"Biru Tua", hex:"#003087" },
+  { group:"Biru", code:"PMS 300 C", name:"Biru Terang", hex:"#0057B8" },
+  { group:"Biru", code:"PMS 301 C", name:"Biru Medium", hex:"#00507D" },
+  { group:"Biru", code:"PMS 302 C", name:"Biru Petrol", hex:"#003F5F" },
+  { group:"Biru", code:"PMS 306 C", name:"Biru Neon", hex:"#00B5E2" },
+  // ---- BIRU MUDA & CYAN ----
+  { group:"Biru Muda & Cyan", code:"PMS 290 C", name:"Biru Es Muda", hex:"#C2DCE8" },
+  { group:"Biru Muda & Cyan", code:"PMS 291 C", name:"Biru Es", hex:"#9CC3D5" },
+  { group:"Biru Muda & Cyan", code:"PMS 304 C", name:"Biru Aqua Muda", hex:"#A9DCE3" },
+  { group:"Biru Muda & Cyan", code:"PMS 305 C", name:"Biru Baby", hex:"#7ACFE4" },
+  { group:"Biru Muda & Cyan", code:"PMS 2985 C", name:"Biru Langit Muda", hex:"#47C1E1" },
+  { group:"Biru Muda & Cyan", code:"PMS 2995 C", name:"Cyan Terang", hex:"#00ACD7" },
+  { group:"Biru Muda & Cyan", code:"PMS 3005 C", name:"Biru Cerulean", hex:"#006DAA" },
+  { group:"Biru Muda & Cyan", code:"PMS 3015 C", name:"Biru Capri", hex:"#005B8E" },
+  { group:"Biru Muda & Cyan", code:"PMS Process Cyan C", name:"Cyan Proses", hex:"#00AEEF" },
+  { group:"Biru Muda & Cyan", code:"PMS 311 C", name:"Aqua Muda", hex:"#48C4DC" },
+  { group:"Biru Muda & Cyan", code:"PMS 312 C", name:"Aqua", hex:"#009DC4" },
+  { group:"Biru Muda & Cyan", code:"PMS 313 C", name:"Aqua Dalam", hex:"#0089AE" },
+  { group:"Biru Muda & Cyan", code:"PMS 314 C", name:"Biru Aqua Tua", hex:"#00758E" },
+  // ---- HIJAU BIRU & TOSKA ----
+  { group:"Hijau Biru & Toska", code:"PMS 317 C", name:"Toska Sangat Muda", hex:"#C3E3DC" },
+  { group:"Hijau Biru & Toska", code:"PMS 318 C", name:"Toska Pucat", hex:"#85CEC7" },
+  { group:"Hijau Biru & Toska", code:"PMS 319 C", name:"Toska Lembut", hex:"#5BC4BC" },
+  { group:"Hijau Biru & Toska", code:"PMS 315 C", name:"Teal Tua", hex:"#006272" },
+  { group:"Hijau Biru & Toska", code:"PMS 316 C", name:"Toska Gelap", hex:"#004F59" },
+  { group:"Hijau Biru & Toska", code:"PMS 320 C", name:"Toska", hex:"#009473" },
+  { group:"Hijau Biru & Toska", code:"PMS 321 C", name:"Toska Muda", hex:"#009CA6" },
+  { group:"Hijau Biru & Toska", code:"PMS 3262 C", name:"Mint Toska", hex:"#00C1A0" },
+  { group:"Hijau Biru & Toska", code:"PMS 3272 C", name:"Hijau Toska Cerah", hex:"#00B38A" },
+  { group:"Hijau Biru & Toska", code:"PMS 3282 C", name:"Hijau Laut", hex:"#009975" },
+  { group:"Hijau Biru & Toska", code:"PMS 3292 C", name:"Hijau Laut Tua", hex:"#006A52" },
+  { group:"Hijau Biru & Toska", code:"PMS 3302 C", name:"Hijau Laut Gelap", hex:"#00513C" },
+  { group:"Hijau Biru & Toska", code:"PMS 328 C", name:"Biru Hijau", hex:"#007B5F" },
+  // ---- HIJAU ----
+  { group:"Hijau", code:"PMS 330 C", name:"Hijau Mint Muda", hex:"#8ECCB9" },
+  { group:"Hijau", code:"PMS 332 C", name:"Hijau Mint Lembut", hex:"#A3D9C8" },
+  { group:"Hijau", code:"PMS 333 C", name:"Hijau Mint", hex:"#5FC8B0" },
+  { group:"Hijau", code:"PMS 334 C", name:"Hijau Segar", hex:"#1E8C6E" },
+  { group:"Hijau", code:"PMS 335 C", name:"Hijau Medium", hex:"#007A53" },
+  { group:"Hijau", code:"PMS 336 C", name:"Hijau Standar", hex:"#006647" },
+  { group:"Hijau", code:"PMS 340 C", name:"Hijau Zamrud Muda", hex:"#45B08A" },
+  { group:"Hijau", code:"PMS 341 C", name:"Hijau Zamrud", hex:"#168C68" },
+  { group:"Hijau", code:"PMS 347 C", name:"Hijau Murni", hex:"#009A44" },
+  { group:"Hijau", code:"PMS 348 C", name:"Hijau Tua", hex:"#007A33" },
+  { group:"Hijau", code:"PMS 349 C", name:"Hijau Gelap", hex:"#215732" },
+  { group:"Hijau", code:"PMS 355 C", name:"Hijau Terang", hex:"#00AE42" },
+  { group:"Hijau", code:"PMS 356 C", name:"Hijau Emerald", hex:"#007934" },
+  { group:"Hijau", code:"PMS 357 C", name:"Hijau Hutan", hex:"#215732" },
+  { group:"Hijau", code:"PMS Green C", name:"Hijau Pantone", hex:"#00A550" },
+  // ---- HIJAU KUNING ----
+  { group:"Hijau Kuning", code:"PMS 360 C", name:"Hijau Kekuningan", hex:"#65B32E" },
+  { group:"Hijau Kuning", code:"PMS 361 C", name:"Hijau Apel", hex:"#43B02A" },
+  { group:"Hijau Kuning", code:"PMS 362 C", name:"Hijau Segar Tua", hex:"#3A8A2C" },
+  { group:"Hijau Kuning", code:"PMS 365 C", name:"Hijau Lime Muda", hex:"#B9DB99" },
+  { group:"Hijau Kuning", code:"PMS 368 C", name:"Hijau Lime", hex:"#78BE20" },
+  { group:"Hijau Kuning", code:"PMS 369 C", name:"Hijau Rumput", hex:"#569A21" },
+  { group:"Hijau Kuning", code:"PMS 370 C", name:"Hijau Daun", hex:"#4E7A28" },
+  { group:"Hijau Kuning", code:"PMS 375 C", name:"Hijau Neon", hex:"#97D700" },
+  { group:"Hijau Kuning", code:"PMS 376 C", name:"Hijau Kuning", hex:"#74AA50" },
+  { group:"Hijau Kuning", code:"PMS 377 C", name:"Olive Hijau", hex:"#5F7E2F" },
+  { group:"Hijau Kuning", code:"PMS 378 C", name:"Olive Tua", hex:"#4A5E26" },
+  // ---- KUNING HIJAU & OLIVE ----
+  { group:"Kuning Hijau & Olive", code:"PMS 379 C", name:"Kuning-Hijau Muda", hex:"#D4E04B" },
+  { group:"Kuning Hijau & Olive", code:"PMS 380 C", name:"Kuning Hijau Cerah", hex:"#C5D821" },
+  { group:"Kuning Hijau & Olive", code:"PMS 381 C", name:"Chartreuse", hex:"#B4C800" },
+  { group:"Kuning Hijau & Olive", code:"PMS 382 C", name:"Kuning Lime", hex:"#C4D600" },
+  { group:"Kuning Hijau & Olive", code:"PMS 383 C", name:"Kuning Olive", hex:"#A4AE2B" },
+  { group:"Kuning Hijau & Olive", code:"PMS 384 C", name:"Olive Kuning", hex:"#8F9329" },
+  { group:"Kuning Hijau & Olive", code:"PMS 385 C", name:"Olive Dalam", hex:"#706E27" },
+  { group:"Kuning Hijau & Olive", code:"PMS 386 C", name:"Kuning-Hijau Cerah", hex:"#E3E96E" },
+  { group:"Kuning Hijau & Olive", code:"PMS 387 C", name:"Hijau Sod", hex:"#D0D755" },
+  { group:"Kuning Hijau & Olive", code:"PMS 388 C", name:"Kuning Terang Hijau", hex:"#E6E850" },
+  // ---- KUNING ----
+  { group:"Kuning", code:"PMS 100 C", name:"Kuning Sangat Pucat", hex:"#F6F0A2" },
+  { group:"Kuning", code:"PMS 101 C", name:"Kuning Pucat", hex:"#F8E98A" },
+  { group:"Kuning", code:"PMS 102 C", name:"Kuning Cerah", hex:"#FFD700" },
+  { group:"Kuning", code:"PMS 103 C", name:"Kuning Emas Muda", hex:"#D4AF00" },
+  { group:"Kuning", code:"PMS 104 C", name:"Kuning Emas", hex:"#B89600" },
+  { group:"Kuning", code:"PMS 105 C", name:"Kuning Olive", hex:"#897A36" },
+  { group:"Kuning", code:"PMS 106 C", name:"Kuning Lemon", hex:"#FEDD3A" },
+  { group:"Kuning", code:"PMS 107 C", name:"Kuning Matahari", hex:"#FECC00" },
+  { group:"Kuning", code:"PMS 108 C", name:"Kuning Muda", hex:"#FDE128" },
+  { group:"Kuning", code:"PMS 109 C", name:"Kuning Murni", hex:"#FFD100" },
+  { group:"Kuning", code:"PMS 110 C", name:"Kuning Standar", hex:"#F2AF00" },
+  { group:"Kuning", code:"PMS 111 C", name:"Kuning Tua", hex:"#C8950A" },
+  { group:"Kuning", code:"PMS 112 C", name:"Kuning Mustard Muda", hex:"#B89111" },
+  { group:"Kuning", code:"PMS 113 C", name:"Kuning Hangat", hex:"#FBDA49" },
+  { group:"Kuning", code:"PMS 114 C", name:"Kuning Netral", hex:"#F8D43A" },
+  { group:"Kuning", code:"PMS 115 C", name:"Kuning Amber Muda", hex:"#FAC60E" },
+  { group:"Kuning", code:"PMS 116 C", name:"Kuning Emas Terang", hex:"#FFB81C" },
+  { group:"Kuning", code:"PMS Process Yellow C", name:"Kuning Proses", hex:"#FEDD00" },
+  // ---- ORANYE & KUNING ORANYE ----
+  { group:"Oranye & Kuning Oranye", code:"PMS 120 C", name:"Kuning Muda Hangat", hex:"#FFE680" },
+  { group:"Oranye & Kuning Oranye", code:"PMS 121 C", name:"Kuning Oranye Muda", hex:"#FFE585" },
+  { group:"Oranye & Kuning Oranye", code:"PMS 122 C", name:"Kuning Oranye Pucat", hex:"#FFD966" },
+  { group:"Oranye & Kuning Oranye", code:"PMS 123 C", name:"Kuning-Oranye", hex:"#FFC72C" },
+  { group:"Oranye & Kuning Oranye", code:"PMS 124 C", name:"Amber", hex:"#EFAA00" },
+  { group:"Oranye & Kuning Oranye", code:"PMS 130 C", name:"Oranye Kuning", hex:"#F5A800" },
+  { group:"Oranye & Kuning Oranye", code:"PMS 131 C", name:"Oranye Kuning Tua", hex:"#D48A00" },
+  { group:"Oranye & Kuning Oranye", code:"PMS 136 C", name:"Oranye Muda Pucat", hex:"#FECB8B" },
+  { group:"Oranye & Kuning Oranye", code:"PMS 137 C", name:"Oranye Muda", hex:"#FFB549" },
+  { group:"Oranye & Kuning Oranye", code:"PMS 138 C", name:"Oranye Cerah", hex:"#E87F00" },
+  { group:"Oranye & Kuning Oranye", code:"PMS 144 C", name:"Oranye Segar", hex:"#F68D2E" },
+  { group:"Oranye & Kuning Oranye", code:"PMS 151 C", name:"Oranye Murni", hex:"#FF7900" },
+  { group:"Oranye & Kuning Oranye", code:"PMS 152 C", name:"Oranye Standar", hex:"#E87722" },
+  { group:"Oranye & Kuning Oranye", code:"PMS 153 C", name:"Oranye Tua", hex:"#C8601A" },
+  { group:"Oranye & Kuning Oranye", code:"PMS Orange 021 C", name:"Oranye Pantone", hex:"#FE5000" },
+  { group:"Oranye & Kuning Oranye", code:"PMS 158 C", name:"Oranye Hangat", hex:"#E87722" },
+  // ---- ORANYE MERAH & MERAH ORANYE ----
+  { group:"Oranye Merah & Merah Oranye", code:"PMS 163 C", name:"Oranye Lembut", hex:"#FFAD8D" },
+  { group:"Oranye Merah & Merah Oranye", code:"PMS 164 C", name:"Oranye Koral", hex:"#FF8A5C" },
+  { group:"Oranye Merah & Merah Oranye", code:"PMS 165 C", name:"Oranye Terang", hex:"#FF6720" },
+  { group:"Oranye Merah & Merah Oranye", code:"PMS 166 C", name:"Oranye Api", hex:"#E35205" },
+  { group:"Oranye Merah & Merah Oranye", code:"PMS 167 C", name:"Oranye-Merah", hex:"#CB3D11" },
+  { group:"Oranye Merah & Merah Oranye", code:"PMS 172 C", name:"Oranye Matahari", hex:"#FF6C37" },
+  { group:"Oranye Merah & Merah Oranye", code:"PMS 173 C", name:"Oranye Bata", hex:"#C95127" },
+  { group:"Oranye Merah & Merah Oranye", code:"PMS 174 C", name:"Cokelat Oranye", hex:"#8B3A2C" },
+  { group:"Oranye Merah & Merah Oranye", code:"PMS 180 C", name:"Merah Tomat", hex:"#C84B35" },
+  { group:"Oranye Merah & Merah Oranye", code:"PMS Warm Red C", name:"Merah Hangat", hex:"#F9423A" },
+  // ---- PEACH & SALMON ----
+  { group:"Peach & Salmon", code:"PMS 155 C", name:"Peach Muda", hex:"#F9C8A0" },
+  { group:"Peach & Salmon", code:"PMS 156 C", name:"Peach", hex:"#F9B78E" },
+  { group:"Peach & Salmon", code:"PMS 157 C", name:"Peach Tua", hex:"#F0905A" },
+  { group:"Peach & Salmon", code:"PMS 168 C", name:"Oranye Peach Tua", hex:"#9E3A26" },
+  { group:"Peach & Salmon", code:"PMS 1525 C", name:"Peach Muda Sekali", hex:"#FCDAB4" },
+  { group:"Peach & Salmon", code:"PMS 1555 C", name:"Peach Hangat", hex:"#FBBF8C" },
+  { group:"Peach & Salmon", code:"PMS 1565 C", name:"Koral Peach", hex:"#FA9C61" },
+  { group:"Peach & Salmon", code:"PMS 1575 C", name:"Oranye Peach Muda", hex:"#F98036" },
+  { group:"Peach & Salmon", code:"PMS 1625 C", name:"Salmon Muda", hex:"#FFA78C" },
+  { group:"Peach & Salmon", code:"PMS 1635 C", name:"Salmon", hex:"#FF7F5C" },
+  { group:"Peach & Salmon", code:"PMS 1645 C", name:"Salmon Oranye", hex:"#FF6131" },
+  { group:"Peach & Salmon", code:"PMS 1655 C", name:"Oranye Salmon", hex:"#FF5C28" },
+  // ---- COKELAT & TANAH ----
+  { group:"Cokelat & Tanah", code:"PMS 464 C", name:"Cokelat Tanah", hex:"#A0622A" },
+  { group:"Cokelat & Tanah", code:"PMS 465 C", name:"Cokelat Sand", hex:"#B8965A" },
+  { group:"Cokelat & Tanah", code:"PMS 466 C", name:"Cokelat Kamel", hex:"#C4A06A" },
+  { group:"Cokelat & Tanah", code:"PMS 469 C", name:"Cokelat Muda", hex:"#8C4A2F" },
+  { group:"Cokelat & Tanah", code:"PMS 470 C", name:"Cokelat Standar", hex:"#7C3A22" },
+  { group:"Cokelat & Tanah", code:"PMS 474 C", name:"Cokelat Siena", hex:"#C06E35" },
+  { group:"Cokelat & Tanah", code:"PMS 476 C", name:"Cokelat Tua", hex:"#4B2E2A" },
+  { group:"Cokelat & Tanah", code:"PMS 477 C", name:"Cokelat Gelap", hex:"#412822" },
+  { group:"Cokelat & Tanah", code:"PMS 483 C", name:"Cokelat Kayu", hex:"#5C2D1E" },
+  { group:"Cokelat & Tanah", code:"PMS 484 C", name:"Merah Bata Tua", hex:"#9E2A2B" },
+  { group:"Cokelat & Tanah", code:"PMS 4625 C", name:"Cokelat Espresso", hex:"#3D1A11" },
+  { group:"Cokelat & Tanah", code:"PMS 4645 C", name:"Cokelat Susu", hex:"#B58C6A" },
+  { group:"Cokelat & Tanah", code:"PMS 7526 C", name:"Cokelat Pasir", hex:"#B89880" },
+  { group:"Cokelat & Tanah", code:"PMS 7527 C", name:"Beige Hangat", hex:"#D9C8B2" },
+  { group:"Cokelat & Tanah", code:"PMS 7534 C", name:"Krem Pasir", hex:"#C7B79A" },
+  { group:"Cokelat & Tanah", code:"PMS 7536 C", name:"Khaki", hex:"#BAB097" },
+  // ---- MERAH MARUN & BURGUNDY ----
+  { group:"Merah Marun & Burgundy", code:"PMS 188 C", name:"Marun", hex:"#6F263D" },
+  { group:"Merah Marun & Burgundy", code:"PMS 1955 C", name:"Burgundy Muda", hex:"#9B1B30" },
+  { group:"Merah Marun & Burgundy", code:"PMS 1955 C", name:"Burgundy", hex:"#7D1935" },
+  { group:"Merah Marun & Burgundy", code:"PMS 209 C", name:"Burgundy Tua", hex:"#6B2035" },
+  { group:"Merah Marun & Burgundy", code:"PMS 504 C", name:"Marun Muda", hex:"#7F4255" },
+  { group:"Merah Marun & Burgundy", code:"PMS 505 C", name:"Marun Medium", hex:"#6D2B42" },
+  { group:"Merah Marun & Burgundy", code:"PMS 506 C", name:"Marun Tua", hex:"#5E1F35" },
+  { group:"Merah Marun & Burgundy", code:"PMS 7421 C", name:"Merah Anggur", hex:"#7B2D3E" },
+  { group:"Merah Marun & Burgundy", code:"PMS 7422 C", name:"Merah Anggur Tua", hex:"#6B2238" },
+  { group:"Merah Marun & Burgundy", code:"PMS Rubine Red C", name:"Rubine Red Gelap", hex:"#BE0047" },
+  // ---- ABU-ABU ----
+  { group:"Abu-abu", code:"PMS 420 C", name:"Abu Sangat Muda", hex:"#C9CAC8" },
+  { group:"Abu-abu", code:"PMS 421 C", name:"Abu Muda", hex:"#B6B8B4" },
+  { group:"Abu-abu", code:"PMS 422 C", name:"Abu Sedang", hex:"#9C9E9A" },
+  { group:"Abu-abu", code:"PMS 423 C", name:"Abu Medium", hex:"#888B8D" },
+  { group:"Abu-abu", code:"PMS 424 C", name:"Abu Standar", hex:"#737579" },
+  { group:"Abu-abu", code:"PMS 425 C", name:"Abu Gelap", hex:"#54585A" },
+  { group:"Abu-abu", code:"PMS 426 C", name:"Abu Sangat Gelap", hex:"#2C2F35" },
+  { group:"Abu-abu", code:"PMS Cool Gray 1 C", name:"Cool Gray 1", hex:"#D9D9D6" },
+  { group:"Abu-abu", code:"PMS Cool Gray 2 C", name:"Cool Gray 2", hex:"#D0D0CE" },
+  { group:"Abu-abu", code:"PMS Cool Gray 3 C", name:"Cool Gray 3", hex:"#C8C9C7" },
+  { group:"Abu-abu", code:"PMS Cool Gray 5 C", name:"Cool Gray 5", hex:"#B1B3B3" },
+  { group:"Abu-abu", code:"PMS Cool Gray 7 C", name:"Cool Gray 7", hex:"#97999B" },
+  { group:"Abu-abu", code:"PMS Cool Gray 9 C", name:"Cool Gray 9", hex:"#76767A" },
+  { group:"Abu-abu", code:"PMS Cool Gray 11 C", name:"Cool Gray 11", hex:"#53565A" },
+  { group:"Abu-abu", code:"PMS Warm Gray 1 C", name:"Warm Gray 1", hex:"#D7D2CB" },
+  { group:"Abu-abu", code:"PMS Warm Gray 3 C", name:"Warm Gray 3", hex:"#C9C3BB" },
+  { group:"Abu-abu", code:"PMS Warm Gray 6 C", name:"Warm Gray 6", hex:"#9E9790" },
+  { group:"Abu-abu", code:"PMS Warm Gray 8 C", name:"Warm Gray 8", hex:"#82786F" },
+  { group:"Abu-abu", code:"PMS Warm Gray 11 C", name:"Warm Gray 11", hex:"#5B514B" },
+  // ---- NETRAL & KREM ----
+  { group:"Netral & Krem", code:"PMS 9180 C", name:"Putih Krem", hex:"#F1EDE4" },
+  { group:"Netral & Krem", code:"PMS 9201 C", name:"Krem Lembut", hex:"#EFE9D9" },
+  { group:"Netral & Krem", code:"PMS 9120 C", name:"Putih Hangat", hex:"#F0EBE5" },
+  { group:"Netral & Krem", code:"PMS 9260 C", name:"Putih Dingin", hex:"#EEF0EE" },
+  { group:"Netral & Krem", code:"PMS 9060 C", name:"Krem Muda", hex:"#F4EDD8" },
+  { group:"Netral & Krem", code:"PMS 7499 C", name:"Krem Pucat", hex:"#EDE6C3" },
+  { group:"Netral & Krem", code:"PMS 7501 C", name:"Krem Standar", hex:"#D7C99A" },
+  { group:"Netral & Krem", code:"PMS 7502 C", name:"Krem Tua", hex:"#C8B27A" },
+  { group:"Netral & Krem", code:"PMS 7503 C", name:"Krem Tanah", hex:"#B5A16B" },
+  { group:"Netral & Krem", code:"PMS 9040 C", name:"Ivory Muda", hex:"#F7F0E0" },
+  { group:"Netral & Krem", code:"PMS 9020 C", name:"Putih Sutera", hex:"#F7F4EF" },
+  { group:"Netral & Krem", code:"PMS Black C", name:"Hitam Pantone", hex:"#2B2926" },
+  { group:"Netral & Krem", code:"PMS Black 6 C", name:"Hitam Murni", hex:"#101820" },
+  { group:"Netral & Krem", code:"PMS 7540 C", name:"Hitam Abu", hex:"#434244" },
+  // ---- EMAS & KUNING EMAS ----
+  { group:"Emas & Kuning Emas", code:"PMS 871 C", name:"Emas Metalik", hex:"#9B8745" },
+  { group:"Emas & Kuning Emas", code:"PMS 872 C", name:"Emas Medium", hex:"#8E7D3F" },
+  { group:"Emas & Kuning Emas", code:"PMS 873 C", name:"Emas Tua", hex:"#7D6B37" },
+  { group:"Emas & Kuning Emas", code:"PMS 874 C", name:"Emas Standar", hex:"#916F2F" },
+  { group:"Emas & Kuning Emas", code:"PMS 875 C", name:"Emas Keemasan", hex:"#7B5C25" },
+  { group:"Emas & Kuning Emas", code:"PMS 876 C", name:"Emas Antik", hex:"#6C4F21" },
+  { group:"Emas & Kuning Emas", code:"PMS 1245 C", name:"Emas Muda", hex:"#F0A500" },
+  { group:"Emas & Kuning Emas", code:"PMS 1255 C", name:"Kuning Emas Muda", hex:"#F4C430" },
+  { group:"Emas & Kuning Emas", code:"PMS 1265 C", name:"Kuning Emas", hex:"#DBA63A" },
+  { group:"Emas & Kuning Emas", code:"PMS 1275 C", name:"Emas Oranye", hex:"#CC8A00" },
+  { group:"Emas & Kuning Emas", code:"PMS 7549 C", name:"Emas Amber", hex:"#F5C518" },
+  { group:"Emas & Kuning Emas", code:"PMS 7550 C", name:"Emas Kuning", hex:"#F0B31A" },
+  // ---- SILVER & METALIK ----
+  { group:"Silver & Metalik", code:"PMS 877 C", name:"Silver Metalik", hex:"#8A8D8F" },
+  { group:"Silver & Metalik", code:"PMS 8003 C", name:"Emas Rose", hex:"#AD8A64" },
+  { group:"Silver & Metalik", code:"PMS 8021 C", name:"Emas Tembaga", hex:"#B87333" },
+  { group:"Silver & Metalik", code:"PMS 8062 C", name:"Tembaga Muda", hex:"#C4956A" },
+  { group:"Silver & Metalik", code:"PMS 8081 C", name:"Perunggu Kehijauan", hex:"#7A8C73" },
+  { group:"Silver & Metalik", code:"PMS 8201 C", name:"Silver Biru", hex:"#8BACC9" },
+  { group:"Silver & Metalik", code:"PMS 8281 C", name:"Silver Hijau", hex:"#8AAA8A" },
+  { group:"Silver & Metalik", code:"PMS 8401 C", name:"Silver Abu", hex:"#9FA3A6" },
+  { group:"Silver & Metalik", code:"PMS 8421 C", name:"Silver Dingin", hex:"#A3AAB0" },
+  { group:"Silver & Metalik", code:"PMS 8441 C", name:"Silver Putih", hex:"#B8BEC4" }
+];
+
+function renderPantoneGrid(list) {
+  var grid = $("pantone-color-grid");
+  grid.innerHTML = "";
+  var count = 0;
+
+  // Group by group
+  var groups = [];
+  var seen = {};
+  list.forEach(function(item) {
+    if (!seen[item.group]) { seen[item.group] = true; groups.push(item.group); }
+  });
+
+  groups.forEach(function(grp) {
+    var titleEl = document.createElement("div");
+    titleEl.className = "study-group-title";
+    titleEl.textContent = grp;
+    grid.appendChild(titleEl);
+
+    list.filter(function(item){ return item.group === grp; }).forEach(function(item) {
+      var sw = document.createElement("div");
+      sw.className = "study-swatch";
+      sw.innerHTML =
+        "<div class='study-block' style='background:" + item.hex + ";'></div>" +
+        "<div class='study-label'>" +
+          "<span class='study-name'>" + item.name + "</span>" +
+          "<span class='study-hex'>" + item.hex + "</span>" +
+          "<span class='pms-code-small'>" + item.code + "</span>" +
+        "</div>";
+      grid.appendChild(sw);
+      count++;
+    });
+  });
+
+  $("pantone-count-badge").textContent = count + " warna";
+}
+
+function filterPantoneGrid() {
+  var q = $("pantone-search-input").value.trim().toLowerCase();
+  var filtered = !q ? pantoneData : pantoneData.filter(function(item) {
+    return item.name.toLowerCase().indexOf(q) !== -1 ||
+           item.code.toLowerCase().indexOf(q) !== -1 ||
+           item.hex.toLowerCase().indexOf(q) !== -1 ||
+           item.group.toLowerCase().indexOf(q) !== -1;
+  });
+  renderPantoneGrid(filtered);
+}
+
+function showPantoneInfo() {
+  $("header-subtitle").textContent = "Info Warna Pantone · PMS Solid";
+  showScreen("pantoneInfo");
+  $("pantone-search-input").value = "";
+  renderPantoneGrid(pantoneData);
+}
 
 
 // =======================================================================
@@ -3633,7 +4092,66 @@ showScreen("home");
   }
   animate();
 
+  // =======================================================================
+  // HARMONY ANIMATION — 5 colour harmonies, active segments pop outward
+  // Wheel keeps spinning via CSS; JS only toggles .seg-pop class
+  // =======================================================================
+  (function () {
+    var HARMONIES = [
+      { segs: function(a){ return [a, (a+6)%12]; } },                              // Complementary
+      { segs: function(a){ return [a, (a+1)%12, (a+11)%12]; } },                   // Analogous
+      { segs: function(a){ return [a, (a+4)%12, (a+8)%12]; } },                    // Triadic
+      { segs: function(a){ return [a, (a+5)%12, (a+7)%12]; } },                    // Split-Complementary
+      { segs: function(a){ return [a, (a+3)%12, (a+6)%12, (a+9)%12]; } }           // Tetradic
+    ];
+
+    var HOLD_MS    = 2200;
+    var BETWEEN_MS = 500;
+
+    var segs = [];
+    for (var i = 0; i < 12; i++) {
+      segs.push(document.getElementById("wseg-" + i));
+    }
+
+    function setHarmony(harmonyIdx, anchor) {
+      var active = HARMONIES[harmonyIdx].segs(anchor);
+      segs.forEach(function(s, i) {
+        if (!s) return;
+        if (active.indexOf(i) !== -1) s.classList.add("seg-pop");
+        else s.classList.remove("seg-pop");
+      });
+    }
+
+    function resetAll() {
+      segs.forEach(function(s){ if(s) s.classList.remove("seg-pop"); });
+    }
+
+    var hIdx    = 0;
+    var anchor  = 0;
+    var running = true;
+
+    function nextStep() {
+      if (!running) return;
+      setHarmony(hIdx, anchor);
+      setTimeout(function () {
+        if (!running) return;
+        resetAll();
+        setTimeout(function () {
+          if (!running) return;
+          hIdx   = (hIdx + 1) % HARMONIES.length;
+          anchor = (anchor + 2) % 12;
+          nextStep();
+        }, BETWEEN_MS);
+      }, HOLD_MS);
+    }
+
+    setTimeout(nextStep, 1500);
+
+    window._splashHarmonyStop = function () { running = false; resetAll(); };
+  })();
+
   function dismissSplash() {
+    if (window._splashHarmonyStop) window._splashHarmonyStop();
     splash.classList.add("splash-exit");
     setTimeout(function () {
       splash.style.display = "none";
