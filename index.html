@@ -3,22 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Warna DKV - Color Games</title>
+<title>Game Edukasi - Color Games</title>
 <style>
   :root {
-    --bg-page: #0f1420;
-    --bg-card: rgba(255,255,255,0.06);
-    --bg-card-solid: #1a2235;
-    --border: rgba(255,255,255,0.12);
-    --text-primary: #f1f3f9;
-    --text-secondary: #9aa3b8;
-    --accent: #7c5cff;
-    --success: #34d399;
-    --success-bg: rgba(52,211,153,0.15);
-    --danger: #f87171;
-    --danger-bg: rgba(248,113,113,0.15);
-    --warn: #fbbf24;
-    --warn-bg: rgba(251,191,36,0.15);
+    --bg-page: #f0f4ff;
+    --bg-card: #ffffff;
+    --bg-card-solid: #ffffff;
+    --border: #d8e2f8;
+    --text-primary: #1e2a4a;
+    --text-secondary: #637099;
+    --accent: #5b4fcf;
+    --success: #0d9e6b;
+    --success-bg: rgba(13,158,107,0.1);
+    --danger: #d9363e;
+    --danger-bg: rgba(217,54,62,0.1);
+    --warn: #c47d00;
+    --warn-bg: rgba(196,125,0,0.1);
     --radius-md: 10px;
     --radius-lg: 16px;
   }
@@ -30,8 +30,9 @@
     min-height: 100vh;
     background: var(--bg-page);
     background-image:
-      radial-gradient(circle at 20% 20%, rgba(124,92,255,0.12), transparent 40%),
-      radial-gradient(circle at 80% 80%, rgba(52,211,153,0.10), transparent 40%);
+      radial-gradient(circle at 15% 15%, rgba(131,109,252,0.10), transparent 40%),
+      radial-gradient(circle at 85% 80%, rgba(255,167,90,0.10), transparent 40%),
+      radial-gradient(circle at 50% 50%, rgba(90,200,180,0.07), transparent 50%);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     color: var(--text-primary);
     display: flex;
@@ -75,29 +76,28 @@
     align-items: center;
     gap: 16px;
     background: var(--bg-card);
-    border: 1px solid var(--border);
+    border: 1.5px solid var(--border);
     border-radius: var(--radius-lg);
     padding: 18px 18px;
-    backdrop-filter: blur(10px);
     cursor: pointer;
-    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s, box-shadow 0.15s;
     text-align: left;
     color: var(--text-primary);
     font-family: inherit;
     width: 100%;
+    box-shadow: 0 2px 8px rgba(91,79,207,0.06);
   }
 
   .game-card:hover {
-    background: rgba(255,255,255,0.1);
-    border-color: rgba(255,255,255,0.25);
+    background: #f5f3ff;
+    border-color: #b0a3f0;
+    box-shadow: 0 4px 16px rgba(91,79,207,0.12);
   }
 
   .game-card:active { transform: scale(0.98); }
 
   .game-card-icon {
-    font-size: 32px;
-    line-height: 1;
-    flex-shrink: 0;
+    display: none;
   }
 
   .game-card-info { flex: 1; }
@@ -106,7 +106,7 @@
 
   .game-card-arrow {
     font-size: 18px;
-    color: var(--text-secondary);
+    color: var(--accent);
     flex-shrink: 0;
   }
 
@@ -122,20 +122,21 @@
     align-items: center;
     justify-content: space-between;
     background: var(--bg-card);
-    border: 1px solid var(--border);
+    border: 1.5px solid var(--border);
     border-radius: var(--radius-lg);
     padding: 16px 18px;
-    backdrop-filter: blur(10px);
     cursor: pointer;
-    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s, box-shadow 0.15s;
     text-align: left;
     color: var(--text-primary);
     font-family: inherit;
+    box-shadow: 0 2px 8px rgba(91,79,207,0.06);
   }
 
   .level-card:hover {
-    background: rgba(255,255,255,0.1);
-    border-color: rgba(255,255,255,0.25);
+    background: #f5f3ff;
+    border-color: #b0a3f0;
+    box-shadow: 0 4px 14px rgba(91,79,207,0.12);
   }
 
   .level-card:active { transform: scale(0.98); }
@@ -152,11 +153,11 @@
     letter-spacing: 0.4px;
     white-space: nowrap;
   }
-  .badge-easy { background: var(--success-bg); color: var(--success); }
-  .badge-normal { background: rgba(124,92,255,0.18); color: var(--accent); }
-  .badge-hard { background: var(--warn-bg); color: var(--warn); }
-  .badge-expert { background: rgba(248,113,113,0.18); color: var(--danger); }
-  .badge-master { background: linear-gradient(135deg, rgba(248,113,113,0.25), rgba(124,92,255,0.25)); color: #ffb4b4; }
+  .badge-easy { background: rgba(13,158,107,0.12); color: #0d9e6b; }
+  .badge-normal { background: rgba(91,79,207,0.12); color: var(--accent); }
+  .badge-hard { background: rgba(196,125,0,0.12); color: #c47d00; }
+  .badge-expert { background: rgba(217,54,62,0.12); color: var(--danger); }
+  .badge-master { background: linear-gradient(135deg, rgba(217,54,62,0.12), rgba(91,79,207,0.12)); color: #9b2d85; }
 
   /* ========== QUIZ THEORY CATEGORY SELECT ========== */
   .category-select-grid {
@@ -170,20 +171,21 @@
     align-items: center;
     justify-content: space-between;
     background: var(--bg-card);
-    border: 1px solid var(--border);
+    border: 1.5px solid var(--border);
     border-radius: var(--radius-lg);
     padding: 14px 18px;
-    backdrop-filter: blur(10px);
     cursor: pointer;
-    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s, box-shadow 0.15s;
     text-align: left;
     color: var(--text-primary);
     font-family: inherit;
+    box-shadow: 0 2px 6px rgba(91,79,207,0.05);
   }
 
   .category-card:hover {
-    background: rgba(255,255,255,0.1);
-    border-color: rgba(255,255,255,0.25);
+    background: #f5f3ff;
+    border-color: #b0a3f0;
+    box-shadow: 0 4px 14px rgba(91,79,207,0.10);
   }
 
   .category-card:active { transform: scale(0.98); }
@@ -197,7 +199,7 @@
     font-weight: 700;
     padding: 4px 10px;
     border-radius: 999px;
-    background: rgba(124,92,255,0.18);
+    background: rgba(91,79,207,0.12);
     color: var(--accent);
     white-space: nowrap;
     margin-left: 10px;
@@ -206,8 +208,8 @@
   /* ========== MATERI PANEL ========== */
   .materi-panel {
     display: none;
-    background: rgba(124,92,255,0.06);
-    border: 1px solid rgba(124,92,255,0.25);
+    background: rgba(91,79,207,0.04);
+    border: 1.5px solid rgba(91,79,207,0.18);
     border-radius: var(--radius-md);
     padding: 14px 16px;
     margin-top: 8px;
@@ -238,7 +240,7 @@
   .materi-panel strong { color: var(--text-primary); }
 
   .materi-highlight {
-    background: rgba(52,211,153,0.08);
+    background: rgba(13,158,107,0.07);
     border-left: 3px solid var(--success);
     padding: 8px 12px;
     border-radius: 0 6px 6px 0;
@@ -266,8 +268,8 @@
     padding: 0 14px;
     height: 100%;
     min-height: 56px;
-    background: rgba(124,92,255,0.1);
-    border: 1px solid rgba(124,92,255,0.3);
+    background: rgba(91,79,207,0.08);
+    border: 1.5px solid rgba(91,79,207,0.25);
     border-radius: var(--radius-lg);
     color: var(--accent);
     font-size: 11px;
@@ -283,10 +285,10 @@
     gap: 2px;
     line-height: 1.2;
   }
-  .materi-btn:hover { background: rgba(124,92,255,0.2); }
+  .materi-btn:hover { background: rgba(91,79,207,0.14); }
   .materi-btn:active { transform: scale(0.97); }
   .materi-btn.active {
-    background: rgba(124,92,255,0.25);
+    background: rgba(91,79,207,0.18);
     border-color: var(--accent);
   }
   .materi-btn-icon { font-size: 16px; }
@@ -316,9 +318,9 @@
   .materi-action-btn-game {
     flex: 1;
     padding: 10px;
-    background: rgba(167,139,250,0.14);
-    color: var(--text-primary);
-    border: 1px solid rgba(167,139,250,0.45);
+    background: rgba(131,109,252,0.10);
+    color: var(--accent);
+    border: 1.5px solid rgba(131,109,252,0.30);
     border-radius: var(--radius-md);
     font-size: 13px;
     font-weight: 700;
@@ -326,7 +328,7 @@
     font-family: inherit;
     transition: opacity 0.15s, background 0.15s;
   }
-  .materi-action-btn-game:hover { opacity: 0.88; background: rgba(167,139,250,0.22); }
+  .materi-action-btn-game:hover { opacity: 0.88; background: rgba(131,109,252,0.16); }
 
   .skema-grid {
     display: grid;
@@ -334,8 +336,8 @@
     margin: 8px 0 10px;
   }
   .skema-item {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
+    background: #f7f6ff;
+    border: 1px solid #e0dbf8;
     border-radius: 8px;
     padding: 8px 10px;
   }
@@ -364,17 +366,17 @@
 
   /* === Wheel: card per-skema dengan materi di atas === */
   .wheel-skema-block {
-    border: 1px solid var(--border);
+    border: 1.5px solid var(--border);
     border-radius: var(--radius-lg);
     overflow: hidden;
     margin-bottom: 10px;
     background: var(--bg-card);
-    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 8px rgba(91,79,207,0.06);
   }
   .wheel-skema-materi {
     padding: 14px 16px 10px;
-    background: rgba(124,92,255,0.06);
-    border-bottom: 1px solid rgba(124,92,255,0.18);
+    background: rgba(91,79,207,0.04);
+    border-bottom: 1px solid rgba(91,79,207,0.14);
     font-size: 13px;
     line-height: 1.65;
   }
@@ -436,17 +438,30 @@
     flex-shrink: 0;
   }
 
+  /* === Diagram mini lingkaran warna di panel materi (referensi skema harmoni) === */
+  .wheel-harmony-diagram {
+    display: flex;
+    justify-content: center;
+    margin: 0 0 10px;
+  }
+  .wheel-harmony-diagram svg {
+    width: 100%;
+    max-width: 168px;
+    height: auto;
+    display: block;
+  }
+
   /* ========== STAT BAR & PROGRESS ========== */
   .stats-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     background: var(--bg-card);
-    border: 1px solid var(--border);
+    border: 1.5px solid var(--border);
     border-radius: var(--radius-lg);
     padding: 14px 18px;
     margin-bottom: 16px;
-    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 8px rgba(91,79,207,0.06);
   }
 
   .stat-block { text-align: center; flex: 1; }
@@ -457,7 +472,7 @@
 
   .progress-track {
     height: 6px;
-    background: rgba(255,255,255,0.08);
+    background: #e0d9f8;
     border-radius: 999px;
     overflow: hidden;
     margin-bottom: 16px;
@@ -487,11 +502,11 @@
   /* ========== KARTU SOAL (COLOR MIXER) ========== */
   .question-card {
     background: var(--bg-card);
-    border: 1px solid var(--border);
+    border: 1.5px solid var(--border);
     border-radius: var(--radius-lg);
     padding: 22px 18px;
     margin-bottom: 14px;
-    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 8px rgba(91,79,207,0.06);
   }
 
   .question-label {
@@ -515,7 +530,7 @@
     width: 52px;
     height: 52px;
     border-radius: var(--radius-md);
-    border: 2px solid #ffffff;
+    border: 2px solid rgba(0,0,0,0.15);
     flex-shrink: 0;
   }
 
@@ -562,7 +577,7 @@
     gap: 10px;
     padding: 12px 14px;
     background: var(--bg-card);
-    border: 1px solid var(--border);
+    border: 1.5px solid var(--border);
     border-radius: var(--radius-md);
     color: var(--text-primary);
     font-size: 14px;
@@ -574,10 +589,9 @@
   }
 
   .option-btn:hover:not(:disabled) {
-    background: rgba(255,255,255,0.1);
-    border-color: rgba(255,255,255,0.25);
+    background: #f5f3ff;
+    border-color: #b0a3f0;
   }
-
   .option-btn:active:not(:disabled) { transform: scale(0.98); }
 
   .option-btn:disabled {
@@ -607,7 +621,7 @@
   }
 
   .wheel-harmony-tag {
-    background: rgba(124,92,255,0.18);
+    background: rgba(91,79,207,0.12);
     color: var(--accent);
     font-size: 15px;
     font-weight: 700;
@@ -639,8 +653,8 @@
   }
   .wheel-seg:hover { opacity: 0.85; }
   .wheel-seg.ref { stroke: #ffffff; stroke-width: 4; }
-  .wheel-seg.picked { stroke: var(--accent); stroke-width: 5; filter: brightness(1.18); }
-  .wheel-seg.correct-seg { stroke: var(--success); stroke-width: 5; filter: brightness(1.15); }
+  .wheel-seg.picked { stroke: var(--accent); stroke-width: 5; filter: brightness(0.9); }
+  .wheel-seg.correct-seg { stroke: var(--success); stroke-width: 5; filter: brightness(0.92); }
   .wheel-seg.wrong-seg { stroke: var(--danger); stroke-width: 5; opacity: 0.55; }
   .wheel-seg.locked { cursor: default; }
   .wheel-seg.dim { opacity: 0.35; }
@@ -675,7 +689,7 @@
     text-transform: capitalize;
   }
 
-  .wheel-pick-chip .dot { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid #fff; flex-shrink: 0; }
+  .wheel-pick-chip .dot { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid rgba(0,0,0,0.15); flex-shrink: 0; }
 
   .wheel-pick-chip.placeholder {
     color: var(--text-secondary);
@@ -686,11 +700,11 @@
   /* ========== KARTU SOAL TEORI ========== */
   .theory-question-card {
     background: var(--bg-card);
-    border: 1px solid var(--border);
+    border: 1.5px solid var(--border);
     border-radius: var(--radius-lg);
     padding: 20px 18px;
     margin-bottom: 12px;
-    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 8px rgba(91,79,207,0.06);
   }
 
   .theory-q-number {
@@ -726,7 +740,7 @@
     gap: 10px;
     padding: 11px 14px;
     background: var(--bg-card);
-    border: 1px solid var(--border);
+    border: 1.5px solid var(--border);
     border-radius: var(--radius-md);
     color: var(--text-primary);
     font-size: 13px;
@@ -738,8 +752,8 @@
   }
 
   .theory-option-btn:hover:not(:disabled) {
-    background: rgba(255,255,255,0.1);
-    border-color: rgba(255,255,255,0.25);
+    background: #f5f3ff;
+    border-color: #b0a3f0;
   }
 
   .theory-option-btn:active:not(:disabled) { transform: scale(0.98); }
@@ -767,7 +781,7 @@
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.1);
+    background: rgba(91,79,207,0.12);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -775,14 +789,14 @@
     margin-top: 1px;
   }
 
-  .theory-option-btn.correct .option-letter { background: rgba(52,211,153,0.3); }
-  .theory-option-btn.wrong .option-letter { background: rgba(248,113,113,0.3); }
+  .theory-option-btn.correct .option-letter { background: rgba(13,158,107,0.2); }
+  .theory-option-btn.wrong .option-letter { background: rgba(217,54,62,0.2); }
 
   .theory-explanation {
     font-size: 12px;
     color: var(--text-secondary);
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--border);
+    background: #f7f6ff;
+    border: 1px solid #e0dbf8;
     border-radius: var(--radius-md);
     padding: 10px 12px;
     margin-bottom: 12px;
@@ -847,11 +861,13 @@
     margin-bottom: 8px;
   }
 
-  /* Result stars */
+  /* Result label */
   .result-stars {
-    font-size: 28px;
+    font-size: 18px;
+    font-weight: 700;
     margin: 6px 0 12px;
-    letter-spacing: 4px;
+    color: var(--accent);
+    letter-spacing: 0.3px;
   }
 
   .result-grade {
@@ -864,14 +880,14 @@
   }
 
   .grade-a { background: var(--success-bg); color: var(--success); }
-  .grade-b { background: rgba(124,92,255,0.18); color: var(--accent); }
+  .grade-b { background: rgba(91,79,207,0.12); color: var(--accent); }
   .grade-c { background: var(--warn-bg); color: var(--warn); }
   .grade-d { background: var(--danger-bg); color: var(--danger); }
 
   .cluster-result {
     text-align: left;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid var(--border);
+    background: #f7f6ff;
+    border: 1px solid #e0dbf8;
     border-radius: var(--radius-md);
     padding: 12px 14px;
     margin-bottom: 14px;
@@ -893,7 +909,7 @@
   }
   .cluster-label { flex: 1; color: var(--text-secondary); }
   .cluster-score { font-weight: 700; min-width: 32px; text-align: right; }
-  .cluster-bar-wrap { flex: 1; height: 5px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden; }
+  .cluster-bar-wrap { flex: 1; height: 5px; background: #e0d9f8; border-radius: 99px; overflow: hidden; }
   .cluster-bar-fill { height: 100%; border-radius: 99px; transition: width 0.5s ease; }
   .fill-green { background: var(--success); }
   .fill-purple { background: var(--accent); }
@@ -905,31 +921,396 @@
     .stat-value { font-size: 17px; }
     .theory-q-text { font-size: 13px; }
   }
+
+  /* ========== PELAJARI WARNA (Study Screen) ========== */
+  .study-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .study-search {
+    flex: 1;
+    height: 36px;
+    font-size: 13px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 0 12px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .study-search:focus { border-color: var(--accent); }
+  .study-count {
+    font-size: 11px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+  }
+  .study-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    max-height: 65vh;
+    overflow-y: auto;
+    padding-right: 2px;
+    margin-bottom: 14px;
+  }
+  .study-swatch {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 0.5px solid rgba(0,0,0,0.09);
+    background: var(--bg-card);
+  }
+  .study-block {
+    height: 56px;
+    width: 100%;
+  }
+  .study-label {
+    padding: 4px 5px 5px;
+    background: var(--bg-card);
+  }
+  .study-name {
+    font-size: 9.5px;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: block;
+    line-height: 1.3;
+  }
+  .study-hex {
+    font-size: 8.5px;
+    color: var(--text-secondary);
+    display: block;
+    font-family: monospace;
+    margin-top: 1px;
+  }
+  .study-group-title {
+    grid-column: 1 / -1;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin: 4px 0 2px;
+    padding: 0 2px;
+    text-transform: none;
+  }
+  .study-start-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 15px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    letter-spacing: 0.2px;
+  }
+  .study-start-btn:hover { opacity: 0.88; }
+  .study-start-btn:active { transform: scale(0.98); }
+
+  /* ========== TEBAK NAMA WARNA ========== */
+  .nw-input-wrap {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .nw-input {
+    flex: 1;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--text-primary);
+    background: var(--bg-card);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .nw-input:focus { border-color: var(--accent); }
+  .nw-input.correct { border-color: var(--success); background: var(--success-bg); }
+  .nw-input.wrong   { border-color: var(--danger);  background: var(--danger-bg);  }
+  .nw-submit-btn {
+    padding: 12px 18px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: opacity 0.15s;
+    white-space: nowrap;
+  }
+  .nw-submit-btn:hover { opacity: 0.88; }
+  .nw-submit-btn:disabled { opacity: 0.45; cursor: default; }
+
+  .nw-suggestions {
+    background: var(--bg-card);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .nw-suggestions.hidden { display: none; }
+  .nw-sug-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 14px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text-primary);
+    text-transform: capitalize;
+    transition: background 0.1s;
+    border: none;
+    background: none;
+    width: 100%;
+    font-family: inherit;
+    text-align: left;
+  }
+  .nw-sug-item:hover { background: #f5f3ff; }
+  .nw-sug-dot {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 1.5px solid rgba(0,0,0,0.12);
+  }
+
+  /* ========== SPLASH SCREEN ========== */
+  #splash-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: #f0f4ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    overflow: hidden;
+    transition: opacity 0.7s cubic-bezier(0.4,0,0.2,1), transform 0.7s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  #splash-screen.splash-exit {
+    opacity: 0;
+    transform: scale(1.06);
+    pointer-events: none;
+  }
+
+  /* === CANVAS BG === */
+  #splash-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* === LIGHT VIGNETTE === */
+  .splash-vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(220,230,255,0.5) 100%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* === CARD === */
+  .splash-card {
+    position: relative;
+    z-index: 2;
+    width: min(340px, 88vw);
+    text-align: center;
+
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+    animation: splashCardIn 0.7s cubic-bezier(0.34,1.45,0.64,1) 0.4s forwards;
+  }
+
+  @keyframes splashCardIn {
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* === WHEEL SVG === */
+  .splash-wheel-wrap {
+    width: 160px;
+    height: 160px;
+    margin: 0 auto 18px;
+    position: relative;
+    animation: splashFadeUp 0.5s ease 0.6s both;
+  }
+
+  #splash-color-wheel {
+    width: 160px;
+    height: 160px;
+    animation: wheelSpin 12s linear infinite;
+  }
+
+  @keyframes wheelSpin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  .splash-wheel-center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #f0f4ff;
+    border: 2px solid rgba(91,79,207,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+  }
+
+  /* === TITLE === */
+  .splash-title {
+    font-size: 34px;
+    font-weight: 900;
+    color: #1e2a4a;
+    letter-spacing: -0.5px;
+    margin: 0 0 2px;
+    line-height: 1.1;
+    animation: splashFadeUp 0.5s ease 0.7s both;
+    position: relative;
+  }
+
+  /* color accent word */
+  .splash-title .accent-word {
+    color: #1e2a4a;
+    -webkit-text-fill-color: #1e2a4a;
+  }
+
+  .splash-sub {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: #8090bb;
+    text-transform: uppercase;
+    margin: 0 0 6px;
+    animation: splashFadeUp 0.5s ease 0.8s both;
+  }
+
+  @keyframes splashFadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* === CTA BUTTON === */
+  .splash-btn {
+    display: block;
+    width: 100%;
+    padding: 16px 20px;
+    border-radius: 18px;
+    border: none;
+    background: linear-gradient(135deg, #5b4fcf 0%, #8e44ad 100%);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(91,79,207,0.25);
+    transition: transform 0.15s, box-shadow 0.15s;
+    animation: splashFadeUp 0.5s ease 0.95s both;
+    font-family: inherit;
+  }
+
+  .splash-btn:hover  { transform: translateY(-2px) scale(1.01); box-shadow: 0 6px 20px rgba(91,79,207,0.35); }
+  .splash-btn:active { transform: scale(0.97); }
+
+  .splash-hint {
+    margin-top: 14px;
+    font-size: 11px;
+    color: #8090bb;
+    animation: splashFadeUp 0.5s ease 1.05s both;
+    letter-spacing: 0.5px;
+  }
+
+  /* === CORNER DECO === */
+  .splash-corner-tl,
+  .splash-corner-br {
+    position: absolute;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.25;
+  }
+  .splash-corner-tl { top: 0; left: 0; }
+  .splash-corner-br { bottom: 0; right: 0; transform: rotate(180deg); }
 </style>
 </head>
 <body>
 
+<!-- ========== SPLASH SCREEN ========== -->
+<div id="splash-screen">
+  <!-- animated particle canvas background -->
+  <canvas id="splash-canvas"></canvas>
+
+  <!-- vignette overlay -->
+  <div class="splash-vignette"></div>
+
+  <!-- corner deco SVGs -->
+  <svg class="splash-corner-tl" width="140" height="140" viewBox="0 0 140 140" fill="none">
+    <circle cx="0" cy="0" r="80" stroke="rgba(91,79,207,0.4)" stroke-width="1.5" fill="none"/>
+    <circle cx="0" cy="0" r="50" stroke="rgba(142,68,173,0.3)" stroke-width="1" fill="none"/>
+    <circle cx="0" cy="0" r="120" stroke="rgba(41,128,185,0.2)" stroke-width="1" fill="none"/>
+  </svg>
+  <svg class="splash-corner-br" width="140" height="140" viewBox="0 0 140 140" fill="none">
+    <circle cx="0" cy="0" r="80" stroke="rgba(226,75,74,0.35)" stroke-width="1.5" fill="none"/>
+    <circle cx="0" cy="0" r="50" stroke="rgba(245,166,35,0.3)" stroke-width="1" fill="none"/>
+    <circle cx="0" cy="0" r="120" stroke="rgba(39,174,96,0.2)" stroke-width="1" fill="none"/>
+  </svg>
+
+  <div class="splash-card">
+    <!-- Spinning color wheel SVG -->
+    <div class="splash-wheel-wrap">
+      <svg id="splash-color-wheel" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+        <!-- 12 color segments -->
+        <path d="M80,80 L80,10 A70,70 0 0,1 115,17.4 Z" fill="#ff0000"/>
+        <path d="M80,80 L115,17.4 A70,70 0 0,1 141.2,43 Z" fill="#ff5500"/>
+        <path d="M80,80 L141.2,43 A70,70 0 0,1 150,80 Z" fill="#ff9900"/>
+        <path d="M80,80 L150,80 A70,70 0 0,1 141.2,117 Z" fill="#ffdd00"/>
+        <path d="M80,80 L141.2,117 A70,70 0 0,1 115,142.6 Z" fill="#aadd00"/>
+        <path d="M80,80 L115,142.6 A70,70 0 0,1 80,150 Z" fill="#00bb00"/>
+        <path d="M80,80 L80,150 A70,70 0 0,1 45,142.6 Z" fill="#00bbaa"/>
+        <path d="M80,80 L45,142.6 A70,70 0 0,1 18.8,117 Z" fill="#0099ff"/>
+        <path d="M80,80 L18.8,117 A70,70 0 0,1 10,80 Z" fill="#0044ff"/>
+        <path d="M80,80 L10,80 A70,70 0 0,1 18.8,43 Z" fill="#6600cc"/>
+        <path d="M80,80 L18.8,43 A70,70 0 0,1 45,17.4 Z" fill="#cc00aa"/>
+        <path d="M80,80 L45,17.4 A70,70 0 0,1 80,10 Z" fill="#ff0066"/>
+        <!-- inner ring light overlay -->
+        <circle cx="80" cy="80" r="35" fill="#f0f4ff"/>
+        <!-- subtle ring border -->
+        <circle cx="80" cy="80" r="70" fill="none" stroke="rgba(0,0,0,0.08)" stroke-width="1"/>
+        <circle cx="80" cy="80" r="35" fill="none" stroke="rgba(0,0,0,0.08)" stroke-width="1"/>
+      </svg>
+      <!-- center dot -->
+      <div class="splash-wheel-center"></div>
+    </div>
+
+    <h1 class="splash-title"><span class="accent-word">Game</span> Edukasi</h1>
+    <p class="splash-sub">Ekskul DKV · SMPN 1 Sumenep</p>
+
+    <button class="splash-btn" id="splash-btn">Mulai Belajar</button>
+    <p class="splash-hint">Tap di mana saja untuk mulai</p>
+  </div>
+</div>
+
 <div class="app-shell">
 
   <div class="app-header">
-    <h1>GAME DKV<br><span style="font-size:14px;font-weight:500;letter-spacing:1.5px;opacity:0.75;">SMPN 1 SUMENEP</span></h1>
+    <h1>Game Edukasi<br><span style="font-size:14px;font-weight:500;letter-spacing:1.5px;opacity:0.75;">SMPN 1 SUMENEP</span></h1>
     <p id="header-subtitle">Pilih game untuk dimainkan</p>
   </div>
 
   <!-- ========== SCREEN: HOME (pilih game) ========== -->
   <div id="screen-home">
     <div class="game-select-grid">
-      <button class="game-card" id="go-color-mixer">
-        <div class="game-card-icon">🖌️</div>
-        <div class="game-card-info">
-          <div class="game-card-name">Color Mixer Quiz</div>
-          <div class="game-card-desc">Tebak hasil campuran warna berdasarkan swatch visual. Ada 5 level kesulitan.</div>
-        </div>
-        <div class="game-card-arrow">›</div>
-      </button>
-
       <button class="game-card" id="go-theory">
-        <div class="game-card-icon">📚</div>
         <div class="game-card-info">
           <div class="game-card-name">Latihan Soal</div>
           <div class="game-card-desc">58 soal pilihan ganda tentang teori warna, sistem RGB/CMYK, 8 skema harmoni warna, dan psikologi warna.</div>
@@ -937,14 +1318,31 @@
         <div class="game-card-arrow">›</div>
       </button>
 
+      <button class="game-card" id="go-color-mixer">
+        <div class="game-card-info">
+          <div class="game-card-name">Color Mixer Quiz</div>
+          <div class="game-card-desc">Tebak hasil campuran warna berdasarkan swatch visual. Ada 5 level kesulitan.</div>
+        </div>
+        <div class="game-card-arrow">›</div>
+      </button>
+
       <button class="game-card" id="go-wheel">
-        <div class="game-card-icon">🎡</div>
         <div class="game-card-info">
           <div class="game-card-name">Color Wheel Harmony</div>
           <div class="game-card-desc">Cocokkan skema harmoni (komplementer, analog, triadik, dst) langsung di roda warna interaktif.</div>
         </div>
         <div class="game-card-arrow">›</div>
       </button>
+
+      <button class="game-card" id="go-nama-warna">
+        <div class="game-card-info">
+          <div class="game-card-name">Tebak Nama Warna</div>
+          <div class="game-card-desc">Pelajari 64 warna Pantone krayon, lalu tebak namanya! Ada mode pilihan ganda dan ketik langsung.</div>
+        </div>
+        <div class="game-card-arrow">›</div>
+      </button>
+
+
     </div>
   </div>
 
@@ -1123,7 +1521,7 @@
     <div id="theory-summary" class="hidden">
       <div class="question-card summary-card">
         <div class="question-label" id="ts-category-label">Sesi selesai</div>
-        <div class="result-stars" id="ts-stars">⭐⭐⭐</div>
+        <div class="result-stars" id="ts-stars">Bagus!</div>
         <div class="big-xp" id="ts-xp">0 XP</div>
         <div class="result-grade" id="ts-grade">A</div>
         <div class="summary-line" id="ts-line">0 dari 0 benar</div>
@@ -1135,6 +1533,94 @@
       </div>
     </div>
   </div>
+
+  <!-- ========== SCREEN: PELAJARI WARNA (sebelum mode select) ========== -->
+  <div id="screen-nama-study" class="hidden">
+    <button class="back-link" id="back-to-home-from-nama-study">← Kembali ke menu</button>
+    <div class="study-header">
+      <input type="text" class="study-search" id="study-search-input" placeholder="Cari nama atau kode warna..." oninput="filterStudyColors()">
+      <span class="study-count" id="study-count-badge">64 warna</span>
+    </div>
+    <div class="study-grid" id="study-color-grid"></div>
+    <button class="study-start-btn" id="study-mulai-btn">Mulai Tebak Warna →</button>
+  </div>
+
+  <!-- ========== SCREEN: TEBAK NAMA WARNA - MODE SELECT ========== -->
+  <div id="screen-nama-select" class="hidden">
+    <button class="back-link" id="back-to-nama-study-from-select">← Pelajari warna dulu</button>
+    <div class="level-select-grid" id="nama-mode-grid"></div>
+  </div>
+
+  <!-- ========== SCREEN: TEBAK NAMA WARNA - GAME ========== -->
+  <div id="screen-nama" class="hidden">
+    <button class="back-link" id="back-to-nama-select">← Ganti mode</button>
+
+    <div class="stats-bar">
+      <div class="stat-block">
+        <div class="stat-label">Soal</div>
+        <div class="stat-value" id="nw-soal">0</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-block">
+        <div class="stat-label">Benar</div>
+        <div class="stat-value" id="nw-benar">0</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-block">
+        <div class="stat-label">XP</div>
+        <div class="stat-value xp" id="nw-xp">0</div>
+      </div>
+    </div>
+
+    <div class="progress-track">
+      <div class="progress-fill" id="nw-progress"></div>
+    </div>
+
+    <div id="nw-active">
+      <!-- kotak warna besar -->
+      <div class="question-card" style="text-align:center;">
+        <div class="theory-q-number" style="justify-content:center; margin-bottom:14px;">
+          <span id="nw-label">Soal 1 dari 15</span>
+          <span class="theory-q-timer hidden" id="nw-timer">8s</span>
+        </div>
+        <div id="nw-swatch-box" style="width:140px;height:140px;border-radius:16px;border:2px solid rgba(0,0,0,0.12);margin:0 auto 14px;"></div>
+        <div id="nw-hex-hint" style="font-size:12px;color:var(--text-secondary);letter-spacing:1px;font-family:monospace;"></div>
+      </div>
+
+      <!-- MODE PILIHAN GANDA -->
+      <div id="nw-mc-area">
+        <div class="theory-options-grid" id="nw-mc-options"></div>
+      </div>
+
+      <!-- MODE KETIK -->
+      <div id="nw-type-area" class="hidden">
+        <div class="nw-input-wrap">
+          <input type="text" id="nw-input" class="nw-input" placeholder="Ketik nama warna..." autocomplete="off" autocorrect="off" spellcheck="false"/>
+          <button class="nw-submit-btn" id="nw-submit">Cek</button>
+        </div>
+        <div id="nw-suggestions" class="nw-suggestions hidden"></div>
+      </div>
+
+      <div class="feedback" id="nw-feedback"></div>
+
+      <div class="action-row">
+        <button class="next-btn hidden" id="nw-next-btn">Soal berikutnya →</button>
+      </div>
+    </div>
+
+    <div id="nw-summary" class="hidden">
+      <div class="question-card summary-card">
+        <div class="question-label" id="nw-summary-mode">Sesi selesai</div>
+        <div class="big-xp" id="nw-summary-xp">0 XP</div>
+        <div class="result-grade" id="nw-grade">A</div>
+        <div class="summary-line" id="nw-summary-line">0 dari 0 benar</div>
+        <div class="action-row" style="margin-top:12px;">
+          <button class="restart-btn" id="nw-restart">Main lagi</button>
+          <button class="change-level-btn" id="nw-change">Ganti mode</button>
+        </div>
+      </div>
+    </div>
+
 
 </div><!-- .app-shell -->
 
@@ -1148,21 +1634,52 @@
 var SESSION_LENGTH = 20;
 
 var palette = {
+  // === Warna dasar (bahan campuran) ===
   merah: "#e24b4a", kuning: "#fac775", biru: "#378add",
   hijau: "#639922", oranye: "#d85a30", ungu: "#7f77dd",
-  putih: "#e9e9ee", hitam: "#2c2c2a", coklat: "#71422b",
-  abu: "#888780", pink: "#d4537e", "merah-muda": "#e88a8a",
-  "biru-muda": "#9cc4ec", "hijau-muda": "#a8d46a", "kuning-muda": "#fde8a8",
-  "ungu-muda": "#c4bdf0", "hijau-tua": "#27500a", "biru-tua": "#0c447c",
-  "merah-tua": "#791f1f", "ungu-tua": "#3c3489", "kuning-oranye": "#ef9f27",
-  "merah-jingga": "#ba4a24", "merah-ungu": "#993556", "biru-ungu": "#534ab7",
-  "kuning-hijau": "#97c459", "biru-hijau": "#0f6e56", zaitun: "#5f5e2a",
-  krem: "#f0e6d2", "abu-tua": "#444441", "abu-muda": "#d3d1c7",
-  lumpur: "#5a4a3a", tosca: "#1d9e75", magenta: "#d4377e",
-  maroon: "#501313", navy: "#042c53", salem: "#173404",
-  karat: "#9c4a1f", mustard: "#c99a2e", lavender: "#b5aef0",
-  "abu-kehijauan": "#7a8a73", "abu-kebiruan": "#7088a0",
-  coral: "#e0775a", indigo: "#3a2f8a"
+  putih: "#e9e9ee", hitam: "#2c2c2a",
+
+  // === PANTONE KRAYON (64 warna) ===
+  // Merah & Oranye
+  merah: "#ED1C24", "merah-cerah": "#FF2D2D", "merah-marun": "#800000",
+  "merah-muda": "#E8344E", "oranye-merah": "#FF4500",
+  oranye: "#FF6B00", "oranye-muda": "#FF8C00",
+  // Kuning
+  "kuning-oranye": "#FFA500", kuning: "#FFD700",
+  "kuning-cerah": "#FFFF00", "kuning-pucat": "#F5F5A0", krem: "#F5E6C8",
+  // Cokelat & Peach
+  "cokelat-krem": "#D4A574", peach: "#FFCBA4", "peach-tua": "#FF9472",
+  salmon: "#FA8072", "cokelat-muda": "#C4956A", cokelat: "#8B4513",
+  "cokelat-tua": "#5C3317", "cokelat-kayu": "#7B4F2E",
+  // Hijau
+  "hijau-kuning": "#9ACD32", "hijau-muda": "#66CC33",
+  hijau: "#008000", "hijau-tua": "#006400",
+  "hijau-lumut": "#4A7A2E", "hijau-hutan": "#228B22",
+  "hijau-mint": "#98FF98", "hijau-toska": "#3CB371",
+  // Biru & Toska
+  toska: "#008080", "toska-muda": "#40E0D0",
+  "biru-langit": "#87CEEB", "biru-muda": "#4DA6FF",
+  biru: "#0066CC", "biru-cobalt": "#0047AB",
+  "biru-tua": "#00008B", "biru-laut": "#000080",
+  // Ungu & Merah Muda
+  "biru-indigo": "#4B0082", ungu: "#800080",
+  "ungu-muda": "#9B59B6", "ungu-cerah": "#BF5FFF",
+  lavender: "#E6E6FA", "lavender-tua": "#9683EC",
+  mauve: "#E0B0FF", magenta: "#FF00FF",
+  // Pink
+  "pink-fuchsia": "#FF1493", "pink-tua": "#E91E8C",
+  pink: "#FF69B4", "pink-muda": "#FFB6C1",
+  "pink-baby": "#FFCCE5", "pink-salmon": "#FF9999",
+  // Netral
+  putih: "#FFFFFF", "abu-terang": "#D3D3D3",
+  abu: "#808080", "abu-gelap": "#404040",
+  hitam: "#1A1A1A",
+  // Metalik & Spesial
+  emas: "#FFD700", "emas-tua": "#B8860B",
+  perak: "#C0C0C0", perunggu: "#CD7F32",
+  "merah-maroon": "#6B0F1A", burgundy: "#900020",
+  "biru-baja": "#4682B4", "hijau-zamrud": "#50C878",
+  "ungu-royal": "#7851A9", "merah-mawar": "#C2185B"
 };
 
 var eazyBase = [
@@ -1173,117 +1690,282 @@ var eazyBase = [
   [["merah","putih"],"merah-muda"],[["putih","merah"],"merah-muda"],
   [["biru","putih"],"biru-muda"],[["putih","biru"],"biru-muda"],
   [["hijau","putih"],"hijau-muda"],[["putih","hijau"],"hijau-muda"],
-  [["kuning","putih"],"kuning-muda"],[["putih","kuning"],"kuning-muda"],
+  [["kuning","putih"],"kuning-pucat"],[["putih","kuning"],"kuning-pucat"],
   [["ungu","putih"],"ungu-muda"],[["putih","ungu"],"ungu-muda"],
   [["hijau","hitam"],"hijau-tua"],[["hitam","hijau"],"hijau-tua"],
   [["biru","hitam"],"biru-tua"],[["hitam","biru"],"biru-tua"],
-  [["merah","hitam"],"merah-tua"],[["hitam","merah"],"merah-tua"],
-  [["ungu","hitam"],"ungu-tua"],[["hitam","ungu"],"ungu-tua"],
+  [["merah","hitam"],"merah-marun"],[["hitam","merah"],"merah-marun"],
+  [["ungu","hitam"],"ungu-royal"],[["hitam","ungu"],"ungu-royal"],
   [["oranye","kuning"],"kuning-oranye"],[["kuning","oranye"],"kuning-oranye"],
-  [["merah","oranye"],"merah-jingga"],[["oranye","merah"],"merah-jingga"],
-  [["merah","ungu"],"merah-ungu"],[["ungu","merah"],"merah-ungu"],
-  [["biru","ungu"],"biru-ungu"],[["ungu","biru"],"biru-ungu"],
-  [["kuning","hijau"],"kuning-hijau"],[["hijau","kuning"],"kuning-hijau"],
-  [["biru","hijau"],"biru-hijau"],[["hijau","biru"],"biru-hijau"],
-  [["hijau","merah"],"coklat"],[["merah","hijau"],"coklat"]
+  [["merah","oranye"],"oranye-merah"],[["oranye","merah"],"oranye-merah"],
+  [["merah","ungu"],"merah-mawar"],[["ungu","merah"],"merah-mawar"],
+  [["biru","ungu"],"biru-indigo"],[["ungu","biru"],"biru-indigo"],
+  [["kuning","hijau"],"hijau-kuning"],[["hijau","kuning"],"hijau-kuning"],
+  [["biru","hijau"],"hijau-toska"],[["hijau","biru"],"hijau-toska"],
+  [["hijau","merah"],"cokelat"],[["merah","hijau"],"cokelat"],
+  // === Campuran Pantone - Easy ===
+  [["merah","putih"],"merah-muda"],[["putih","merah"],"merah-muda"],
+  [["oranye","putih"],"peach"],[["putih","oranye"],"peach"],
+  [["kuning","putih"],"kuning-pucat"],[["putih","kuning"],"kuning-pucat"],
+  [["biru","putih"],"biru-langit"],[["putih","biru"],"biru-langit"],
+  [["hijau","putih"],"hijau-mint"],[["putih","hijau"],"hijau-mint"],
+  [["merah","hitam"],"merah-marun"],[["hitam","merah"],"merah-marun"],
+  [["biru","hitam"],"biru-laut"],[["hitam","biru"],"biru-laut"],
+  [["cokelat","putih"],"cokelat-muda"],[["putih","cokelat"],"cokelat-muda"],
+  [["kuning","abu"],"emas-tua"],[["abu","kuning"],"emas-tua"],
+  [["ungu","merah"],"pink-fuchsia"],[["merah","ungu"],"pink-fuchsia"],
+  [["merah","putih"],"pink-muda"],[["putih","merah"],"pink-muda"],
+  [["biru","ungu"],"biru-indigo"],[["ungu","biru"],"biru-indigo"],
+  [["hijau","kuning"],"hijau-kuning"],[["kuning","hijau"],"hijau-kuning"],
+  [["oranye","merah"],"oranye-merah"],[["merah","oranye"],"oranye-merah"],
+  [["merah","ungu"],"merah-mawar"],[["ungu","merah"],"merah-mawar"],
+  [["biru","hijau"],"hijau-toska"],[["hijau","biru"],"hijau-toska"],
+  [["oranye","kuning"],"oranye-muda"],[["kuning","oranye"],"oranye-muda"],
+  [["cokelat","hitam"],"cokelat-tua"],[["hitam","cokelat"],"cokelat-tua"],
+  [["hijau","biru"],"toska-muda"],[["biru","hijau"],"toska-muda"],
+  [["kuning","oranye"],"emas"],[["oranye","kuning"],"emas"],
+  [["abu","putih"],"abu-terang"],[["putih","abu"],"abu-terang"],
+  [["hitam","abu"],"abu-gelap"],[["abu","hitam"],"abu-gelap"],
+  [["merah","hitam"],"burgundy"],[["hitam","merah"],"burgundy"],
+  [["ungu","hitam"],"ungu-royal"],[["hitam","ungu"],"ungu-royal"],
+  [["biru","abu"],"biru-baja"],[["abu","biru"],"biru-baja"],
+  [["hijau","hitam"],"hijau-lumut"],[["hitam","hijau"],"hijau-lumut"],
+  [["hijau","abu"],"hijau-hutan"],[["abu","hijau"],"hijau-hutan"],
+  [["biru","hijau"],"hijau-zamrud"],[["hijau","biru"],"hijau-zamrud"],
+  [["merah","oranye"],"salmon"],[["oranye","merah"],"salmon"],
+  [["cokelat","oranye"],"cokelat-krem"],[["oranye","cokelat"],"cokelat-krem"],
+  [["merah","hitam"],"merah-maroon"],[["hitam","merah"],"merah-maroon"],
+  [["ungu","putih"],"lavender-tua"],[["putih","ungu"],"lavender-tua"],
+  [["ungu","putih"],"mauve"],[["putih","ungu"],"mauve"]
 ];
 
 var bisalahBase = [
   [["merah","putih","biru"],"lavender"],
-  [["biru","putih","hitam"],"abu-kebiruan"],
-  [["hijau","putih","hitam"],"abu-kehijauan"],
-  [["merah","kuning","hitam"],"karat"],
+  [["biru","putih","hitam"],"biru-baja"],
+  [["hijau","putih","hitam"],"hijau-lumut"],
+  [["merah","kuning","hitam"],"cokelat-krem"],
   [["oranye","putih"],"krem"],[["putih","oranye"],"krem"],
-  [["kuning","abu"],"mustard"],[["abu","kuning"],"mustard"],
-  [["hijau","abu"],"zaitun"],[["abu","hijau"],"zaitun"],
+  [["kuning","abu"],"emas-tua"],[["abu","kuning"],"emas-tua"],
+  [["hijau","abu"],"hijau-lumut"],[["abu","hijau"],"hijau-lumut"],
   [["merah","biru","putih"],"ungu-muda"],[["biru","merah","putih"],"ungu-muda"],
-  [["ungu","merah"],"merah-ungu"],[["merah","ungu"],"merah-ungu"],
-  [["biru","hijau","putih"],"tosca"],[["hijau","biru","putih"],"tosca"],
+  [["ungu","merah"],"merah-mawar"],[["merah","ungu"],"merah-mawar"],
+  [["biru","hijau","putih"],"toska"],[["hijau","biru","putih"],"toska"],
   [["merah","ungu","putih"],"magenta"],[["ungu","merah","putih"],"magenta"],
-  [["merah","hitam","ungu"],"maroon"],[["hitam","merah","ungu"],"maroon"],
-  [["biru","hitam","ungu"],"navy"],[["hitam","biru","ungu"],"navy"],
-  [["hijau","hitam","biru"],"salem"],[["hitam","hijau","biru"],"salem"],
-  [["oranye","merah","putih"],"coral"],[["merah","oranye","putih"],"coral"],
-  [["biru","ungu","hitam"],"indigo"],[["ungu","biru","hitam"],"indigo"],
-  [["coklat","putih"],"karat"],[["putih","coklat"],"karat"],
-  [["abu","putih"],"abu-muda"],[["putih","abu"],"abu-muda"],
-  [["abu","hitam"],"abu-tua"],[["hitam","abu"],"abu-tua"]
+  [["merah","hitam","ungu"],"merah-maroon"],[["hitam","merah","ungu"],"merah-maroon"],
+  [["biru","hitam","ungu"],"biru-laut"],[["hitam","biru","ungu"],"biru-laut"],
+  [["hijau","hitam","biru"],"hijau-hutan"],[["hitam","hijau","biru"],"hijau-hutan"],
+  [["oranye","merah","putih"],"oranye-merah"],[["merah","oranye","putih"],"oranye-merah"],
+  [["biru","ungu","hitam"],"biru-indigo"],[["ungu","biru","hitam"],"biru-indigo"],
+  [["cokelat","putih"],"cokelat-krem"],[["putih","cokelat"],"cokelat-krem"],
+  [["abu","putih"],"abu-terang"],[["putih","abu"],"abu-terang"],
+  [["abu","hitam"],"abu-gelap"],[["hitam","abu"],"abu-gelap"],
+  // === Campuran Pantone - Normal ===
+  [["merah","putih","oranye"],"peach-tua"],[["oranye","putih","merah"],"peach-tua"],
+  [["oranye","merah","hitam"],"cokelat-kayu"],[["merah","oranye","hitam"],"cokelat-kayu"],
+  [["merah","oranye","putih"],"salmon"],[["oranye","merah","putih"],"salmon"],
+  [["biru","hijau","putih"],"toska-muda"],[["hijau","biru","putih"],"toska-muda"],
+  [["biru","ungu","hitam"],"biru-indigo"],[["ungu","biru","hitam"],"biru-indigo"],
+  [["merah","ungu","putih"],"pink-fuchsia"],[["ungu","merah","putih"],"pink-fuchsia"],
+  [["biru","abu","hitam"],"biru-baja"],[["abu","biru","hitam"],"biru-baja"],
+  [["hijau","abu","hitam"],"hijau-lumut"],[["abu","hijau","hitam"],"hijau-lumut"],
+  [["merah","hitam","ungu"],"burgundy"],[["hitam","merah","ungu"],"burgundy"],
+  [["ungu","hitam","merah"],"ungu-royal"],[["hitam","ungu","merah"],"ungu-royal"],
+  [["merah","hitam","oranye"],"merah-maroon"],[["hitam","merah","oranye"],"merah-maroon"],
+  [["kuning","abu","hitam"],"emas-tua"],[["abu","kuning","hitam"],"emas-tua"],
+  [["ungu","putih","abu"],"mauve"],[["putih","ungu","abu"],"mauve"],
+  [["ungu","putih","biru"],"lavender-tua"],[["biru","putih","ungu"],"lavender-tua"],
+  [["merah","ungu","hitam"],"merah-mawar"],[["ungu","merah","hitam"],"merah-mawar"],
+  [["biru","hitam","ungu"],"biru-laut"],[["hitam","biru","ungu"],"biru-laut"],
+  [["hijau","kuning","putih"],"hijau-kuning"],[["kuning","hijau","putih"],"hijau-kuning"],
+  [["hijau","biru","hitam"],"hijau-hutan"],[["biru","hijau","hitam"],"hijau-hutan"],
+  [["biru","hijau","hitam"],"hijau-zamrud"],[["hijau","biru","hitam"],"hijau-zamrud"],
+  [["cokelat","oranye","putih"],"cokelat-krem"],[["oranye","cokelat","putih"],"cokelat-krem"],
+  [["hijau","biru","abu"],"hijau-toska"],[["biru","hijau","abu"],"hijau-toska"],
+  [["kuning","putih","abu"],"kuning-pucat"],[["putih","kuning","abu"],"kuning-pucat"],
+  [["biru","putih","abu"],"biru-langit"],[["putih","biru","abu"],"biru-langit"],
+  [["merah","putih","abu"],"pink-muda"],[["putih","merah","abu"],"pink-muda"],
+  [["merah","oranye","putih"],"merah-cerah"],
+  [["oranye","merah","kuning"],"oranye-merah"],[["merah","oranye","kuning"],"oranye-merah"],
+  [["hijau","putih","biru"],"hijau-mint"],[["putih","hijau","biru"],"hijau-mint"],
+  [["cokelat","hitam","merah"],"cokelat-tua"],[["hitam","cokelat","merah"],"cokelat-tua"],
+  [["abu","putih","hitam"],"abu-terang"],[["putih","abu","hitam"],"abu-terang"],
+  [["abu","hitam","biru"],"abu-gelap"],[["hitam","abu","biru"],"abu-gelap"],
+  [["cokelat","oranye","merah"],"salmon"],[["oranye","cokelat","merah"],"salmon"],
+  [["ungu","pink","putih"],"ungu-cerah"]
 ];
 
 var stressBase = [
-  [["merah","kuning","biru","putih"],"coklat"],
+  [["merah","kuning","biru","putih"],"cokelat"],
   [["biru","kuning","hijau","hitam"],"hijau-tua"],
-  [["merah","biru","kuning","hitam"],"coklat"],
+  [["merah","biru","kuning","hitam"],"cokelat"],
   [["kuning","ungu","putih","hitam"],"abu"],
-  [["merah","hijau","biru"],"lumpur"],[["hijau","merah","biru"],"lumpur"],
-  [["kuning","biru","merah"],"coklat"],[["hijau","merah","kuning"],"coklat"],
+  [["merah","hijau","biru"],"cokelat-tua"],[["hijau","merah","biru"],"cokelat-tua"],
+  [["kuning","biru","merah"],"cokelat"],[["hijau","merah","kuning"],"cokelat"],
   [["putih","merah","biru"],"ungu-muda"],
-  [["merah","kuning","hitam","putih"],"karat"],
-  [["biru","hijau","kuning","hitam"],"zaitun"],
-  [["ungu","kuning","hitam"],"lumpur"],[["kuning","ungu","hitam"],"lumpur"],
-  [["merah","hijau","hitam"],"lumpur"],[["hijau","merah","hitam"],"lumpur"],
-  [["biru","oranye","putih"],"abu-kebiruan"],[["oranye","biru","putih"],"abu-kebiruan"],
-  [["merah","biru","kuning","putih"],"coklat"],
-  [["coklat","hitam","merah"],"maroon"],[["hitam","coklat","merah"],"maroon"],
-  [["abu","biru","hitam"],"abu-tua"],[["biru","abu","hitam"],"abu-tua"],
-  [["hijau","kuning","hitam","putih"],"zaitun"],
-  [["merah","ungu","hitam","putih"],"maroon"],
-  [["oranye","hijau","hitam"],"lumpur"],[["hijau","oranye","hitam"],"lumpur"],
-  [["biru","merah","hijau","hitam"],"abu-tua"],
-  [["kuning","merah","biru","hitam"],"coklat"]
+  [["merah","kuning","hitam","putih"],"cokelat-krem"],
+  [["biru","hijau","kuning","hitam"],"hijau-lumut"],
+  [["ungu","kuning","hitam"],"cokelat-tua"],[["kuning","ungu","hitam"],"cokelat-tua"],
+  [["merah","hijau","hitam"],"cokelat-tua"],[["hijau","merah","hitam"],"cokelat-tua"],
+  [["biru","oranye","putih"],"biru-baja"],[["oranye","biru","putih"],"biru-baja"],
+  [["merah","biru","kuning","putih"],"cokelat"],
+  [["cokelat","hitam","merah"],"merah-maroon"],[["hitam","cokelat","merah"],"merah-maroon"],
+  [["abu","biru","hitam"],"abu-gelap"],[["biru","abu","hitam"],"abu-gelap"],
+  [["hijau","kuning","hitam","putih"],"hijau-lumut"],
+  [["merah","ungu","hitam","putih"],"merah-maroon"],
+  [["oranye","hijau","hitam"],"cokelat-tua"],[["hijau","oranye","hitam"],"cokelat-tua"],
+  [["biru","merah","hijau","hitam"],"abu-gelap"],
+  [["kuning","merah","biru","hitam"],"cokelat"],
+  // === Campuran Pantone - Hard ===
+  [["merah","oranye","putih","abu"],"peach"],[["oranye","merah","putih","abu"],"peach"],
+  [["merah","oranye","hitam","abu"],"cokelat-kayu"],
+  [["biru","hijau","putih","abu"],"toska-muda"],
+  [["merah","ungu","putih","abu"],"pink-fuchsia"],
+  [["biru","abu","hitam","ungu"],"biru-indigo"],
+  [["hijau","abu","hitam","kuning"],"hijau-lumut"],
+  [["merah","hitam","ungu","abu"],"burgundy"],
+  [["ungu","hitam","merah","abu"],"ungu-royal"],
+  [["merah","hitam","oranye","cokelat"],"merah-maroon"],
+  [["kuning","abu","hitam","oranye"],"emas-tua"],
+  [["biru","hitam","ungu","abu"],"biru-laut"],
+  [["hijau","kuning","putih","abu"],"hijau-kuning"],
+  [["hijau","biru","hitam","abu"],"hijau-hutan"],
+  [["biru","hijau","hitam","abu"],"hijau-zamrud"],
+  [["cokelat","oranye","putih","kuning"],"cokelat-krem"],
+  [["merah","ungu","hitam","abu"],"merah-mawar"],
+  [["biru","abu","putih","hijau"],"biru-baja"],
+  [["merah","oranye","putih","kuning"],"salmon"],
+  [["ungu","putih","abu","biru"],"lavender-tua"],
+  [["ungu","putih","abu","merah"],"mauve"],
+  [["oranye","merah","kuning","putih"],"oranye-merah"],
+  [["hijau","putih","biru","abu"],"hijau-mint"],
+  [["biru","putih","abu","hijau"],"biru-langit"],
+  [["merah","putih","abu","oranye"],"pink-muda"],
+  [["cokelat","hitam","merah","abu"],"cokelat-tua"],
+  [["abu","hitam","biru","ungu"],"abu-gelap"],
+  [["merah","oranye","putih","kuning"],"merah-cerah"],
+  [["kuning","putih","abu","hijau"],"kuning-pucat"],
+  [["hijau","biru","abu","hitam"],"hijau-toska"],
+  [["cokelat","oranye","merah","putih"],"peach-tua"],
+  [["merah","hitam","cokelat","oranye"],"cokelat-kayu"]
 ];
 
 var expertBase = [
-  [["merah-tua","kuning","hitam"],"karat"],[["kuning","merah-tua","hitam"],"karat"],
-  [["biru-tua","kuning","abu"],"zaitun"],[["kuning","biru-tua","abu"],"zaitun"],
-  [["merah-ungu","putih","hitam"],"abu-kehijauan"],
-  [["hijau-tua","abu","putih"],"abu-kehijauan"],[["abu","hijau-tua","putih"],"abu-kehijauan"],
-  [["biru-ungu","hitam","putih"],"navy"],[["hitam","biru-ungu","putih"],"navy"],
-  [["kuning-oranye","hitam","merah"],"karat"],[["hitam","kuning-oranye","merah"],"karat"],
-  [["merah-jingga","hitam","kuning"],"karat"],
-  [["biru-hijau","hitam","putih"],"abu-kehijauan"],
-  [["kuning-hijau","hitam","abu"],"zaitun"],[["hitam","kuning-hijau","abu"],"zaitun"],
-  [["ungu-tua","merah","hitam"],"maroon"],[["merah","ungu-tua","hitam"],"maroon"],
-  [["coral","hitam","putih"],"karat"],[["hitam","coral","putih"],"karat"],
-  [["tosca","hitam","abu"],"salem"],
-  [["magenta","hitam","ungu"],"maroon"],[["hitam","magenta","ungu"],"maroon"],
-  [["lavender","abu","hitam"],"indigo"],
-  [["mustard","hitam","merah"],"karat"],[["hitam","mustard","merah"],"karat"],
-  [["krem","abu","hitam"],"zaitun"],
-  [["abu-muda","hitam","biru"],"abu-kebiruan"],
-  [["abu-tua","putih","kuning"],"zaitun"],
-  [["karat","putih","hitam"],"lumpur"],
-  [["zaitun","hitam","kuning"],"lumpur"],[["hitam","zaitun","kuning"],"lumpur"],
-  [["indigo","putih","merah"],"ungu-tua"],
-  [["navy","putih","kuning"],"abu-kebiruan"],
-  [["maroon","putih","biru"],"ungu-tua"]
+  [["merah-marun","kuning","hitam"],"cokelat-krem"],[["kuning","merah-marun","hitam"],"cokelat-krem"],
+  [["biru-tua","kuning","abu"],"hijau-lumut"],[["kuning","biru-tua","abu"],"hijau-lumut"],
+  [["merah-mawar","putih","hitam"],"hijau-lumut"],
+  [["hijau-tua","abu","putih"],"hijau-lumut"],[["abu","hijau-tua","putih"],"hijau-lumut"],
+  [["biru-indigo","hitam","putih"],"biru-laut"],[["hitam","biru-indigo","putih"],"biru-laut"],
+  [["kuning-oranye","hitam","merah"],"cokelat-krem"],[["hitam","kuning-oranye","merah"],"cokelat-krem"],
+  [["oranye-merah","hitam","kuning"],"cokelat-krem"],
+  [["hijau-toska","hitam","putih"],"hijau-lumut"],
+  [["hijau-kuning","hitam","abu"],"hijau-lumut"],[["hitam","hijau-kuning","abu"],"hijau-lumut"],
+  [["ungu-royal","merah","hitam"],"merah-maroon"],[["merah","ungu-royal","hitam"],"merah-maroon"],
+  [["oranye-merah","hitam","putih"],"cokelat-krem"],[["hitam","oranye-merah","putih"],"cokelat-krem"],
+  [["toska","hitam","abu"],"hijau-hutan"],
+  [["magenta","hitam","ungu"],"merah-maroon"],[["hitam","magenta","ungu"],"merah-maroon"],
+  [["lavender","abu","hitam"],"biru-indigo"],
+  [["emas-tua","hitam","merah"],"cokelat-krem"],[["hitam","emas-tua","merah"],"cokelat-krem"],
+  [["krem","abu","hitam"],"hijau-lumut"],
+  [["abu-terang","hitam","biru"],"biru-baja"],
+  [["abu-gelap","putih","kuning"],"hijau-lumut"],
+  [["cokelat-krem","putih","hitam"],"cokelat-tua"],
+  [["hijau-lumut","hitam","kuning"],"cokelat-tua"],[["hitam","hijau-lumut","kuning"],"cokelat-tua"],
+  [["biru-indigo","putih","merah"],"ungu-royal"],
+  [["biru-laut","putih","kuning"],"biru-baja"],
+  [["merah-maroon","putih","biru"],"ungu-royal"],
+  // === Campuran Pantone - Expert ===
+  [["peach","hitam","merah"],"cokelat-kayu"],[["hitam","peach","merah"],"cokelat-kayu"],
+  [["salmon","hitam","abu"],"cokelat-muda"],[["hitam","salmon","abu"],"cokelat-muda"],
+  [["oranye-merah","hitam","kuning"],"cokelat-krem"],
+  [["merah-cerah","hitam","putih"],"salmon"],
+  [["cokelat-krem","hitam","merah"],"cokelat-tua"],[["hitam","cokelat-krem","merah"],"cokelat-tua"],
+  [["pink-fuchsia","hitam","ungu"],"merah-mawar"],[["hitam","pink-fuchsia","ungu"],"merah-mawar"],
+  [["pink-tua","hitam","merah"],"merah-mawar"],
+  [["lavender-tua","hitam","biru"],"biru-indigo"],[["hitam","lavender-tua","biru"],"biru-indigo"],
+  [["mauve","hitam","abu"],"lavender-tua"],
+  [["ungu-cerah","hitam","putih"],"lavender-tua"],[["hitam","ungu-cerah","putih"],"lavender-tua"],
+  [["biru-langit","hitam","abu"],"biru-baja"],[["hitam","biru-langit","abu"],"biru-baja"],
+  [["biru-cobalt","hitam","putih"],"biru-laut"],[["hitam","biru-cobalt","putih"],"biru-laut"],
+  [["hijau-toska","hitam","abu"],"hijau-hutan"],[["hitam","hijau-toska","abu"],"hijau-hutan"],
+  [["hijau-zamrud","hitam","putih"],"hijau-lumut"],[["hitam","hijau-zamrud","putih"],"hijau-lumut"],
+  [["hijau-mint","hitam","abu"],"hijau-hutan"],
+  [["toska-muda","hitam","abu"],"hijau-toska"],[["hitam","toska-muda","abu"],"hijau-toska"],
+  [["emas","hitam","abu"],"emas-tua"],[["hitam","emas","abu"],"emas-tua"],
+  [["perunggu","hitam","merah"],"cokelat-tua"],[["hitam","perunggu","merah"],"cokelat-tua"],
+  [["biru-baja","putih","abu"],"biru-langit"],
+  [["burgundy","putih","abu"],"pink-salmon"],[["putih","burgundy","abu"],"pink-salmon"],
+  [["merah-maroon","putih","oranye"],"salmon"],
+  [["ungu-royal","putih","merah"],"pink-fuchsia"],
+  [["abu-terang","biru","putih"],"biru-langit"],
+  [["abu-gelap","biru","putih"],"biru-baja"],
+  [["hijau-kuning","hitam","abu"],"hijau-lumut"],[["hitam","hijau-kuning","abu"],"hijau-lumut"],
+  [["hijau-hutan","putih","kuning"],"hijau-kuning"],
+  [["biru-indigo","putih","merah"],"lavender-tua"],
+  [["merah-mawar","putih","abu"],"pink-muda"],
+  [["peach-tua","hitam","merah"],"salmon"],[["hitam","peach-tua","merah"],"salmon"],
+  [["pink-salmon","hitam","oranye"],"peach-tua"],[["hitam","pink-salmon","oranye"],"peach-tua"],
+  [["kuning-pucat","abu","hijau"],"hijau-kuning"],
+  [["cokelat-muda","hitam","oranye"],"cokelat-kayu"]
 ];
 
 var masterBase = [
-  [["merah-tua","biru-tua","kuning","hitam"],"lumpur"],[["biru-tua","merah-tua","kuning","hitam"],"lumpur"],
-  [["hijau-tua","merah-jingga","putih","hitam"],"abu-kehijauan"],
-  [["ungu-tua","kuning-oranye","abu","hitam"],"lumpur"],
-  [["biru-ungu","merah-ungu","putih","hitam"],"indigo"],[["merah-ungu","biru-ungu","putih","hitam"],"indigo"],
-  [["kuning-hijau","biru-hijau","hitam","abu"],"zaitun"],
-  [["coral","tosca","hitam","putih"],"abu-kehijauan"],
-  [["magenta","navy","putih","abu"],"indigo"],
-  [["lavender","maroon","hitam","kuning"],"lumpur"],
-  [["mustard","biru-tua","hitam","putih"],"zaitun"],
-  [["karat","biru-ungu","hitam","abu"],"lumpur"],
-  [["abu-kebiruan","merah-tua","hitam","kuning"],"lumpur"],
-  [["abu-kehijauan","ungu-tua","hitam","putih"],"abu-tua"],
-  [["krem","navy","hitam","merah"],"lumpur"],
-  [["zaitun","merah-jingga","hitam","putih"],"lumpur"],
-  [["indigo","mustard","putih","hitam"],"zaitun"],
-  [["salem","coral","hitam","abu"],"lumpur"],
-  [["biru-hijau","merah-tua","kuning","hitam"],"lumpur"],
-  [["kuning-oranye","biru-tua","hitam","putih"],"zaitun"],
-  [["hijau-tua","magenta","putih","hitam"],"abu-kehijauan"],
-  [["merah-ungu","kuning-hijau","hitam","putih"],"lumpur"],
-  [["abu-muda","maroon","hitam","kuning"],"lumpur"],
-  [["navy","mustard","abu","hitam"],"zaitun"],
-  [["tosca","karat","hitam","putih"],"lumpur"],
-  [["lavender","zaitun","hitam","merah"],"lumpur"]
+  [["merah-marun","biru-tua","kuning","hitam"],"cokelat-tua"],[["biru-tua","merah-marun","kuning","hitam"],"cokelat-tua"],
+  [["hijau-tua","oranye-merah","putih","hitam"],"hijau-lumut"],
+  [["ungu-royal","kuning-oranye","abu","hitam"],"cokelat-tua"],
+  [["biru-indigo","merah-mawar","putih","hitam"],"biru-indigo"],[["merah-mawar","biru-indigo","putih","hitam"],"biru-indigo"],
+  [["hijau-kuning","hijau-toska","hitam","abu"],"hijau-lumut"],
+  [["oranye-merah","toska","hitam","putih"],"hijau-lumut"],
+  [["magenta","biru-laut","putih","abu"],"biru-indigo"],
+  [["lavender","merah-maroon","hitam","kuning"],"cokelat-tua"],
+  [["emas-tua","biru-tua","hitam","putih"],"hijau-lumut"],
+  [["cokelat-krem","biru-indigo","hitam","abu"],"cokelat-tua"],
+  [["biru-baja","merah-marun","hitam","kuning"],"cokelat-tua"],
+  [["hijau-lumut","ungu-royal","hitam","putih"],"abu-gelap"],
+  [["krem","biru-laut","hitam","merah"],"cokelat-tua"],
+  [["hijau-lumut","oranye-merah","hitam","putih"],"cokelat-tua"],
+  [["biru-indigo","emas-tua","putih","hitam"],"hijau-lumut"],
+  [["hijau-hutan","oranye-merah","hitam","abu"],"cokelat-tua"],
+  [["hijau-toska","merah-marun","kuning","hitam"],"cokelat-tua"],
+  [["kuning-oranye","biru-tua","hitam","putih"],"hijau-lumut"],
+  [["hijau-tua","magenta","putih","hitam"],"hijau-lumut"],
+  [["merah-mawar","hijau-kuning","hitam","putih"],"cokelat-tua"],
+  [["abu-terang","merah-maroon","hitam","kuning"],"cokelat-tua"],
+  [["biru-laut","emas-tua","abu","hitam"],"hijau-lumut"],
+  [["toska","cokelat-krem","hitam","putih"],"cokelat-tua"],
+  [["lavender","hijau-lumut","hitam","merah"],"cokelat-tua"],
+  // === Campuran Pantone - Master ===
+  [["merah-cerah","oranye","hitam","abu"],"cokelat-kayu"],
+  [["salmon","oranye-merah","hitam","putih"],"peach-tua"],
+  [["peach","oranye-merah","hitam","abu"],"cokelat-krem"],
+  [["pink-fuchsia","merah-mawar","hitam","putih"],"pink-tua"],
+  [["pink-tua","ungu-royal","hitam","abu"],"merah-mawar"],
+  [["lavender-tua","biru-indigo","hitam","putih"],"biru-laut"],
+  [["mauve","lavender-tua","hitam","abu"],"ungu-royal"],
+  [["ungu-cerah","mauve","putih","hitam"],"lavender-tua"],
+  [["biru-langit","biru-cobalt","hitam","putih"],"biru-baja"],
+  [["biru-cobalt","biru-laut","hitam","abu"],"biru-indigo"],
+  [["hijau-mint","hijau-toska","hitam","abu"],"hijau-hutan"],
+  [["toska-muda","hijau-zamrud","hitam","abu"],"hijau-toska"],
+  [["hijau-zamrud","hijau-hutan","hitam","abu"],"hijau-lumut"],
+  [["hijau-kuning","hijau-lumut","hitam","abu"],"hijau-hutan"],
+  [["emas","emas-tua","hitam","abu"],"perunggu"],
+  [["perunggu","emas-tua","hitam","merah"],"cokelat-tua"],
+  [["biru-baja","abu-gelap","hitam","putih"],"abu-gelap"],
+  [["abu-terang","biru-baja","hitam","putih"],"biru-langit"],
+  [["burgundy","merah-maroon","hitam","abu"],"cokelat-tua"],
+  [["merah-maroon","cokelat-tua","hitam","abu"],"cokelat-kayu"],
+  [["ungu-royal","biru-indigo","hitam","abu"],"biru-laut"],
+  [["merah-mawar","pink-fuchsia","hitam","putih"],"merah-marun"],
+  [["cokelat-krem","cokelat-muda","hitam","oranye"],"cokelat-kayu"],
+  [["cokelat-muda","cokelat-tua","hitam","merah"],"cokelat-tua"],
+  [["hijau-hutan","hijau-lumut","hitam","kuning"],"hijau-kuning"],
+  [["hijau-toska","hijau-zamrud","biru","hitam"],"toska-muda"],
+  [["biru-laut","biru-cobalt","putih","abu"],"biru-baja"],
+  [["pink-salmon","peach-tua","hitam","merah"],"salmon"],
+  [["pink-baby","pink-muda","putih","abu"],"pink-muda"],
+  [["kuning-pucat","emas-tua","abu","hitam"],"emas-tua"],
+  [["hijau-mint","toska-muda","putih","abu"],"biru-langit"],
+  [["merah-cerah","pink-fuchsia","putih","hitam"],"pink-tua"]
 ];
 
 function buildLevel(id, name, badgeClass, desc, n, time, xp, base) {
@@ -1420,7 +2102,10 @@ var screens = {
   wheelSelect: $("screen-wheel-select"),
   wheel: $("screen-wheel"),
   theorySelect: $("screen-theory-select"),
-  theory: $("screen-theory")
+  theory: $("screen-theory"),
+  namaStudy: $("screen-nama-study"),
+  namaSelect: $("screen-nama-select"),
+  nama: $("screen-nama")
 };
 
 function showScreen(name) {
@@ -1453,9 +2138,14 @@ function makeSwatch(colorName, sizeClass) {
 $("go-color-mixer").addEventListener("click", function(){ showScreen("levelSelect"); renderLevelSelect(); });
 $("go-theory").addEventListener("click", function(){ showScreen("theorySelect"); renderTheorySelect(); });
 $("go-wheel").addEventListener("click", function(){ showScreen("wheelSelect"); renderWheelLevelSelect(); });
+$("go-nama-warna").addEventListener("click", function(){ showScreen("namaStudy"); renderStudyScreen(); });
+
 $("back-to-home-from-mixer").addEventListener("click", function(){ showScreen("home"); $("header-subtitle").textContent = "Pilih game untuk dimainkan"; });
 $("back-to-home-from-theory").addEventListener("click", function(){ showScreen("home"); $("header-subtitle").textContent = "Pilih game untuk dimainkan"; });
 $("back-to-home-from-wheel").addEventListener("click", function(){ showScreen("home"); $("header-subtitle").textContent = "Pilih game untuk dimainkan"; });
+$("back-to-home-from-nama-study").addEventListener("click", function(){ showScreen("home"); $("header-subtitle").textContent = "Pilih game untuk dimainkan"; });
+$("back-to-nama-study-from-select").addEventListener("click", function(){ showScreen("namaStudy"); renderStudyScreen(); });
+
 
 // =======================================================================
 // ========================= COLOR MIXER =================================
@@ -1629,13 +2319,13 @@ var wheelColors = [
   { name: "oranye",        hex: "#d85a30" },
   { name: "kuning-oranye", hex: "#ef9f27" },
   { name: "kuning",        hex: "#fac775" },
-  { name: "kuning-hijau",  hex: "#97c459" },
+  { name: "hijau-kuning",  hex: "#97c459" },
   { name: "hijau",         hex: "#639922" },
-  { name: "biru-hijau",    hex: "#0f6e56" },
+  { name: "hijau-toska",    hex: "#0f6e56" },
   { name: "biru",          hex: "#378add" },
-  { name: "biru-ungu",     hex: "#534ab7" },
+  { name: "biru-indigo",     hex: "#534ab7" },
   { name: "ungu",          hex: "#7f77dd" },
-  { name: "merah-ungu",    hex: "#993556" }
+  { name: "merah-mawar",    hex: "#993556" }
 ];
 var WHEEL_N = wheelColors.length;
 function wmod(x){ return ((x % WHEEL_N) + WHEEL_N) % WHEEL_N; }
@@ -1732,6 +2422,64 @@ var wheelSkemaMateri = {
   }
 };
 
+// Titik diagram referensi per skema (selaras 100% dengan contoh warna di teks materi
+// masing-masing skema), dipakai untuk menggambar mini color-wheel di panel materi.
+// drawLines:false khusus utk Analog (di gambar referensi, Analog memang tanpa garis penghubung).
+var harmonyDiagramData = {
+  komplementer: { points: [0, 6],       drawLines: true  }, // Merah & Hijau
+  analog:       { points: [4, 5, 6],    drawLines: false }, // Kuning, Kuning-Hijau, Hijau
+  triadik:      { points: [0, 4, 8],    drawLines: true  }, // Merah, Kuning, Biru
+  split:        { points: [0, 5, 7],    drawLines: true  }, // Merah -> Kuning-Hijau & Hijau-Toska
+  tetradik:     { points: [0, 3, 6, 9], drawLines: true  }  // Merah, Kuning-Oranye, Hijau, Biru-Indigo (persegi)
+};
+
+// Membangun mini-SVG lingkaran warna statis (untuk panel materi), gaya & warnanya
+// 100% memakai wheelColors yang sama dengan roda permainan agar konsisten.
+function buildHarmonyDiagramSVG(typeKey) {
+  var data = harmonyDiagramData[typeKey];
+  var points = data.points, drawLines = data.drawLines;
+  var cx = 120, cy = 120, rOuter = 92, rInner = 33;
+  var anglePer = 360 / WHEEL_N;
+  function edge(deg, r) {
+    var rad = (deg - 90) * Math.PI / 180;
+    return [cx + r*Math.cos(rad), cy + r*Math.sin(rad)];
+  }
+  function segCenter(idx, r) { return edge(idx*anglePer + anglePer/2, r); }
+
+  var svg = '<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">';
+  for (var i = 0; i < WHEEL_N; i++) {
+    var a0 = i*anglePer, a1 = (i+1)*anglePer;
+    var p0o = edge(a0, rOuter), p1o = edge(a1, rOuter);
+    var p0i = edge(a0, rInner), p1i = edge(a1, rInner);
+    var d = "M "+p0i[0]+" "+p0i[1]+
+            " L "+p0o[0]+" "+p0o[1]+
+            " A "+rOuter+" "+rOuter+" 0 0 1 "+p1o[0]+" "+p1o[1]+
+            " L "+p1i[0]+" "+p1i[1]+
+            " A "+rInner+" "+rInner+" 0 0 0 "+p0i[0]+" "+p0i[1]+" Z";
+    svg += '<path d="'+d+'" fill="'+wheelColors[i].hex+'"></path>';
+  }
+  if (drawLines) {
+    if (points.length === 2) {
+      var p0 = segCenter(points[0], rOuter), p1 = segCenter(points[1], rOuter);
+      svg += '<line x1="'+p0[0]+'" y1="'+p0[1]+'" x2="'+p1[0]+'" y2="'+p1[1]+'" stroke="#26262c" stroke-width="5" stroke-linecap="round"/>';
+    } else {
+      var dPoly = "";
+      points.forEach(function(idx, k){
+        var p = segCenter(idx, rOuter);
+        dPoly += (k === 0 ? "M " : " L ") + p[0] + " " + p[1];
+      });
+      dPoly += " Z";
+      svg += '<path d="'+dPoly+'" fill="none" stroke="#26262c" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>';
+    }
+  }
+  points.forEach(function(idx){
+    var p = segCenter(idx, rOuter);
+    svg += '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="11.5" fill="'+wheelColors[idx].hex+'" stroke="#ffffff" stroke-width="4"></circle>';
+  });
+  svg += '</svg>';
+  return svg;
+}
+
 function renderWheelLevelSelect() {
   $("header-subtitle").textContent = "Color Wheel Harmony · Pilih skema";
   var grid = $("wheel-level-select-grid");
@@ -1771,8 +2519,10 @@ function renderWheelLevelSelect() {
 
     // Panel materi (tersembunyi awalnya)
     var panel = document.createElement("div"); panel.className = "materi-panel";
+    var diagramSvg = buildHarmonyDiagramSVG(sk.typeKey);
     panel.innerHTML =
       '<h4>Skema ' + mat.nomor + ' dari 8 · ' + ht.label + '</h4>'
+      + '<div class="wheel-harmony-diagram">' + diagramSvg + '</div>'
       + '<p>' + mat.desc + '</p>'
       + '<p>' + mat.contoh + '</p>'
       + '<div class="materi-highlight"><strong>Aturan game:</strong> ' + mat.aturan + '</div>';
@@ -2158,7 +2908,7 @@ function renderTheorySelect() {
         panel.innerHTML = "<h4>"+mk.judul+"</h4>"+mk.isi+
           '<div class="materi-actions-row">'
           + '<button class="mulai-dari-materi-btn" data-catid="'+cat.id+'">▶ Latihan Soal</button>'
-          + '<button class="materi-action-btn-game" data-action="wheel-game">🎡 Main Game Roda Warna</button>'
+          + '<button class="materi-action-btn-game" data-action="wheel-game">Main Game Roda Warna</button>'
           + '</div>';
       } else {
         panel.innerHTML = "<h4>"+mk.judul+"</h4>"+mk.isi+
@@ -2278,12 +3028,12 @@ function selectTheoryAnswer(idx, btn) {
     theoryCorrect++;
     theoryXP += 20;
     clusterResults[cluster].correct++;
-    $("tq-feedback").textContent = "✓ Benar! +20 XP";
+    $("tq-feedback").textContent = "Benar! +20 XP";
     $("tq-feedback").className = "feedback correct-text";
   } else {
     btn.classList.add("wrong");
     revealTheoryCorrect();
-    $("tq-feedback").textContent = "✗ Kurang tepat. Lihat penjelasan jawaban yang benar di atas.";
+    $("tq-feedback").textContent = "Kurang tepat. Lihat penjelasan jawaban yang benar di atas.";
     $("tq-feedback").className = "feedback wrong-text";
     // Tampilkan penjelasan singkat
     var expEl = $("tq-explanation");
@@ -2310,7 +3060,7 @@ function showTheorySummary() {
   var pct = theorySessionTotal > 0 ? Math.round((theoryCorrect/theorySessionTotal)*100) : 0;
 
   // Stars
-  var stars = pct >= 90 ? "⭐⭐⭐" : pct >= 70 ? "⭐⭐" : pct >= 50 ? "⭐" : "☆";
+  var stars = pct >= 90 ? "Sempurna!" : pct >= 70 ? "Bagus!" : pct >= 50 ? "Cukup" : "Perlu Latihan";
   $("ts-stars").textContent = stars;
   $("ts-xp").textContent = theoryXP + " XP";
   $("ts-line").textContent = theoryCorrect+" dari "+theorySessionTotal+" benar ("+pct+"%)";
@@ -2351,10 +3101,550 @@ $("ts-change").addEventListener("click", function(){ showScreen("theorySelect");
 $("back-to-theory-select").addEventListener("click", function(){ clearInterval(theoryTimer); showScreen("theorySelect"); renderTheorySelect(); });
 
 // =======================================================================
+// ==================== TEBAK NAMA WARNA ================================
+// =======================================================================
+
+// 64 warna Pantone krayon
+var namaWarnaPool = [
+  { nama: "Merah",            hex: "#ED1C24", grup: "Merah & Oranye" },
+  { nama: "Merah Cerah",      hex: "#FF2D2D", grup: "Merah & Oranye" },
+  { nama: "Merah Marun",      hex: "#800000", grup: "Merah & Oranye" },
+  { nama: "Merah Muda",       hex: "#E8344E", grup: "Merah & Oranye" },
+  { nama: "Oranye Merah",     hex: "#FF4500", grup: "Merah & Oranye" },
+  { nama: "Oranye",           hex: "#FF6B00", grup: "Merah & Oranye" },
+  { nama: "Oranye Muda",      hex: "#FF8C00", grup: "Merah & Oranye" },
+  { nama: "Kuning Oranye",    hex: "#FFA500", grup: "Kuning & Hijau Muda" },
+  { nama: "Kuning",           hex: "#FFD700", grup: "Kuning & Hijau Muda" },
+  { nama: "Kuning Cerah",     hex: "#FFFF00", grup: "Kuning & Hijau Muda" },
+  { nama: "Kuning Pucat",     hex: "#F5F5A0", grup: "Kuning & Hijau Muda" },
+  { nama: "Krem",             hex: "#F5E6C8", grup: "Kuning & Hijau Muda" },
+  { nama: "Cokelat Krem",     hex: "#D4A574", grup: "Cokelat & Peach" },
+  { nama: "Peach",            hex: "#FFCBA4", grup: "Cokelat & Peach" },
+  { nama: "Peach Tua",        hex: "#FF9472", grup: "Cokelat & Peach" },
+  { nama: "Salmon",           hex: "#FA8072", grup: "Cokelat & Peach" },
+  { nama: "Cokelat Muda",     hex: "#C4956A", grup: "Cokelat & Peach" },
+  { nama: "Cokelat",          hex: "#8B4513", grup: "Cokelat & Peach" },
+  { nama: "Cokelat Tua",      hex: "#5C3317", grup: "Cokelat & Peach" },
+  { nama: "Cokelat Kayu",     hex: "#7B4F2E", grup: "Cokelat & Peach" },
+  { nama: "Hijau Kuning",     hex: "#9ACD32", grup: "Hijau" },
+  { nama: "Hijau Muda",       hex: "#66CC33", grup: "Hijau" },
+  { nama: "Hijau",            hex: "#008000", grup: "Hijau" },
+  { nama: "Hijau Tua",        hex: "#006400", grup: "Hijau" },
+  { nama: "Hijau Lumut",      hex: "#4A7A2E", grup: "Hijau" },
+  { nama: "Hijau Hutan",      hex: "#228B22", grup: "Hijau" },
+  { nama: "Hijau Mint",       hex: "#98FF98", grup: "Hijau" },
+  { nama: "Hijau Toska",      hex: "#3CB371", grup: "Hijau" },
+  { nama: "Toska",            hex: "#008080", grup: "Biru & Toska" },
+  { nama: "Toska Muda",       hex: "#40E0D0", grup: "Biru & Toska" },
+  { nama: "Biru Langit",      hex: "#87CEEB", grup: "Biru & Toska" },
+  { nama: "Biru Muda",        hex: "#4DA6FF", grup: "Biru & Toska" },
+  { nama: "Biru",             hex: "#0066CC", grup: "Biru & Toska" },
+  { nama: "Biru Cobalt",      hex: "#0047AB", grup: "Biru & Toska" },
+  { nama: "Biru Tua",         hex: "#00008B", grup: "Biru & Toska" },
+  { nama: "Biru Laut",        hex: "#000080", grup: "Biru & Toska" },
+  { nama: "Biru Indigo",      hex: "#4B0082", grup: "Ungu & Merah Muda" },
+  { nama: "Ungu",             hex: "#800080", grup: "Ungu & Merah Muda" },
+  { nama: "Ungu Muda",        hex: "#9B59B6", grup: "Ungu & Merah Muda" },
+  { nama: "Ungu Cerah",       hex: "#BF5FFF", grup: "Ungu & Merah Muda" },
+  { nama: "Lavender",         hex: "#E6E6FA", grup: "Ungu & Merah Muda" },
+  { nama: "Lavender Tua",     hex: "#9683EC", grup: "Ungu & Merah Muda" },
+  { nama: "Mauve",            hex: "#E0B0FF", grup: "Ungu & Merah Muda" },
+  { nama: "Magenta",          hex: "#FF00FF", grup: "Ungu & Merah Muda" },
+  { nama: "Pink Fuchsia",     hex: "#FF1493", grup: "Pink" },
+  { nama: "Pink Tua",         hex: "#E91E8C", grup: "Pink" },
+  { nama: "Pink",             hex: "#FF69B4", grup: "Pink" },
+  { nama: "Pink Muda",        hex: "#FFB6C1", grup: "Pink" },
+  { nama: "Pink Baby",        hex: "#FFCCE5", grup: "Pink" },
+  { nama: "Pink Salmon",      hex: "#FF9999", grup: "Pink" },
+  { nama: "Putih",            hex: "#FFFFFF", grup: "Netral" },
+  { nama: "Abu Abu Terang",   hex: "#D3D3D3", grup: "Netral" },
+  { nama: "Abu Abu",          hex: "#808080", grup: "Netral" },
+  { nama: "Abu Abu Gelap",    hex: "#404040", grup: "Netral" },
+  { nama: "Hitam",            hex: "#1A1A1A", grup: "Netral" },
+  { nama: "Emas",             hex: "#FFD700", grup: "Metalik & Spesial" },
+  { nama: "Emas Tua",         hex: "#B8860B", grup: "Metalik & Spesial" },
+  { nama: "Perak",            hex: "#C0C0C0", grup: "Metalik & Spesial" },
+  { nama: "Perunggu",         hex: "#CD7F32", grup: "Metalik & Spesial" },
+  { nama: "Merah Maroon",     hex: "#6B0F1A", grup: "Metalik & Spesial" },
+  { nama: "Burgundy",         hex: "#900020", grup: "Metalik & Spesial" },
+  { nama: "Biru Baja",        hex: "#4682B4", grup: "Metalik & Spesial" },
+  { nama: "Hijau Zamrud",     hex: "#50C878", grup: "Metalik & Spesial" },
+  { nama: "Ungu Royal",       hex: "#7851A9", grup: "Metalik & Spesial" },
+  { nama: "Merah Mawar",      hex: "#C2185B", grup: "Metalik & Spesial" }
+];
+
+var namaModes = [
+  { id:"mc",   name:"Pilihan Ganda",  desc:"Pilih dari 4 opsi jawaban",           badgeClass:"badge-easy",   xp:10, timer:0,  soal:15 },
+  { id:"type", name:"Ketik Jawaban",  desc:"Tulis nama warna tanpa bantuan opsi", badgeClass:"badge-normal", xp:20, timer:0,  soal:15 },
+  { id:"fast", name:"Mode Cepat",     desc:"Ketik nama warna, timer 8 detik!",    badgeClass:"badge-hard",   xp:30, timer:8,  soal:15 }
+];
+
+var nwMode = null;
+var nwPool = [];
+var nwCurrent = null;
+var nwIndex = 0;
+var nwBenar = 0;
+var nwXP = 0;
+var nwTimer = null;
+var nwTimeLeft = 0;
+var nwLocked = false;
+
+
+// ---- STUDY / PELAJARI WARNA SCREEN ----
+function getLuminance(hex) {
+  var r = parseInt(hex.slice(1,3),16)/255;
+  var g = parseInt(hex.slice(3,5),16)/255;
+  var b = parseInt(hex.slice(5,7),16)/255;
+  function toL(c){ return c<=0.03928 ? c/12.92 : Math.pow((c+0.055)/1.055,2.4); }
+  return 0.2126*toL(r)+0.7152*toL(g)+0.0722*toL(b);
+}
+
+var studyCurrentList = namaWarnaPool.slice();
+
+function renderStudyScreen() {
+  $("header-subtitle").textContent = "Pelajari Warna · 64 Warna Pantone";
+  $("study-search-input").value = "";
+  studyCurrentList = namaWarnaPool.slice();
+  renderStudyGrid(studyCurrentList);
+}
+
+function filterStudyColors() {
+  var q = $("study-search-input").value.trim().toLowerCase();
+  if (!q) {
+    studyCurrentList = namaWarnaPool.slice();
+  } else {
+    studyCurrentList = namaWarnaPool.filter(function(c){
+      return c.nama.toLowerCase().indexOf(q) !== -1 ||
+             c.hex.toLowerCase().indexOf(q) !== -1 ||
+             c.grup.toLowerCase().indexOf(q) !== -1;
+    });
+  }
+  renderStudyGrid(studyCurrentList);
+}
+
+function renderStudyGrid(list) {
+  var grid = $("study-color-grid");
+  grid.innerHTML = "";
+  $("study-count-badge").textContent = list.length + " warna";
+
+  // Group by grup
+  var groups = [];
+  var seen = {};
+  list.forEach(function(c){
+    if (!seen[c.grup]) { seen[c.grup] = true; groups.push(c.grup); }
+  });
+
+  groups.forEach(function(grp) {
+    var titleEl = document.createElement("div");
+    titleEl.className = "study-group-title";
+    titleEl.textContent = grp;
+    grid.appendChild(titleEl);
+
+    list.filter(function(c){ return c.grup === grp; }).forEach(function(c) {
+      var lum = getLuminance(c.hex);
+      var textColor = lum > 0.35 ? "#1a1a1a" : "#ffffff";
+      var sw = document.createElement("div");
+      sw.className = "study-swatch";
+      sw.innerHTML = "<div class='study-block' style='background:"+c.hex+";'></div>" +
+        "<div class='study-label'><span class='study-name'>"+c.nama+"</span><span class='study-hex'>"+c.hex+"</span></div>";
+      grid.appendChild(sw);
+    });
+  });
+}
+
+function renderNamaModeSelect() {
+  $("header-subtitle").textContent = "Tebak Nama Warna · Pilih mode";
+  var grid = $("nama-mode-grid");
+  grid.innerHTML = "";
+  namaModes.forEach(function(m) {
+    var btn = document.createElement("button");
+    btn.className = "level-card";
+    var left = document.createElement("div"); left.className = "level-card-left";
+    var name = document.createElement("div"); name.className = "level-card-name"; name.textContent = m.name;
+    var desc = document.createElement("div"); desc.className = "level-card-desc"; desc.textContent = m.desc + " · " + m.soal + " soal";
+    left.appendChild(name); left.appendChild(desc);
+    var badge = document.createElement("div"); badge.className = "level-card-badge " + m.badgeClass; badge.textContent = "+" + m.xp + " xp/benar";
+    btn.appendChild(left); btn.appendChild(badge);
+    btn.addEventListener("click", function(){ startNamaWarna(m); });
+    grid.appendChild(btn);
+  });
+}
+
+function startNamaWarna(mode) {
+  nwMode = mode;
+  nwPool = shuffle(namaWarnaPool).slice(0, mode.soal);
+  nwIndex = 0; nwBenar = 0; nwXP = 0; nwLocked = false;
+  $("header-subtitle").textContent = "Tebak Nama Warna · " + mode.name;
+  $("nw-summary").classList.add("hidden");
+  $("nw-active").classList.remove("hidden");
+  showScreen("nama");
+  renderNamaQuestion();
+}
+
+function updateNamaUI() {
+  $("nw-soal").textContent = nwIndex + 1;
+  $("nw-benar").textContent = nwBenar;
+  $("nw-xp").textContent = nwXP;
+  var pct = Math.round((nwIndex / nwMode.soal) * 100);
+  $("nw-progress").style.width = pct + "%";
+}
+
+function renderNamaQuestion() {
+  nwLocked = false;
+  nwCurrent = nwPool[nwIndex];
+  $("nw-feedback").textContent = "";
+  $("nw-feedback").className = "feedback";
+  $("nw-next-btn").classList.add("hidden");
+
+  // update stats
+  $("nw-soal").textContent = nwIndex + 1;
+  $("nw-benar").textContent = nwBenar;
+  $("nw-xp").textContent = nwXP;
+  $("nw-label").textContent = "Soal " + (nwIndex + 1) + " dari " + nwMode.soal;
+  var pct = Math.round((nwIndex / nwMode.soal) * 100);
+  $("nw-progress").style.width = pct + "%";
+
+  // tampilkan kotak warna
+  var box = $("nw-swatch-box");
+  box.style.background = nwCurrent.hex;
+
+  // tampilkan hex hanya di mode fast sebagai clue
+  var hexHint = $("nw-hex-hint");
+  hexHint.textContent = nwMode.id === "fast" ? nwCurrent.hex.toUpperCase() : "";
+
+  // reset timer label
+  if (nwMode.timer > 0) {
+    $("nw-timer").classList.remove("hidden");
+    $("nw-timer").textContent = nwMode.timer + "s";
+  } else {
+    $("nw-timer").classList.add("hidden");
+  }
+
+  if (nwMode.id === "mc") {
+    $("nw-mc-area").classList.remove("hidden");
+    $("nw-type-area").classList.add("hidden");
+    renderNamaMC();
+  } else {
+    $("nw-mc-area").classList.add("hidden");
+    $("nw-type-area").classList.remove("hidden");
+    renderNamaType();
+    if (nwMode.timer > 0) startNamaTimer();
+  }
+}
+
+function renderNamaMC() {
+  var correct = nwCurrent.nama;
+  var wrongPool = namaWarnaPool.filter(function(w){ return w.nama !== correct; });
+  var wrongs = shuffle(wrongPool).slice(0, 3).map(function(w){ return w.nama; });
+  var opts = shuffle([correct].concat(wrongs));
+
+  var grid = $("nw-mc-options");
+  grid.innerHTML = "";
+  var letters = ["A","B","C","D"];
+  opts.forEach(function(opt, idx) {
+    var btn = document.createElement("button");
+    btn.className = "theory-option-btn";
+    var letter = document.createElement("span"); letter.className = "option-letter";
+    letter.textContent = letters[idx];
+    var text = document.createElement("span");
+    text.textContent = opt.replace(/-/g, " ");
+    text.style.textTransform = "capitalize";
+    btn.appendChild(letter); btn.appendChild(text);
+    btn.addEventListener("click", function(){ if (!nwLocked) selectNamaMC(opt, btn, grid); });
+    grid.appendChild(btn);
+  });
+}
+
+function selectNamaMC(chosen, btn, grid) {
+  nwLocked = true;
+  var correct = nwCurrent.nama;
+  if (chosen === correct) {
+    btn.classList.add("correct");
+    nwBenar++; nwXP += nwMode.xp;
+    $("nw-feedback").textContent = "Benar! +" + nwMode.xp + " XP";
+    $("nw-feedback").className = "feedback correct-text";
+  } else {
+    btn.classList.add("wrong");
+    // reveal correct
+    grid.querySelectorAll(".theory-option-btn").forEach(function(b) {
+      var t = b.querySelector("span:last-child").textContent.toLowerCase();
+      if (t === correct.toLowerCase()) b.classList.add("correct");
+    });
+    $("nw-feedback").textContent = "Kurang tepat. Jawabannya: " + correct;
+    $("nw-feedback").className = "feedback wrong-text";
+  }
+  grid.querySelectorAll(".theory-option-btn").forEach(function(b){ b.disabled = true; });
+  $("nw-next-btn").textContent = nwIndex + 1 >= nwMode.soal ? "Lihat hasil →" : "Soal berikutnya →";
+  $("nw-next-btn").classList.remove("hidden");
+  updateNamaUI();
+}
+
+function renderNamaType() {
+  var inp = $("nw-input");
+  inp.value = "";
+  inp.className = "nw-input";
+  inp.disabled = false;
+  $("nw-submit").disabled = false;
+  $("nw-suggestions").innerHTML = "";
+  $("nw-suggestions").classList.add("hidden");
+
+  // autocomplete saat mengetik
+  inp.oninput = function() {
+    var val = inp.value.trim().toLowerCase();
+    var sug = $("nw-suggestions");
+    if (val.length < 1) { sug.classList.add("hidden"); return; }
+    var matches = namaWarnaPool.filter(function(w){
+      return w.nama.toLowerCase().indexOf(val) === 0;
+    }).slice(0, 5);
+    if (matches.length === 0) { sug.classList.add("hidden"); return; }
+    sug.innerHTML = "";
+    matches.forEach(function(m) {
+      var item = document.createElement("button");
+      item.className = "nw-sug-item";
+      var dot = document.createElement("span"); dot.className = "nw-sug-dot";
+      dot.style.background = m.hex;
+      var txt = document.createElement("span"); txt.textContent = m.nama; txt.style.textTransform = "capitalize";
+      item.appendChild(dot); item.appendChild(txt);
+      item.addEventListener("click", function(e) {
+        e.preventDefault();
+        inp.value = m.nama;
+        sug.classList.add("hidden");
+        inp.focus();
+      });
+      sug.appendChild(item);
+    });
+    sug.classList.remove("hidden");
+  };
+
+  inp.onkeydown = function(e) {
+    if (e.key === "Enter") { e.preventDefault(); submitNamaType(); }
+  };
+
+  setTimeout(function(){ inp.focus(); }, 80);
+}
+
+function startNamaTimer() {
+  clearInterval(nwTimer);
+  nwTimeLeft = nwMode.timer;
+  $("nw-timer").textContent = nwTimeLeft + "s";
+  nwTimer = setInterval(function() {
+    nwTimeLeft--;
+    $("nw-timer").textContent = nwTimeLeft + "s";
+    if (nwTimeLeft <= 0) {
+      clearInterval(nwTimer);
+      if (!nwLocked) {
+        nwLocked = true;
+        $("nw-input").disabled = true;
+        $("nw-submit").disabled = true;
+        $("nw-suggestions").classList.add("hidden");
+        $("nw-feedback").textContent = "Waktu habis! Jawaban: " + nwCurrent.nama;
+        $("nw-feedback").className = "feedback wrong-text";
+        $("nw-next-btn").textContent = nwIndex + 1 >= nwMode.soal ? "Lihat hasil →" : "Soal berikutnya →";
+        $("nw-next-btn").classList.remove("hidden");
+        updateNamaUI();
+      }
+    }
+  }, 1000);
+}
+
+function submitNamaType() {
+  if (nwLocked) return;
+  var inp = $("nw-input");
+  var val = inp.value.trim().toLowerCase().replace(/\s+/g, " ");
+  if (!val) return;
+  clearInterval(nwTimer);
+  nwLocked = true;
+  $("nw-suggestions").classList.add("hidden");
+  inp.disabled = true;
+  $("nw-submit").disabled = true;
+
+  var correct = nwCurrent.nama.toLowerCase();
+  // toleransi: cocok persis, atau singkatan (mis. "abu" untuk "abu muda")
+  var isCorrect = val === correct ||
+    (correct.indexOf(val) === 0 && val.length >= correct.split(" ")[0].length && correct.split(" ").length === 1);
+  // strict match: harus persis
+  isCorrect = val === correct;
+
+  if (isCorrect) {
+    inp.className = "nw-input correct";
+    nwBenar++; nwXP += nwMode.xp;
+    $("nw-feedback").textContent = "Benar! +" + nwMode.xp + " XP";
+    $("nw-feedback").className = "feedback correct-text";
+  } else {
+    inp.className = "nw-input wrong";
+    $("nw-feedback").textContent = "Kurang tepat. Jawabannya: " + nwCurrent.nama;
+    $("nw-feedback").className = "feedback wrong-text";
+  }
+
+  $("nw-next-btn").textContent = nwIndex + 1 >= nwMode.soal ? "Lihat hasil →" : "Soal berikutnya →";
+  $("nw-next-btn").classList.remove("hidden");
+  updateNamaUI();
+}
+
+$("nw-submit").addEventListener("click", submitNamaType);
+
+$("nw-next-btn").addEventListener("click", function() {
+  clearInterval(nwTimer);
+  nwIndex++;
+  if (nwIndex >= nwMode.soal) {
+    showNamaSummary();
+  } else {
+    renderNamaQuestion();
+  }
+});
+
+function showNamaSummary() {
+  clearInterval(nwTimer);
+  $("nw-active").classList.add("hidden");
+  $("nw-summary").classList.remove("hidden");
+  $("nw-progress").style.width = "100%";
+
+  var pct = Math.round((nwBenar / nwMode.soal) * 100);
+  $("nw-summary-xp").textContent = nwXP + " XP";
+  $("nw-summary-mode").textContent = nwMode.name;
+  $("nw-summary-line").textContent = nwBenar + " dari " + nwMode.soal + " benar (" + pct + "%)";
+
+  var gradeEl = $("nw-grade");
+  if (pct >= 90)      { gradeEl.textContent = "Nilai A · Luar Biasa!"; gradeEl.className = "result-grade grade-a"; }
+  else if (pct >= 75) { gradeEl.textContent = "Nilai B · Bagus!";      gradeEl.className = "result-grade grade-b"; }
+  else if (pct >= 60) { gradeEl.textContent = "Nilai C · Cukup";       gradeEl.className = "result-grade grade-c"; }
+  else                { gradeEl.textContent = "Nilai D · Perlu Latihan"; gradeEl.className = "result-grade grade-d"; }
+}
+
+$("nw-restart").addEventListener("click", function(){ startNamaWarna(nwMode); });
+$("study-mulai-btn").addEventListener("click", function(){ showScreen("namaSelect"); renderNamaModeSelect(); });
+$("nw-change").addEventListener("click", function(){ clearInterval(nwTimer); showScreen("namaSelect"); renderNamaModeSelect(); });
+$("back-to-nama-select").addEventListener("click", function(){ clearInterval(nwTimer); showScreen("namaSelect"); renderNamaModeSelect(); });
+
+// =======================================================================
 // INIT
 // =======================================================================
 showScreen("home");
 
+})();
+
+// =======================================================================
+// SPLASH SCREEN LOGIC (outside IIFE)
+// =======================================================================
+(function () {
+  var splash  = document.getElementById("splash-screen");
+  var btn     = document.getElementById("splash-btn");
+  var canvas  = document.getElementById("splash-canvas");
+  var ctx     = canvas.getContext("2d");
+
+  // --- Canvas resize ---
+  function resizeCanvas() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener("resize", resizeCanvas);
+
+  // --- Particle system ---
+  var COLORS = ["#e24b4a","#f5a623","#27ae60","#2980b9","#8e44ad","#e67e22","#16a085","#c0392b","#6c3483","#1a5276"];
+  var particles = [];
+
+  function Particle() {
+    this.reset(true);
+  }
+  Particle.prototype.reset = function(initial) {
+    this.x  = Math.random() * canvas.width;
+    this.y  = initial ? Math.random() * canvas.height : canvas.height + 20;
+    this.r  = 2 + Math.random() * 5;
+    this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+    this.vx = (Math.random() - 0.5) * 0.5;
+    this.vy = -(0.4 + Math.random() * 0.9);
+    this.alpha = 0;
+    this.targetAlpha = 0.25 + Math.random() * 0.35;
+    this.life  = 0;
+    this.maxLife = 180 + Math.random() * 200;
+  };
+
+  for (var i = 0; i < 55; i++) { particles.push(new Particle()); }
+
+  // --- Nebula blobs (slow drifting) ---
+  var blobs = [];
+  var blobDefs = [
+    { x:0.15, y:0.25, r:220, color:"rgba(91,79,207,0.06)" },
+    { x:0.85, y:0.75, r:200, color:"rgba(226,75,74,0.05)" },
+    { x:0.5,  y:0.5,  r:260, color:"rgba(41,128,185,0.04)" },
+    { x:0.2,  y:0.8,  r:180, color:"rgba(39,174,96,0.04)" },
+    { x:0.8,  y:0.2,  r:190, color:"rgba(142,68,173,0.05)" },
+  ];
+  blobDefs.forEach(function(d) {
+    blobs.push({ bx: d.x, by: d.y, r: d.r, color: d.color,
+      dx: (Math.random()-0.5)*0.0003, dy: (Math.random()-0.5)*0.0003 });
+  });
+
+  var t = 0;
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // light bg
+    ctx.fillStyle = "#f0f4ff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // subtle soft color blobs
+    blobs.forEach(function(b) {
+      b.bx += b.dx; b.by += b.dy;
+      if (b.bx < 0 || b.bx > 1) b.dx *= -1;
+      if (b.by < 0 || b.by > 1) b.dy *= -1;
+      var bg = ctx.createRadialGradient(
+        b.bx * canvas.width, b.by * canvas.height, 0,
+        b.bx * canvas.width, b.by * canvas.height, b.r
+      );
+      bg.addColorStop(0, b.color);
+      bg.addColorStop(1, "transparent");
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    });
+
+    // particles
+    t++;
+    particles.forEach(function(p) {
+      p.life++;
+      p.x += p.vx + Math.sin(t * 0.01 + p.r) * 0.15;
+      p.y += p.vy;
+      // fade in/out
+      if (p.life < 30) p.alpha = (p.life / 30) * p.targetAlpha;
+      else if (p.life > p.maxLife - 40) p.alpha = ((p.maxLife - p.life) / 40) * p.targetAlpha;
+      else p.alpha = p.targetAlpha;
+
+      if (p.life >= p.maxLife || p.y < -20) { p.reset(false); return; }
+
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, p.alpha);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.color;
+      ctx.fill();
+      ctx.restore();
+    });
+
+    // done
+  }
+
+  var rafId;
+  function animate() {
+    if (!splash.style.display || splash.style.display !== "none") {
+      draw();
+      rafId = requestAnimationFrame(animate);
+    }
+  }
+  animate();
+
+  function dismissSplash() {
+    splash.classList.add("splash-exit");
+    setTimeout(function () {
+      splash.style.display = "none";
+      cancelAnimationFrame(rafId);
+    }, 700);
+  }
+
+  btn.addEventListener("click", dismissSplash);
+  splash.addEventListener("click", function (e) {
+    if (e.target === splash) dismissSplash();
+  });
 })();
 </script>
 
